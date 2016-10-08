@@ -79,7 +79,7 @@ class AdminPlugin(b3.plugin.Plugin):
         "group_unknown": "^7Group $group_name does not exist",
         "group_beyond_reach": "^7Group $group_name is beyond your reach",
         "cleared_warnings": "$admin ^7has cleared $player ^ of all tk-points and warnings",
-        "cleared_warnings_for_all": "$admin ^7has cleared $player ^7of all tk-points and warnings",
+        "cleared_warnings_for_all": "$admin ^7has cleared all tk-points and warnings",
         "warn_too_fast": "^7Only one warning per $num_second seconds can be issued",
         "ban_denied": "^7Hey %s^7, you're no Elvis, can't ban %s",
         "help_available": "^7Available commands: %s",
