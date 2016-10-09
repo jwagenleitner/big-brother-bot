@@ -1295,6 +1295,8 @@ class Iourt43Parser(Iourt42Parser):
             gametype = 'jump'
         elif gametype_int == '10':
             gametype = 'freeze'
+        elif  gametype_int == '11':
+            gametype = 'gungame'
 
         return gametype
 
