@@ -39,12 +39,6 @@ class Poweradminurt43Plugin(Poweradminurt42Plugin):
         """
         Poweradminurt42Plugin.onLoadConfig(self)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    COMMANDS                                                                                                      #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def cmd_pagungame(self, data, client, cmd=None):
         """
         Change game type to Gun Game
