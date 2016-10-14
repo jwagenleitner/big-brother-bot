@@ -58,17 +58,17 @@
                 <plugin name="adv" config="@conf/plugin_adv.xml" path="c:/somewhere/else/"/>
 
         -->
-        <plugin name="admin" config="@conf/plugin_admin.xml" />
+        <plugin name="admin" config="@conf/plugin_admin.ini" />
         <plugin name="adv" config="@conf/plugin_adv.xml" />
         <plugin name="censor" config="@conf/plugin_censor.xml" />
         <plugin name="pingwatch" config="@conf/plugin_pingwatch.ini" />
         <plugin name="spamcontrol" config="@conf/plugin_spamcontrol.ini" />
         <plugin name="stats" config="@conf/plugin_stats.xml" />
         <plugin name="status" config="@conf/plugin_status.ini" />
-        <plugin name="tk" config="@conf/plugin_tk.xml" />
-        <plugin name="welcome" config="@conf/plugin_welcome.xml" />
+        <plugin name="tk" config="@conf/plugin_tk.ini" />
+        <plugin name="welcome" config="@conf/plugin_welcome.ini" />
         <plugin name="poweradminurt" config="@conf/plugin_poweradminurt.ini" />
-        <plugin name="xlrstats" config="@conf/xlrstats.xml"/>
+        <plugin name="xlrstats" config="@conf/xlrstats.ini"/>
 
         <!-- The next plugins are external, 3rd party plugins and should reside in the external_dir. Example: -->
         <!-- plugin config="@b3/extplugins/conf/newplugin.xml" name="newplugin" -->
