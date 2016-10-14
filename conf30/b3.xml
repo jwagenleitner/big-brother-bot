@@ -61,10 +61,10 @@
         <plugin name="admin" config="@conf/plugin_admin.xml" />
         <plugin name="adv" config="@conf/plugin_adv.xml" />
         <plugin name="censor" config="@conf/plugin_censor.xml" />
-        <plugin name="pingwatch" config="@conf/plugin_pingwatch.xml" />
-        <plugin name="spamcontrol" config="@conf/plugin_spamcontrol.xml" />
+        <plugin name="pingwatch" config="@conf/plugin_pingwatch.ini" />
+        <plugin name="spamcontrol" config="@conf/plugin_spamcontrol.ini" />
         <plugin name="stats" config="@conf/plugin_stats.xml" />
-        <plugin name="status" config="@conf/plugin_status.xml" />
+        <plugin name="status" config="@conf/plugin_status.ini" />
         <plugin name="tk" config="@conf/plugin_tk.xml" />
         <plugin name="welcome" config="@conf/plugin_welcome.xml" />
         <plugin name="poweradminurt" config="@conf/plugin_poweradminurt.ini" />
