@@ -70,6 +70,10 @@
         <plugin name="poweradminurt" config="@conf/plugin_poweradminurt.ini" />
         <plugin name="xlrstats" config="@conf/xlrstats.ini"/>
 
+        <plugin name="" config="@conf/plugin_firstkill.ini"/>
+        <plugin name="" config="@conf/plugin_spree.ini"/>
+        <plugin name="" config="@conf/plugin_spawnkill.ini"/>
+
         <!-- The next plugins are external, 3rd party plugins and should reside in the external_dir. Example: -->
         <!-- plugin config="@b3/extplugins/conf/newplugin.xml" name="newplugin" -->
         <plugin name="urtbslap" config="@conf/urtbslap.xml" />
