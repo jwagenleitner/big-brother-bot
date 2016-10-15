@@ -108,6 +108,10 @@ class Poweradminurt42Plugin(Poweradminurt41Plugin):
             return
 
         client = event.client
+
+        if client.maxLevel >= 20:
+            return
+
         if client.var(self, 'radio_ignore_till', self.getTime()).value > self.getTime():
             self.debug("ignoring radio event")
             return
