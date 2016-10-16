@@ -118,3 +118,52 @@ mute_duration: 2
         assertSpampoints(5)
         self.assertEqual(0, self.joe.warn.call_count)
         self.console.write.assert_has_calls([call("mute 0 2")])
+
+    def test_spam_with_maxlevel(self):
+        # GIVEN a config with maxlevel set at moderator
+        self.init("""
+[radio_spam_protection]
+enable: True
+mute_duration: 2
+maxlevel: mod
+""")
+        self.moderator.connects("0")
+        self.console.write = Mock(wraps=lambda x: sys.stderr.write("%s\n" % x))
+        self.moderator.warn = Mock()
+
+        def moderator_radio(msg_group, msg_id, location, text):
+            self.console.parseLine('''Radio: 0 - %s - %s - "%s" - "%s"''' % (msg_group, msg_id, location, text))
+
+        def assertSpampoints(points):
+            self.assertEqual(points, self.moderator.var(self.p, 'radio_spamins', 0).value)
+
+        assertSpampoints(0)
+
+        # WHEN the moderator spams messages
+        when(self.p).getTime().thenReturn(0)
+        moderator_radio(3, 1, "Patio Courtyard", "Requesting medic. Status: healthy")
+        moderator_radio(3, 1, "Patio Courtyard", "Requesting medic. Status: healthy")
+        moderator_radio(3, 1, "Patio Courtyard", "Requesting medic. Status: healthy")
+
+        # THEN the moderator is not warned
+        assertSpampoints(0)
+        self.assertEqual(0, self.moderator.warn.call_count)
+        self.console.write.assert_has_calls([])
+
+        # THEN WHEN we set the maxlevel about moderator
+        self.init("""
+[radio_spam_protection]
+enable: True
+mute_duration: 2
+maxlevel: fulladmin
+""")
+
+        # AND we spam again
+        moderator_radio(3, 1, "Patio Courtyard", "Requesting medic. Status: healthy")
+        moderator_radio(3, 1, "Patio Courtyard", "Requesting medic. Status: healthy")
+        moderator_radio(3, 1, "Patio Courtyard", "Requesting medic. Status: healthy")
+
+        # THEN this time the moderator is warned for spamming
+        assertSpampoints(5)
+        self.assertEqual(0, self.moderator.warn.call_count)
+        self.console.write.assert_has_calls([call("mute 0 2")])

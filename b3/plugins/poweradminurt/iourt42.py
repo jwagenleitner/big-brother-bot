@@ -55,6 +55,7 @@ class Poweradminurt42Plugin(Poweradminurt41Plugin):
     # radio spam protection
     _rsp_enable = False
     _rsp_mute_duration = 2
+    _rsp_maxlevel = 20
     _rsp_falloffRate = 2  # spam points will fall off by 1 point every 4 seconds
     _rsp_maxSpamins = 10
 
@@ -93,6 +94,7 @@ class Poweradminurt42Plugin(Poweradminurt41Plugin):
         """
         self._rsp_enable = self.getSetting('radio_spam_protection', 'enable', b3.BOOL, self._rsp_enable)
         self._rsp_mute_duration = self.getSetting('radio_spam_protection', 'mute_duration', b3.INT, self._rsp_mute_duration, lambda x: clamp(x, minv=1))
+        self._rsp_maxlevel = self.getSetting('radio_spam_protection', 'maxlevel', b3.LEVEL, self._rsp_maxlevel)
 
     ####################################################################################################################
     #                                                                                                                  #
@@ -109,7 +111,7 @@ class Poweradminurt42Plugin(Poweradminurt41Plugin):
 
         client = event.client
 
-        if client.maxLevel >= 20:
+        if client.maxLevel >= self._rsp_maxlevel:
             return
 
         if client.var(self, 'radio_ignore_till', self.getTime()).value > self.getTime():
