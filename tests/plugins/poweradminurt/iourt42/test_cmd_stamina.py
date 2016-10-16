@@ -22,9 +22,9 @@ from b3.plugins.poweradminurt import PoweradminurtPlugin
 from tests.plugins.poweradminurt.iourt42 import Iourt42TestCase
 
 
-class Test_cmd_funstuff(Iourt42TestCase):
+class Test_cmd_stamina(Iourt42TestCase):
     def setUp(self):
-        super(Test_cmd_funstuff, self).setUp()
+        super(Test_cmd_stamina, self).setUp()
         self.conf = CfgConfigParser()
         self.conf.loadFromString("""
 [commands]
