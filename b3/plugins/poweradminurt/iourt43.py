@@ -17,15 +17,41 @@
 
 from .iourt42 import Poweradminurt42Plugin
 
+
 class Poweradminurt43Plugin(Poweradminurt42Plugin):
 
     requiresParsers = ['iourt43']
+
+    _weapons43 = dict(p90='k', frf1='i', mag='l', ben='j')
+
+    _weapon_aliases43 = {
+        "nail": "p90",
+        "fr": "frf1",
+        "44": "mag",
+        ".44": "mag",
+        "slug": "ben",
+    }
+
+    _weapon_groups43 = {
+        'all_snipers': 'NZi',
+        'all_pistols': 'FGfgl',
+        'all_auto': 'IJLMacehk',
+        'all_shotgun': 'Hj',
+        'all_sec': 'HIJhjk',
+        'all_ak': 'HIJhjkFGfgl',
+    }
 
     def onStartup(self):
         """
         Initialize plugin settings
         """
         Poweradminurt42Plugin.onStartup(self)
+
+        # Adjust for new weapons in 4.3
+        self._gears['none'] = 'FGHIJKLMNZacefghijklOQRSTUVWX'
+        self._weapons.update(self._weapons43)
+        self._weapon_aliases.update(self._weapon_aliases43)
+        self._weapon_groups.update(self._weapon_groups43)
 
     def registerEvents(self):
         """
