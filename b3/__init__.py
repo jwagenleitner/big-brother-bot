@@ -60,12 +60,12 @@ from ConfigParser import NoOptionError
 from ConfigParser import NoSectionError
 
 __author__ = 'ThorN'
-__version__ = '1.10.11'
+__version__ = '1.13'
 
 modulePath = pkg_handler.resource_directory(__name__)
 
 versionId = 'v%s' % __version__
-version = '^8www.bigbrotherbot.net ^0(^8b3^0) ^9%s ^9[^3AngryBiscuit^9]^3' % versionId
+version = '^8www.bigbrotherbot.net ^0(^8b3^0) ^9%s ^9[^330Plus^9]^3' % versionId
 
 confdir = None
 console = None

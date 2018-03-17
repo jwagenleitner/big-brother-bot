@@ -1,7 +1,7 @@
 <configuration>
     <settings name="b3">
         <set name="parser">iourt43</set>
-        <set name="database">sqlite://memory/</set>
+        <set name="database">sqlite://b3.database.sqlite/</set>
         <set name="bot_name">30+Bot</set>
         <set name="bot_prefix">^0(^230+Bot^0)^7:</set>
         <set name="time_format">%I:%M%p %Z %m/%d/%y</set>
@@ -11,9 +11,9 @@
         <set name="logfile">@conf/b3.log</set>
     </settings>
     <settings name="server">
-        <set name="rcon_password">secret</set>
+        <set name="rcon_password">password</set>
         <set name="port">27960</set>
-        <set name="game_log">/UrbanTerror43/q3ut4/games.log</set>
+        <set name="game_log">/home/johnwa/games/urt433-server/q3ut4/games.log</set>
         <set name="public_ip">127.0.0.1</set>
         <set name="rcon_ip">127.0.0.1</set>
         <set name="punkbuster">off</set>
