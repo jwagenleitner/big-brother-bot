@@ -52,7 +52,7 @@ class NaderPlugin(b3.plugin.Plugin):
     _challengeTarget = None
     _challengeDuration = 300
     _challengeThread = None
-    _db_tableHEF = ''
+    _db_tableHOF = ''
     _db_mapName = ''
     _db_playerid = ''
     _db_score = ''
@@ -111,7 +111,7 @@ class NaderPlugin(b3.plugin.Plugin):
                     pass
 
         try:
-            self._db_tableHEF = self.config.get('settings', 'db_table_hef')
+            self._db_tableHOF = self.config.get('settings', 'db_table_hof')
             self._db_mapName = self.config.get('settings', 'db_map_name')
             self._db_playerid = self.config.get('settings', 'db_playerid')
             self._db_score = self.config.get('settings', 'db_score')
@@ -438,7 +438,7 @@ class NaderPlugin(b3.plugin.Plugin):
         if currentRecordValue == '-1':
             self.debug('MySQL error, cannot get record')
             return
-        # Retrieve HEF for the current map
+        # Retrieve HOF for the current map
         if (currentRecordHolder != '') and (currentRecordValue != '0'):
             self.debug('Record already exists in DB')
             if topKills > int(currentRecordValue):
@@ -447,7 +447,7 @@ class NaderPlugin(b3.plugin.Plugin):
                 currentRecordHolder = bestPlayer.exactName
                 currentRecordValue = topKills
                 q = 'UPDATE %s SET %s=\'%s\', %s=\'%s\' WHERE %s=\'%s\'' % (
-                self._db_tableHEF, self._db_playerid, str(bestPlayer.id), self._db_score, str(topKills),
+                self._db_tableHOF, self._db_playerid, str(bestPlayer.id), self._db_score, str(topKills),
                 self._db_mapName, currentMap)
                 self.debug('New record, updating: %s' % q)
                 try:
@@ -465,7 +465,7 @@ class NaderPlugin(b3.plugin.Plugin):
             currentRecordHolder = bestPlayer.exactName
             currentRecordValue = topKills
             q = 'INSERT INTO %s (%s, %s, %s) VALUES(\'%s\', %s, \'%s\')' % (
-            self._db_tableHEF, self._db_mapName, self._db_playerid, self._db_score, currentMap, str(bestPlayer.id),
+            self._db_tableHOF, self._db_mapName, self._db_playerid, self._db_score, currentMap, str(bestPlayer.id),
             topKills)
             self.debug('New record, inserting: %s' % q)
             try:
@@ -484,7 +484,7 @@ class NaderPlugin(b3.plugin.Plugin):
         RecordHolder = ''
         RecordValue = '-1'
         cursor = None
-        q = 'SELECT * FROM %s WHERE %s = \'%s\'' % (self._db_tableHEF, self._db_mapName, self.console.game.mapName)
+        q = 'SELECT * FROM %s WHERE %s = \'%s\'' % (self._db_tableHOF, self._db_mapName, self.console.game.mapName)
         try:
             cursor = self.query(q)
         except:

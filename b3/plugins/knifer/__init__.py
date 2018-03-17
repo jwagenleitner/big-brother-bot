@@ -1,5 +1,3 @@
-# Knifer Plugin
-
 __author__ = 'SvaRoX'
 __version__ = '0.3'
 
@@ -10,34 +8,6 @@ import string
 import thread, threading
 
 
-#
-#
-#
-#
-#
-#
-# ----------------> QUAND PAS DE NOM : ERROR PROCESSING COMMAND - 22:17 (crossing)
-#
-#
-#
-#
-# -------------------> testscore : probleme dans le calcul d'arrondi : 2.0*0.2 = 0.0, 2.0*0.6 = 1.0, 2.0*0.3 = 1.0
-#
-#
-# 183_.59 : Scarryman, 1791.71 Me -> !kntest scarr -> Earned: 2 * 3.7 = 7, 2 * 2.2 = 4.0
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-
-# --------------------------------------------------------------------------------------------------
 class KniferPlugin(b3.plugin.Plugin):
     _adminPlugin = None
     _xlrstatsPlugin = None
@@ -62,8 +32,6 @@ class KniferPlugin(b3.plugin.Plugin):
         if not self._adminPlugin:
             self.error('Could not find admin plugin')
             return False
-        # else:
-        # self._adminPlugin.debug('Plugin loaded')
         self._xlrstatsPlugin = self.console.getPlugin('xlrstats')
         if not self._xlrstatsPlugin:
             self.debug('Could not find xlrstats plugin')
@@ -369,7 +337,7 @@ class KniferPlugin(b3.plugin.Plugin):
         client.message('^7Total knife kills (xlrstats): ^2%d' % xlrResult.kills)
 
     def challengeEnd(self):
-        self.debug('Challeng has ended')
+        self.debug('Challenge has ended')
         self.console.write('bigtext "^3%s ^7has won the knife challenge!"' % self._challengeTarget.exactName)
         self._challengeTarget = None
 
