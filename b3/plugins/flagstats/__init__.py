@@ -11,72 +11,19 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-#
-# 
-#
-# Changelog :
-# 0.1.0 : initial release
-# This plugin was made with a tranformation of the plugin Headshoturt by Courgette
-# 0.2.0 : initial release
-# Put timer to create events that old parser can't give
-# 0.3.0 : Bugs corrections
-# 0.4.0 : Plugin simplified work with parseriourt41 1.5.0 or above
-# 0.5.0 : 
-#    Refactoring and cleaning
-#    fix bug when no flag is captured
-#    quickest flag award separated from max flag award.
-#    cmd !flag also give best personnal time
-#    add tests
-# 2010-10-22 - v0.5.1 - GrosBedo
-# * fix a small bug when no flag is captured and issuing a !flag
-# 2010-10-23 - v0.6.0 - GrosBedo
-# * added support for oa081 and generic flag_taken event
-# * added !topstat
-# * adapted config parsing and commands to the last convention
-# * shortened a LOT messages spawned by this plugin
-# * separate_awards setting to show CTF awards for all teams at once or separated
-# 2010-10-25 - v0.6.1 - GrosBedo
-# * Reworked the code
-# * Added more stats (flag taken and flag returned)
-# * Removed the FlagStats Class, stats are now normalized and accessible as standard variables (use playerinfo.py to list them)
-# 2010-10-26 - v0.6.2 - GrosBedo
-# * a few bugfixes
-# * added flagcarrierkill stats
-# * added Best Defender award which is flagreturns + flagcarrierkill
-# 2010-10-26 - v0.6.3 - GrosBedo
-# * Reworked the code a lot, decreased the number of lines and cut code redundancy
-# * Management of teams events is now more generic
-# * Stats are now erased at round start, instead of round end
-# * Added Def stat (flagreturns + flagcarrierkills) and Best Defender Award
-# 2010-10-28 - v0.6.4 - GrosBedo
-# * Fixed a little bug that made !topflags pm results to the wrong player (or pm when it should be public awards show)
-# 2010-10-29 - v0.6.5 - GrosBedo
-# * Fastest Cap award is now converted into hours, minutes and seconds if necessary
-# * Fixed a few bugs
-# * Added instructions in the Readme to implement compatibility for Flagstats in parsers
-# 2010-10-30 - v0.6.6 - GrosBedo
-# * EVT_GAME_FLAG_RETURNED is really no longer needed for a parser to be supported by flagstats
-# 2010-10-30 - v0.6.7 - GrosBedo
-# * Fixed a small bug in show_awards that made it be repeated twice (at the end, and at the beginning of next map)
-# 2010-10-31 - v0.6.8 - Beber888
-# * Fixed a small bug in show number of flags, needed ".value", add plurial notion for messages for Number of flags
-# 2010-11-01 - v0.6.9 - GrosBedo
-# * Notification on best time beaten is now converted to minutes and seconds too
-#
 
 __version__ = '0.6.9'
-__author__  = 'Beber888, GrosBedo'
-
+__author__ = 'Beber888, GrosBedo'
 
 import b3, time
 import b3.events
 import b3.plugin
-import math
+
 
 class TeamData():
     name = 'UnknownTeam'
@@ -88,13 +35,16 @@ class TeamData():
     TakenTime = 0
     FlagTaken = 0
 
+
 class RedTeamData(TeamData):
     name = 'Red'
+
 
 class BlueTeamData(TeamData):
     name = 'Blue'
 
-#--------------------------------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------------------------------
 class FlagstatsPlugin(b3.plugin.Plugin):
     _adminPlugin = None
     _reset_flagstats_stats = None
@@ -102,17 +52,17 @@ class FlagstatsPlugin(b3.plugin.Plugin):
     _clientvar_name = 'flagstats_info'
     _show_awards = None
     GameType = 0
-    
+
     def onLoadConfig(self):
 
         try:
-            self._min_level_flagstats_cmd = self.config.getint('commands', 'flag') 
+            self._min_level_flagstats_cmd = self.config.getint('commands', 'flag')
         except:
             self._min_level_flagstats_cmd = 1
             self.debug('Using default value (%i) for commands::flag', self._min_level_flagstats_cmd)
 
         try:
-            self._min_level_topflags_cmd = self.config.getint('commands', 'topflags') 
+            self._min_level_topflags_cmd = self.config.getint('commands', 'topflags')
         except:
             self._min_level_topflags_cmd = 1
             self.debug('Using default value (%i) for commands::topflags', self._min_level_topflags_cmd)
@@ -143,17 +93,17 @@ class FlagstatsPlugin(b3.plugin.Plugin):
 
         return
 
-        
     def onStartup(self):
         self.registerEvent(b3.events.EVT_CLIENT_ACTION)
         try:
             self.registerEvent(b3.events.EVT_GAME_FLAG_RETURNED)
         except:
             pass
-        self.registerEvent(b3.events.EVT_GAME_EXIT) # used to show awards at the end of round
-        #self.registerEvent(b3.events.EVT_GAME_ROUND_END) # used to show awards at the end of round
-        self.registerEvent(b3.events.EVT_GAME_ROUND_START) # better to reinit stats at round start than round end, so that players can still query their stats at the end
-        
+        self.registerEvent(b3.events.EVT_GAME_EXIT)  # used to show awards at the end of round
+        # self.registerEvent(b3.events.EVT_GAME_ROUND_END) # used to show awards at the end of round
+        self.registerEvent(
+            b3.events.EVT_GAME_ROUND_START)  # better to reinit stats at round start than round end, so that players can still query their stats at the end
+
         # Initialize the teams' flag stats
         self.BlueTeamData = BlueTeamData()
         self.RedTeamData = RedTeamData()
@@ -178,14 +128,13 @@ class FlagstatsPlugin(b3.plugin.Plugin):
                     self._adminPlugin.registerCommand(self, cmd, level, func, alias)
 
     def getCmd(self, cmd):
-      """ return the method for a given command  """
-      cmd = 'cmd_%s' % cmd
-      if hasattr(self, cmd):
-          func = getattr(self, cmd)
-          return func
-      return None
+        """ return the method for a given command  """
+        cmd = 'cmd_%s' % cmd
+        if hasattr(self, cmd):
+            func = getattr(self, cmd)
+            return func
+        return None
 
-        
     def onEvent(self, event):
         """\
         Handle intercepted events
@@ -206,7 +155,6 @@ class FlagstatsPlugin(b3.plugin.Plugin):
             elif event.type == b3.events.EVT_GAME_ROUND_START:
                 self.game_reinit(event)
         return
-        
 
     def init_flagstats_stats(self, client):
         # initialize the clients' flag stats
@@ -216,12 +164,11 @@ class FlagstatsPlugin(b3.plugin.Plugin):
         client.setvar(self, 'flagcarrierkill', 0)
         client.setvar(self, 'flagbesttime', -1)
 
-
     def FlagCounter(self, event):
         """\
-        A Event was made. 
+        A Event was made.
         """
-        
+
         # VARS INITIAZITATION
         client = event.client
         self.teamdatas = None
@@ -233,23 +180,24 @@ class FlagstatsPlugin(b3.plugin.Plugin):
         elif client.team == b3.TEAM_RED or event.data == 'team_CTF_blueflag':
             self.teamdatas = self.RedTeamData
             self.oppositeteamdatas = self.BlueTeamData
-        else: # this is not a CTF event and no player is acting in this event, so we just pass
+        else:  # this is not a CTF event and no player is acting in this event, so we just pass
             return False
 
         # FLAG MANAGEMENT
-        #Flag taken
-        if  (event.data == 'team_CTF_redflag' or event.data == 'team_CTF_blueflag' or event.data == 'flag_taken') and self.oppositeteamdatas.FlagTaken == 0:# and self.teamdatas.PorteurRed == 0:
+        # Flag taken
+        if (
+                event.data == 'team_CTF_redflag' or event.data == 'team_CTF_blueflag' or event.data == 'flag_taken') and self.oppositeteamdatas.FlagTaken == 0:  # and self.teamdatas.PorteurRed == 0:
             self.oppositeteamdatas.FlagTaken = 1
             self.oppositeteamdatas.TakenTime = time.time()
             client.var(self, 'flagtaken', 0).value += 1
-        
-        #Flag returned
+
+        # Flag returned
         elif event.data == 'flag_returned' and self.teamdatas.FlagTaken == 1:
             self.teamdatas.FlagTaken = 0
             client.var(self, 'flagreturned', 0).value += 1
-                    
-        #Flag captured
-        elif event.data == 'flag_captured' and self.oppositeteamdatas.FlagTaken == 1: #and client ==  self.PorteurRed:
+
+        # Flag captured
+        elif event.data == 'flag_captured' and self.oppositeteamdatas.FlagTaken == 1:  # and client ==  self.PorteurRed:
             self.oppositeteamdatas.FlagTaken = 0
             timeCapture = time.time() - self.oppositeteamdatas.TakenTime
 
@@ -262,19 +210,19 @@ class FlagstatsPlugin(b3.plugin.Plugin):
                 if self.teamdatas.minTime > timeCapture or self.teamdatas.minTime == -1:
                     self.teamdatas.minTime = timeCapture
                     self.teamdatas.minTimeClient = client
-                if client.var(self, 'flagbesttime', -1).value > timeCapture or client.var(self, 'flagbesttime', -1).value == -1:
+                if client.var(self, 'flagbesttime', -1).value > timeCapture or client.var(self, 'flagbesttime',
+                                                                                          -1).value == -1:
                     # new personal record !
                     client.setvar(self, 'flagbesttime', timeCapture)
                     self.show_messageToClient(client, timeCapture, bestTime=True)
                 else:
                     self.show_messageToClient(client, timeCapture)
 
-        #Flag carrier killed
+        # Flag carrier killed
         elif event.data == 'flag_carrier_kill':
             client.var(self, 'flagcarrierkill', 0).value += 1
 
         return
-
 
     def FlagReturn(self, event):
         if event.data == 'RED':
@@ -282,7 +230,6 @@ class FlagstatsPlugin(b3.plugin.Plugin):
         if event.data == 'BLUE':
             self.BlueTeamData.FlagTaken = 0
 
-    
     def show_messageToClient(self, client, timeCapture, bestTime=False):
         """\
         display the message
@@ -292,20 +239,24 @@ class FlagstatsPlugin(b3.plugin.Plugin):
             Plurial = 's'
         else:
             Plurial = ''
-        self.console.write('%s^3 captured ^5%s^3 flag%s in ^5%s^3' % (client.name, flagcaptured, Plurial, self.show_time(timeCapture)))
+        self.console.write(
+            '%s^3 captured ^5%s^3 flag%s in ^5%s^3' % (client.name, flagcaptured, Plurial, self.show_time(timeCapture)))
         if bestTime and self._show_personal_best:
-            client.message('^3%s: New personnal record for flag capture ! (^5%s^3)' % (client.name, self.show_time(timeCapture)))
-
-
-
+            client.message(
+                '^3%s: New personnal record for flag capture ! (^5%s^3)' % (client.name, self.show_time(timeCapture)))
 
     def cmd_flagstats(self, data, client, cmd=None):
         """\
         [player] - Show a players number of flag captured
         """
-        if data is None or data=='':
+        if data is None or data == '':
             if client is not None:
-                client.message('^7You took ^5%s ^7flags, returned ^5%s^7, captured ^5%s^7, def ^5%s^7, best capture time ^5%s ^7' % (client.var(self, 'flagtaken', 0).value, client.var(self, 'flagreturned', 0).value, client.var(self, 'flagcaptured', 0).value, (client.var(self, 'flagreturned', 0).value + client.var(self, 'flagcarrierkill', 0).value), self.show_time(client.var(self, 'flagbesttime', -1).value)))
+                client.message(
+                    '^7You took ^5%s ^7flags, returned ^5%s^7, captured ^5%s^7, def ^5%s^7, best capture time ^5%s ^7' % (
+                    client.var(self, 'flagtaken', 0).value, client.var(self, 'flagreturned', 0).value,
+                    client.var(self, 'flagcaptured', 0).value,
+                    (client.var(self, 'flagreturned', 0).value + client.var(self, 'flagcarrierkill', 0).value),
+                    self.show_time(client.var(self, 'flagbesttime', -1).value)))
         else:
             input = self._adminPlugin.parseUserCmd(data)
             if input:
@@ -314,20 +265,25 @@ class FlagstatsPlugin(b3.plugin.Plugin):
                 if not sclient:
                     # a player matchin the name was not found, a list of closest matches will be displayed
                     # we can exit here and the user will retry with a more specific player
-                    client.message('^7Invalid data, can\'t find player %s'%data)
+                    client.message('^7Invalid data, can\'t find player %s' % data)
                     return False
             else:
                 client.message('^7Invalid data, try !help flag')
                 return False
 
-            client.message('^7%s took ^5%s ^7flags returned ^5%s^7 captured ^5%s^7, def ^5%s^7, best capture time ^5%s ^7' % (sclient.name, sclient.var(self, 'flagtaken', 0).value, sclient.var(self, 'flagreturned', 0).value, sclient.var(self, 'flagcaptured', 0).value, (sclient.var(self, 'flagreturned', 0).value + sclient.var(self, 'flagcarrierkill', 0).value), self.show_time(sclient.var(self, 'flagbesttime', -1).value)))
+            client.message(
+                '^7%s took ^5%s ^7flags returned ^5%s^7 captured ^5%s^7, def ^5%s^7, best capture time ^5%s ^7' % (
+                sclient.name, sclient.var(self, 'flagtaken', 0).value, sclient.var(self, 'flagreturned', 0).value,
+                sclient.var(self, 'flagcaptured', 0).value,
+                (sclient.var(self, 'flagreturned', 0).value + sclient.var(self, 'flagcarrierkill', 0).value),
+                self.show_time(sclient.var(self, 'flagbesttime', -1).value)))
 
     def game_reinit(self, event):
 
         if self._reset_flagstats_stats:
             for c in self.console.clients.getList():
                 self.init_flagstats_stats(c)
-    
+
         self.RedTeamData = RedTeamData()
         self.BlueTeamData = BlueTeamData()
 
@@ -356,7 +312,6 @@ class FlagstatsPlugin(b3.plugin.Plugin):
             result = ''.join([result, '%0.2f s' % sec])
 
         return result
-        
 
     def flag_awards_show(self, client=None):
         msg = ''
@@ -369,37 +324,55 @@ class FlagstatsPlugin(b3.plugin.Plugin):
             if self.BlueTeamData.maxFlag > self.RedTeamData.maxFlag:
                 if self.BlueTeamData.maxFlag > 1:
                     plurial = 's'
-                msg = ''.join([msg, 'Most Flags: %s [^4Blue^3] (^5%s^3 flag%s) - '%(self.BlueTeamData.maxFlagClients.name, self.BlueTeamData.maxFlag, plurial)])
+                msg = ''.join([msg, 'Most Flags: %s [^4Blue^3] (^5%s^3 flag%s) - ' % (
+                self.BlueTeamData.maxFlagClients.name, self.BlueTeamData.maxFlag, plurial)])
             elif self.BlueTeamData.maxFlag < self.RedTeamData.maxFlag:
                 if self.RedTeamData.maxFlag > 1:
                     plurial = 's'
-                msg = ''.join([msg, 'Most Flags: %s [^1Red^3] (^5%s^3 flag%s) - '%(self.RedTeamData.maxFlagClients.name, self.RedTeamData.maxFlag, plurial)])
+                msg = ''.join([msg, 'Most Flags: %s [^1Red^3] (^5%s^3 flag%s) - ' % (
+                self.RedTeamData.maxFlagClients.name, self.RedTeamData.maxFlag, plurial)])
             elif self.BlueTeamData.maxFlag == self.RedTeamData.maxFlag and self.BlueTeamData.maxFlagClients is not None:
-                msg = ''.join([msg, 'Most Flags: %s [^4Blue^3] and %s [^1Red^3] (^5%s^3 flags) - '%(self.BlueTeamData.maxFlagClients.name, self.RedTeamData.maxFlagClients.name, self.RedTeamData.maxFlag)])
-            else: # both are None
+                msg = ''.join([msg, 'Most Flags: %s [^4Blue^3] and %s [^1Red^3] (^5%s^3 flags) - ' % (
+                self.BlueTeamData.maxFlagClients.name, self.RedTeamData.maxFlagClients.name, self.RedTeamData.maxFlag)])
+            else:  # both are None
                 msg = ''
 
             # BEST DEFENDER
             clientmaxdef = None
             for c in self.console.clients.getList():
-                if clientmaxdef is None or ((c.var(self, 'flagcarrierkill', 0).value + c.var(self, 'flagreturned', 0).value) > (clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned', 0).value)):
+                if clientmaxdef is None or (
+                        (c.var(self, 'flagcarrierkill', 0).value + c.var(self, 'flagreturned', 0).value) > (
+                        clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned',
+                                                                                              0).value)):
                     clientmaxdef = c
-            if clientmaxdef is not None and (clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned', 0).value) > 0:
+            if clientmaxdef is not None and (
+                    clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned',
+                                                                                          0).value) > 0:
                 if clientmaxdef.team == b3.TEAM_BLUE:
                     tmpteam = '^4Blue'
                 elif clientmaxdef.team == b3.TEAM_RED:
                     tmpteam = '^1Red'
                 else:
                     tmpteam = '^1Free'
-                msg = ''.join([msg, 'Best Defender: %s [%s^3] (def ^5%s^3) - '%(clientmaxdef.name, tmpteam, clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned', 0).value)])
+                msg = ''.join([msg, 'Best Defender: %s [%s^3] (def ^5%s^3) - ' % (clientmaxdef.name, tmpteam,
+                                                                                  clientmaxdef.var(self,
+                                                                                                   'flagcarrierkill',
+                                                                                                   0).value + clientmaxdef.var(
+                                                                                      self, 'flagreturned', 0).value)])
 
             # FASTEST CAPTURE
-            if (self.BlueTeamData.minTime < self.RedTeamData.minTime and self.BlueTeamData.minTime != -1) or (self.BlueTeamData.minTime > 0 and self.RedTeamData.minTime == -1): # If blue team's fastest cap time is smaller than red team's, we take blue's score. Another case : blue team captured, red did not, so red time is -1 by default, but in this case blue team's fastest cap time is taken.
-                msg = ''.join([msg, 'Fastest Cap: %s [^4Blue^3] (^5%s^3)'%(self.BlueTeamData.minTimeClient.name, self.show_time(self.BlueTeamData.minTime))])
-            elif (self.BlueTeamData.minTime > self.RedTeamData.minTime and self.RedTeamData.minTime != -1) or (self.RedTeamData.minTime > 0 and self.BlueTeamData.minTime == -1): # opposite of the previous conditionnal test (in favor of red team)
-                msg = ''.join([msg, 'Fastest Cap: %s [^1Red^3] (^5%s^3)'%(self.RedTeamData.minTimeClient.name, self.show_time(self.RedTeamData.minTime))])
-            elif self.BlueTeamData.minTime == self.RedTeamData.minTime and self.BlueTeamData.minTimeClient is not None: # if both teams equal and are not null
-                msg = ''.join([msg, 'Fastest Cap: %s [^4Blue^3] and %s [^1Red^3] (^5%s^3)'%(self.BlueTeamData.minTimeClient.name, self.RedTeamData.minTimeClient.name, self.show_time(self.BlueTeamData.minTime))])
+            if (self.BlueTeamData.minTime < self.RedTeamData.minTime and self.BlueTeamData.minTime != -1) or (
+                    self.BlueTeamData.minTime > 0 and self.RedTeamData.minTime == -1):  # If blue team's fastest cap time is smaller than red team's, we take blue's score. Another case : blue team captured, red did not, so red time is -1 by default, but in this case blue team's fastest cap time is taken.
+                msg = ''.join([msg, 'Fastest Cap: %s [^4Blue^3] (^5%s^3)' % (
+                self.BlueTeamData.minTimeClient.name, self.show_time(self.BlueTeamData.minTime))])
+            elif (self.BlueTeamData.minTime > self.RedTeamData.minTime and self.RedTeamData.minTime != -1) or (
+                    self.RedTeamData.minTime > 0 and self.BlueTeamData.minTime == -1):  # opposite of the previous conditionnal test (in favor of red team)
+                msg = ''.join([msg, 'Fastest Cap: %s [^1Red^3] (^5%s^3)' % (
+                self.RedTeamData.minTimeClient.name, self.show_time(self.RedTeamData.minTime))])
+            elif self.BlueTeamData.minTime == self.RedTeamData.minTime and self.BlueTeamData.minTimeClient is not None:  # if both teams equal and are not null
+                msg = ''.join([msg, 'Fastest Cap: %s [^4Blue^3] and %s [^1Red^3] (^5%s^3)' % (
+                self.BlueTeamData.minTimeClient.name, self.RedTeamData.minTimeClient.name,
+                self.show_time(self.BlueTeamData.minTime))])
 
             # PRINT AWARDS
             if client:
@@ -410,7 +383,7 @@ class FlagstatsPlugin(b3.plugin.Plugin):
             else:
                 if msg != '':
                     self.console.say('^3CTF Awards: %s' % msg)
-                
+
         else:
             # BLUE TEAM AWARDS
             # - most flags
@@ -418,18 +391,29 @@ class FlagstatsPlugin(b3.plugin.Plugin):
                 plurial = ''
                 if self.BlueTeamData.maxFlag > 1:
                     plurial = 's'
-                msgblue = ''.join([msgblue, 'Most Flags: %s (^5%s^3 flag%s) - '%(self.BlueTeamData.maxFlagClients.name, self.BlueTeamData.maxFlag, plurial)])
+                msgblue = ''.join([msgblue, 'Most Flags: %s (^5%s^3 flag%s) - ' % (
+                self.BlueTeamData.maxFlagClients.name, self.BlueTeamData.maxFlag, plurial)])
             # - best defender
             clientmaxdef = None
             for c in self.console.clients.getList():
-                if c.team == b3.TEAM_BLUE and (clientmaxdef is None or ((c.var(self, 'flagcarrierkill', 0).value + c.var(self, 'flagreturned', 0).value) > (clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned', 0).value))):
+                if c.team == b3.TEAM_BLUE and (clientmaxdef is None or (
+                        (c.var(self, 'flagcarrierkill', 0).value + c.var(self, 'flagreturned', 0).value) > (
+                        clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned',
+                                                                                              0).value))):
                     clientmaxdef = c
-            if clientmaxdef is not None and ((clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned', 0).value) > 0):
+            if clientmaxdef is not None and ((clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(
+                    self, 'flagreturned', 0).value) > 0):
                 tmpteam = '^4Blue'
-                msgblue = ''.join([msgblue, 'Best Defender: %s [%s^3] (def ^5%s^3) - '%(clientmaxdef.name, tmpteam, clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned', 0).value)])
+                msgblue = ''.join([msgblue, 'Best Defender: %s [%s^3] (def ^5%s^3) - ' % (clientmaxdef.name, tmpteam,
+                                                                                          clientmaxdef.var(self,
+                                                                                                           'flagcarrierkill',
+                                                                                                           0).value + clientmaxdef.var(
+                                                                                              self, 'flagreturned',
+                                                                                              0).value)])
             # - fastest capture
             if self.BlueTeamData.minTimeClient is not None:
-                msgblue = ''.join([msgblue, 'Fastest Cap: %s (^5%s^3)'%(self.BlueTeamData.minTimeClient.name, self.show_time(self.BlueTeamData.minTime))])
+                msgblue = ''.join([msgblue, 'Fastest Cap: %s (^5%s^3)' % (
+                self.BlueTeamData.minTimeClient.name, self.show_time(self.BlueTeamData.minTime))])
 
             # RED TEAM AWARDS
             # - most flags
@@ -437,19 +421,30 @@ class FlagstatsPlugin(b3.plugin.Plugin):
                 plurial = ''
                 if self.RedTeamData.maxFlag > 1:
                     plurial = 's'
-                msgred = ''.join([msgred, 'Most Flags: %s (^5%s^3 flag%s) - '%(self.RedTeamData.maxFlagClients.name, self.RedTeamData.maxFlag, plurial)])
+                msgred = ''.join([msgred, 'Most Flags: %s (^5%s^3 flag%s) - ' % (
+                self.RedTeamData.maxFlagClients.name, self.RedTeamData.maxFlag, plurial)])
             # - best defender
             clientmaxdef = None
             for c in self.console.clients.getList():
-                if c.team == b3.TEAM_RED and (clientmaxdef is None or ((c.var(self, 'flagcarrierkill', 0).value + c.var(self, 'flagreturned', 0).value) > (clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned', 0).value))):
+                if c.team == b3.TEAM_RED and (clientmaxdef is None or (
+                        (c.var(self, 'flagcarrierkill', 0).value + c.var(self, 'flagreturned', 0).value) > (
+                        clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned',
+                                                                                              0).value))):
                     clientmaxdef = c
-            if clientmaxdef is not None and ((clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned', 0).value) > 0):
+            if clientmaxdef is not None and ((clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(
+                    self, 'flagreturned', 0).value) > 0):
                 tmpteam = '^1Red'
-                msgred = ''.join([msgred, 'Best Defender: %s [%s^3] (def ^5%s^3) - '%(clientmaxdef.name, tmpteam, clientmaxdef.var(self, 'flagcarrierkill', 0).value + clientmaxdef.var(self, 'flagreturned', 0).value)])
+                msgred = ''.join([msgred, 'Best Defender: %s [%s^3] (def ^5%s^3) - ' % (clientmaxdef.name, tmpteam,
+                                                                                        clientmaxdef.var(self,
+                                                                                                         'flagcarrierkill',
+                                                                                                         0).value + clientmaxdef.var(
+                                                                                            self, 'flagreturned',
+                                                                                            0).value)])
             # - fastest capture
             if self.RedTeamData.minTimeClient is not None:
-                msgred = ''.join([msgred, 'Fastest Cap: %s (^5%s^3)'%(self.RedTeamData.minTimeClient.name, self.show_time(self.RedTeamData.minTime))])
-    
+                msgred = ''.join([msgred, 'Fastest Cap: %s (^5%s^3)' % (
+                self.RedTeamData.minTimeClient.name, self.show_time(self.RedTeamData.minTime))])
+
             # PRINT AWARDS
             if client:
                 if msgred == '' and msgblue == '':
@@ -470,18 +465,19 @@ class FlagstatsPlugin(b3.plugin.Plugin):
         return
 
 
-
 ################################ TESTS #############################
 if __name__ == '__main__':
-    
+
     ############# setup test environment ##################
     from b3.fake import FakeConsole, FakeClient
     from b3.parsers.iourt41 import Iourt41Parser
-   
+
+
     ## inherits from both FakeConsole and Iourt41Parser
     class FakeUrtConsole(FakeConsole, Iourt41Parser):
         pass
-   
+
+
     class UrtClient():
         def takesFlag(self):
             if self.team == b3.TEAM_BLUE:
@@ -490,85 +486,89 @@ if __name__ == '__main__':
             elif self.team == b3.TEAM_RED:
                 print "\n%s takes blue flag" % self.name
                 self.doAction('team_CTF_blueflag')
+
         def returnsFlag(self):
             print "\n%s returns flag" % self.name
             self.doAction('flag_returned')
+
         def capturesFlag(self):
             print "\n%s captures flag" % self.name
             self.doAction('flag_captured')
-       
+
+
     ## use mixins to add methods to FakeClient
     FakeClient.__bases__ += (UrtClient,)
-  
+
     fakeConsole = FakeUrtConsole('@b3/conf/b3.xml')
     fakeConsole.startup()
-    
+
     p = FlagstatsPlugin(fakeConsole, '@b3/extplugins/conf/flagstats.xml')
     p.onStartup()
     p._show_awards = True
-    
+
     from b3.fake import joe, simon
+
     joe.team = b3.TEAM_BLUE
     simon.team = b3.TEAM_RED
-    jack = FakeClient(fakeConsole, cid=42, name="Jack", exactName="Jack", guid="qsd654sqf", _maxLevel=1, authed=True, team=b3.TEAM_RED)
+    jack = FakeClient(fakeConsole, cid=42, name="Jack", exactName="Jack", guid="qsd654sqf", _maxLevel=1, authed=True,
+                      team=b3.TEAM_RED)
 
-    
     ## initialize gametype
     fakeConsole.game.gameType = 'ctf'
-    
+
     ############# END setup test environment ##################
-    
+
     print "================= ROUND 1 ==================="
-    
+
     joe.takesFlag()
     joe.says('!flag')
     simon.returnsFlag()
-    
+
     simon.takesFlag()
     time.sleep(1.5)
     simon.capturesFlag()
     time.sleep(0.5)
     simon.says('!flag')
-    
+
     jack.takesFlag()
     time.sleep(0.8)
     jack.capturesFlag()
     time.sleep(0.5)
     jack.says('!fs')
-    
+
     simon.takesFlag()
     time.sleep(1.23)
     simon.capturesFlag()
     time.sleep(0.5)
     simon.says('!fs')
-    
+
     fakeConsole.queueEvent(b3.events.Event(b3.events.EVT_GAME_EXIT, None))
     time.sleep(1)
-    
+
     print "\n================= ROUND 2 ==================="
-    
+
     joe.takesFlag()
     time.sleep(0.88)
     joe.capturesFlag()
     time.sleep(0.5)
-    
+
     jack.takesFlag()
     time.sleep(0.5)
     fakeConsole.queueEvent(b3.events.Event(b3.events.EVT_GAME_FLAG_RETURNED, 'BLUE'))
     time.sleep(0.5)
-    
+
     jack.takesFlag()
     time.sleep(1)
     jack.capturesFlag()
     time.sleep(0.5)
     jack.says('!flag')
-    
+
     jack.takesFlag()
     time.sleep(3)
     jack.capturesFlag()
     time.sleep(0.5)
     jack.says('!flag')
-    
+
     fakeConsole.queueEvent(b3.events.Event(b3.events.EVT_GAME_EXIT, None))
-    
+
     time.sleep(5)
