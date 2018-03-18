@@ -97,3 +97,19 @@ class Poweradminurt43Plugin(Poweradminurt42Plugin):
         elif data.lower() == 'off':
             self.console.setCvar('g_instagib', '0')
             self.console.say('^7Instagib mode: ^1OFF')
+
+    def cmd_pahardcore(self, data, client, cmd=None):
+        """
+        Set the g_hardcore <on/off>
+        (You can safely use the command without the 'pa' at the beginning)
+        """
+        if not data or data.lower() not in ('on', 'off'):
+            client.message('^7You must provide an argument of "on" or "off", try !help pahardcore')
+            return
+
+        if data.lower() == 'on':
+            self.console.setCvar('g_hardcore', 1)
+            self.console.say('^7Hardcore: ^2ON')
+        elif data.lower() == 'off':
+            self.console.setCvar('g_hardcore', 0)
+            self.console.say('^7Hardcore: ^1OFF')
