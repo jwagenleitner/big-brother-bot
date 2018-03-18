@@ -43,6 +43,7 @@
     </settings>
     <plugins>
         <plugin name="admin" config="@conf/plugin_admin.ini" />
+<!--
         <plugin name="adv" config="@conf/plugin_adv.xml" />
         <plugin name="censor" config="@conf/plugin_censor.xml" />
         <plugin name="pingwatch" config="@conf/plugin_pingwatch.ini" />
@@ -51,8 +52,10 @@
         <plugin name="status" config="@conf/plugin_status.ini" />
         <plugin name="tk" config="@conf/plugin_tk.ini" />
         <plugin name="welcome" config="@conf/plugin_welcome.ini" />
+-->
         <plugin name="poweradminurt" config="@conf/plugin_poweradminurt.ini" />
         <plugin name="xlrstats" config="@conf/plugin_xlrstats.ini"/>
+<!--
         <plugin name="firstkill" config="@conf/plugin_firstkill.ini"/>
         <plugin name="spree" config="@conf/plugin_spree.ini"/>
         <plugin name="spawnkill" config="@conf/plugin_spawnkill.ini"/>
@@ -60,5 +63,6 @@
         <plugin name="nader" config="@conf/nader.xml" />
         <plugin name="knifer" config="@conf/knifer.xml" />
         <plugin name="flagstats" config="@conf/flagstats.xml" />
+-->
     </plugins>
 </configuration>

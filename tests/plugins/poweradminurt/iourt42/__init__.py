@@ -1,20 +1,26 @@
-# BigBrotherBot(B3) (www.bigbrotherbot.net)
-# Copyright (C) 2011 Courgette
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-#
+# -*- coding: utf-8 -*-
+
+# ################################################################### #
+#                                                                     #
+#  BigBrotherBot(B3) (www.bigbrotherbot.net)                          #
+#  Copyright (C) 2005 Michael "ThorN" Thornton                        #
+#                                                                     #
+#  This program is free software; you can redistribute it and/or      #
+#  modify it under the terms of the GNU General Public License        #
+#  as published by the Free Software Foundation; either version 2     #
+#  of the License, or (at your option) any later version.             #
+#                                                                     #
+#  This program is distributed in the hope that it will be useful,    #
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of     #
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the       #
+#  GNU General Public License for more details.                       #
+#                                                                     #
+#  You should have received a copy of the GNU General Public License  #
+#  along with this program; if not, write to the Free Software        #
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA      #
+#  02110-1301, USA.                                                   #
+#                                                                     #
+# ################################################################### #
 
 import unittest
 from b3.cvar import Cvar
@@ -23,7 +29,6 @@ from tests import logging_disabled
 from b3 import TEAM_UNKNOWN
 from b3.config import XmlConfigParser
 from b3.plugins.admin import AdminPlugin
-from b3.plugins.xlrstats import XlrstatsPlugin
 from b3.update import B3version
 from b3 import __version__ as b3_version
 from b3.parsers.iourt42 import Iourt42Parser
@@ -46,7 +51,7 @@ class Iourt42TestCase(unittest.TestCase):
         with logging_disabled():
             # create a Iourt41 parser
             self.parser_conf = XmlConfigParser()
-            self.parser_conf.loadFromString("""<configuration><settings name="server"><set name="game_log"></set></settings><settings name="b3"><set name="time_zone">CST</set></settings></configuration>""")
+            self.parser_conf.loadFromString("""<configuration><settings name="server"><set name="game_log"></set></settings></configuration>""")
             self.console = Iourt42Parser(self.parser_conf)
             self.console.startup()
 
@@ -59,13 +64,9 @@ class Iourt42TestCase(unittest.TestCase):
                 self.adminPlugin = AdminPlugin(self.console, admin_plugin_conf_file)
                 self.adminPlugin.onLoadConfig()
                 self.adminPlugin.onStartup()
-                self.xlrstatsPlugin = XlrstatsPlugin(self.console, '@b3/conf/plugin_xlrstats.ini')
-                self.xlrstatsPlugin.onLoadConfig()
-                self.xlrstatsPlugin.onStartup()
 
             # make sure the admin plugin obtained by other plugins is our admin plugin
             when(self.console).getPlugin('admin').thenReturn(self.adminPlugin)
-            when(self.console).getPlugin('xlrstats').thenReturn(self.xlrstatsPlugin)
 
             # prepare a few players
             from b3.fake import FakeClient
