@@ -17,11 +17,20 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+import re
 from b3.parsers.iourt42 import Iourt42Parser
 
 class Iourt43Parser(Iourt42Parser):
 
     gameName = 'iourt43'
+
+    _rePlayerScore = re.compile(r'^(?P<slot>[0-9]+):(?P<name>.*)\s+'
+                                r'TEAM:(?P<team>RED|BLUE|SPECTATOR|FREE)\s+'
+                                r'KILLS:(?P<kill>[0-9]+)\s+'
+                                r'DEATHS:(?P<death>[0-9]+)\s+'
+                                r'ASSISTS:(?P<assist>[0-9]+)\s+'
+                                r'PING:(?P<ping>[0-9]+|CNCT|ZMBI)\s+'
+                                r'AUTH:(?P<auth>.*)\s+IP:(?P<ip>.*)$', re.IGNORECASE)
 
     def __new__(cls, *args, **kwargs):
         return Iourt42Parser.__new__(cls)
