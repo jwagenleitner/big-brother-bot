@@ -10,34 +10,6 @@ import string
 import thread, threading
 
 
-#
-#
-#
-#
-#
-#
-# ----------------> QUAND PAS DE NOM : ERROR PROCESSING COMMAND - 22:17 (crossing)
-#
-#
-#
-#
-# -------------------> testscore : probleme dans le calcul d'arrondi : 2.0*0.2 = 0.0, 2.0*0.6 = 1.0, 2.0*0.3 = 1.0
-#
-#
-# 183_.59 : Scarryman, 1791.71 Me -> !kntest scarr -> Earned: 2 * 3.7 = 7, 2 * 2.2 = 4.0
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-
-# --------------------------------------------------------------------------------------------------
 class NaderPlugin(b3.plugin.Plugin):
     _adminPlugin = None
     _xlrstatsPlugin = None

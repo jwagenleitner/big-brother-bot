@@ -23,6 +23,7 @@ __author__ = 'Beber888, GrosBedo'
 import b3, time
 import b3.events
 import b3.plugin
+from b3.functions import getCmd
 
 
 class TeamData():
@@ -123,17 +124,9 @@ class FlagstatsPlugin(b3.plugin.Plugin):
                 alias = None
                 if len(sp) == 2:
                     cmd, alias = sp
-                func = self.getCmd(cmd)
+                func = getCmd(self, cmd)
                 if func:
                     self._adminPlugin.registerCommand(self, cmd, level, func, alias)
-
-    def getCmd(self, cmd):
-        """ return the method for a given command  """
-        cmd = 'cmd_%s' % cmd
-        if hasattr(self, cmd):
-            func = getattr(self, cmd)
-            return func
-        return None
 
     def onEvent(self, event):
         """\

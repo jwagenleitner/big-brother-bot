@@ -4,12 +4,6 @@
 #
 ########################
 
-##
-# CHANGELOG
-##
-
-# 27-07-2008 v0.0.1 - Written for Decoy to bitchslap people, nuff said. Slap code modified from poweradminurt by xlr8or. - Pyranwolf.
-# 28-07-2008 v0.0.2 - Added possibility to provide a number of slaps and extra check on syntax for !mslap
 __author__ = 'HSO Clan Development http://www.hsoclan.co.uk'
 __version__ = '0.0.2'
 
@@ -34,35 +28,32 @@ class UrtbslapPlugin(b3.plugin.Plugin):
 
     def cmd_mslap(self, data, client=None, cmd=None):
         input = self._adminPlugin.parseUserCmd(data)
-        if not data:
+        if not input:
             client.message('^7command is !mslap <playername or partialname> <number of slaps>')
             return False
-        else:
-            if len([x for x in data if x.isspace()]) < 1:
-                client.message('^7 correct syntax is !mslap <playername or part> <number of slaps>')
-            else:
-                input = data.split(' ', 1)
-                cname = input[0]
-                creps = input[1]
-                sclient = self._adminPlugin.findClientPrompt(cname, client)
-                if not sclient: return False
-                self.console.write('bigtext "^7Play by 30+ Rules Please!"')
-                reps = int(creps)
-                while reps > 0:
-                    self.console.write('slap %s' % (sclient.cid))
-                    reps -= 1
+        if len(input) < 2:
+            client.message('^7 correct syntax is !mslap <playername or part> <number of slaps>')
+            return False
+        cname = input[0]
+        creps = input[1]
+        sclient = self._adminPlugin.findClientPrompt(cname, client)
+        if not sclient: return False
+        self.console.write('bigtext "^7Play by 30+ Rules Please!"')
+        self.__do_slap(sclient, int(creps))
         return True
 
     def cmd_bslap(self, data, client=None, cmd=None):
         input = self._adminPlugin.parseUserCmd(data)
-        if input:
-            sclient = self._adminPlugin.findClientPrompt(input[0], client)
-            if not sclient: return False
-            self.console.write('bigtext "^7Slapped to Death Because You Deserved It!"')
-            reps = 20
-            while reps > 0:
-                self.console.write('slap %s' % (sclient.cid))
-                reps -= 1
-        else:
+        if not input:
             client.message('^7Slap who???')
-        return False
+            return False
+        sclient = self._adminPlugin.findClientPrompt(input[0], client)
+        if not sclient:
+            return False
+        self.console.write('bigtext "^7Slapped to Death Because You Deserved It!"')
+        self.__do_slap(sclient, 20)
+
+    def __do_slap(self, sclient, reps):
+        while reps > 0:
+            self.console.write('slap %s' % (sclient.cid))
+            reps -= 1

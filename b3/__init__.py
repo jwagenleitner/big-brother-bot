@@ -38,12 +38,12 @@ from ConfigParser import NoOptionError
 from ConfigParser import NoSectionError
 
 __author__ = 'ThorN'
-__version__ = '1.30.1'
+__version__ = '1.30.3'
 
 modulePath = pkg_handler.resource_directory(__name__)
 
 versionId = 'v%s' % __version__
-version = '^8www.bigbrotherbot.net ^0(^8b3^0) ^9%s ^9[^3VacampLotEdition^9]^3' % versionId
+version = '^0(^8b3^0) ^9%s ^9[VaCampsALot Edition^9]^3' % versionId
 
 confdir = None
 console = None

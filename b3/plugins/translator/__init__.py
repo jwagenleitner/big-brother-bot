@@ -28,6 +28,7 @@ __version__ = '3.2'
 import b3
 import b3.plugin
 import b3.events
+from b3.functions import getCmd
 
 # translate utility that utilize google translator, support python2 & python3
 # Note that the order or arguments in the URL matters.
@@ -54,18 +55,6 @@ import sys
 import time
 reload(sys)
 sys.setdefaultencoding('utf-8')
-
-try:
-    # import the getCmd function
-    import b3.functions.getCmd as getCmd
-except ImportError:
-    # keep backward compatibility
-    def getCmd(instance, cmd):
-        cmd = 'cmd_%s' % cmd
-        if hasattr(instance, cmd):
-            func = getattr(instance, cmd)
-            return func
-        return None
 
 
 class TranslatorPlugin(b3.plugin.Plugin):

@@ -537,8 +537,8 @@ class Iourt42Parser(Iourt41Parser):
         try:
             cvar = self.getCvar('gamename')
             gamename = cvar.getString() if cvar else None
-            if gamename != 'q3urt42' and gamename != 'q3urt43':
-                self.error("The iourt42 B3 parser cannot be used with a game server other than Urban Terror 4.2 or 4.3 [%s]" % gamename)
+            if not self.is_valid_game(gamename):
+                self.error("The %s B3 parser cannot be used with a game server other than [%s]" % (self.gameName, gamename))
                 raise SystemExit(220)
         except Exception, e:
             self.warning("Could not query server for gamename.", exc_info=e)
@@ -571,6 +571,9 @@ class Iourt42Parser(Iourt41Parser):
 
         self.load_conf_frozensand_ban_settings()
         self.load_conf_userinfo_overflow()
+
+    def is_valid_game(self, gamename):
+        return gamename == 'q3urt42'
 
     def pluginsStarted(self):
         """

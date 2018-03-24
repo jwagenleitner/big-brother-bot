@@ -168,21 +168,14 @@ class Iourt43Parser(Iourt42Parser):
     def __new__(cls, *args, **kwargs):
         return Iourt42Parser.__new__(cls)
 
+    def is_valid_game(self, gamename):
+        return gamename == 'q3urt43'
+
     def startup(self):
         """
         Called after the parser is created before run().
         """
-        try:
-            cvar = self.getCvar('gamename')
-            gamename = cvar.getString() if cvar else None
-            if gamename != 'q3urt43':
-                self.error("The iourt43 B3 parser cannot be used with a game server other than Urban Terror 4.3 [%s]" % gamename)
-                raise SystemExit(220)
-        except Exception, e:
-            self.warning("Could not query server for gamename.", exc_info=e)
-
         Iourt42Parser.startup(self)
-
         self.Events.createEvent('EVT_ASSIST', 'Event assist')
 
     def OnAssist(self, action, data, match=None):
