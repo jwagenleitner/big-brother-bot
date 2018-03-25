@@ -1,7 +1,8 @@
 <configuration>
     <settings name="b3">
         <set name="parser">iourt43</set>
-        <set name="database">sqlite://b3.database.sqlite/</set>
+        <set name="database">mysql://b3:password@localhost/b3</set>
+        <!--<set name="database">sqlite://b3.database.sqlite/</set>-->
         <set name="bot_name">30+Bot</set>
         <set name="bot_prefix">^0(^230+Bot^0)^7:</set>
         <set name="time_format">%I:%M%p %Z %m/%d/%y</set>
@@ -13,7 +14,7 @@
     <settings name="server">
         <set name="rcon_password">password</set>
         <set name="port">27960</set>
-        <set name="game_log">/home/johnwa/games/urt433-server/q3ut4/games.log</set>
+        <set name="game_log">~/games/urt433-server/q3ut4/games.log</set>
         <set name="public_ip">127.0.0.1</set>
         <set name="rcon_ip">127.0.0.1</set>
         <set name="punkbuster">off</set>
@@ -43,26 +44,22 @@
     </settings>
     <plugins>
         <plugin name="admin" config="@conf/plugin_admin.ini" />
-<!--
         <plugin name="adv" config="@conf/plugin_adv.xml" />
         <plugin name="censor" config="@conf/plugin_censor.xml" />
+        <plugin name="firstkill" config="@conf/plugin_firstkill.ini"/>
+        <plugin name="flagstats" config="@conf/flagstats.xml" />
+        <plugin name="knifer" config="@conf/knifer.xml" />
+        <plugin name="nader" config="@conf/nader.xml" />
         <plugin name="pingwatch" config="@conf/plugin_pingwatch.ini" />
+        <plugin name="poweradminurt" config="@conf/plugin_poweradminurt.ini" />
         <plugin name="spamcontrol" config="@conf/plugin_spamcontrol.ini" />
+        <plugin name="spawnkill" config="@conf/plugin_spawnkill.ini"/>
+        <plugin name="spree" config="@conf/plugin_spree.ini"/>
         <plugin name="stats" config="@conf/plugin_stats.xml" />
         <plugin name="status" config="@conf/plugin_status.ini" />
         <plugin name="tk" config="@conf/plugin_tk.ini" />
-        <plugin name="welcome" config="@conf/plugin_welcome.ini" />
--->
-        <plugin name="poweradminurt" config="@conf/plugin_poweradminurt.ini" />
-        <plugin name="xlrstats" config="@conf/plugin_xlrstats.ini"/>
-<!--
-        <plugin name="firstkill" config="@conf/plugin_firstkill.ini"/>
-        <plugin name="spree" config="@conf/plugin_spree.ini"/>
-        <plugin name="spawnkill" config="@conf/plugin_spawnkill.ini"/>
         <plugin name="urtbslap" config="@conf/urtbslap.xml" />
-        <plugin name="nader" config="@conf/nader.xml" />
-        <plugin name="knifer" config="@conf/knifer.xml" />
-        <plugin name="flagstats" config="@conf/flagstats.xml" />
--->
+        <plugin name="welcome" config="@conf/plugin_welcome.ini" />
+        <plugin name="xlrstats" config="@conf/plugin_xlrstats.ini"/>
     </plugins>
 </configuration>
