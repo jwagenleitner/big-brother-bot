@@ -22,10 +22,7 @@ class KniferPlugin(b3.plugin.Plugin):
     _challengeTarget = None
     _challengeDuration = 300
     _challengeThread = None
-    _db_tableHOF = ''
-    _db_mapName = ''
-    _db_playerid = ''
-    _db_score = ''
+    _hof_plugin_name = 'knifer'
 
     def onLoadConfig(self):
         self._adminPlugin = self.console.getPlugin('admin')
@@ -77,14 +74,6 @@ class KniferPlugin(b3.plugin.Plugin):
                     self.debug('Message displayed at %d knife kills' % nb)
                 except:
                     pass
-
-        try:
-            self._db_tableHOF = self.config.get('settings', 'db_table_hof')
-            self._db_mapName = self.config.get('settings', 'db_map_name')
-            self._db_playerid = self.config.get('settings', 'db_playerid')
-            self._db_score = self.config.get('settings', 'db_score')
-        except:
-            self.error('Cannot load database settings')
 
         self._adminPlugin.registerCommand(self, 'knenable', self._minLevel, self.cmd_knenable)
         self._adminPlugin.registerCommand(self, 'kndisable', self._minLevel, self.cmd_kndisable)
@@ -379,9 +368,7 @@ class KniferPlugin(b3.plugin.Plugin):
         if len(cutKillers) == 0:
             return
 
-        cursor = None
         newRecord = 0
-        message = ''
 
         # Find the best knife player
         listKills = []
@@ -402,7 +389,7 @@ class KniferPlugin(b3.plugin.Plugin):
         currentMap = mapName
         (currentRecordHolder, currentRecordValue) = self.getRecord()
         if currentRecordValue == '-1':
-            self.debug('MySQL error, cannot get record')
+            self.debug('SQL error, cannot get record')
             return
         # Retrieve HOF for the current map
         if (currentRecordHolder != '') and (currentRecordValue != '0'):
@@ -412,17 +399,15 @@ class KniferPlugin(b3.plugin.Plugin):
                 newRecord = 1
                 currentRecordHolder = bestPlayer.exactName
                 currentRecordValue = topKills
-                q = 'UPDATE %s SET %s=\'%s\', %s=\'%s\' WHERE %s=\'%s\'' % (
-                self._db_tableHOF, self._db_playerid, str(bestPlayer.id), self._db_score, str(topKills),
-                self._db_mapName, currentMap)
+                q = """UPDATE plugin_hof SET player_id=%s, score=%s WHERE plugin_name='%s' and map_name='%s'""" % (
+                    bestPlayer.id, topKills, self._hof_plugin_name, currentMap
+                )
                 self.debug('New record, updating: %s' % q)
                 try:
                     cursor = self.query(q)
                 except:
                     self.error('Can\'t execute query : %s' % q)
             else:
-                # currentRecordHolder = self.console.clients.getByDB(r[self._db_playerid]).exactName
-                # currentRecordValue = r[self._db_score]
                 self.debug('No new record, previous record for %s = %s knife kills' % (
                 currentRecordHolder, currentRecordValue))
         else:
@@ -430,9 +415,9 @@ class KniferPlugin(b3.plugin.Plugin):
             newRecord = 1
             currentRecordHolder = bestPlayer.exactName
             currentRecordValue = topKills
-            q = 'INSERT INTO %s (%s, %s, %s) VALUES(\'%s\', %s, \'%s\')' % (
-            self._db_tableHOF, self._db_mapName, self._db_playerid, self._db_score, currentMap, str(bestPlayer.id),
-            topKills)
+            q = """INSERT INTO plugin_hof (plugin_name, map_name, player_id, score) VALUES('%s', '%s', %s, %s)""" % (
+                self._hof_plugin_name, currentMap, bestPlayer.id, topKills
+            )
             self.debug('New record, inserting: %s' % q)
             try:
                 cursor = self.query(q)
@@ -448,24 +433,26 @@ class KniferPlugin(b3.plugin.Plugin):
     def getRecord(self):
         RecordHolder = ''
         RecordValue = '-1'
-        cursor = None
-        q = 'SELECT * FROM %s WHERE %s = \'%s\'' % (self._db_tableHOF, self._db_mapName, self.console.game.mapName)
+        q = """SELECT * FROM plugin_hof WHERE plugin_name='%s' and map_name='%s'""" % (
+            self._hof_plugin_name, self.console.game.mapName
+        )
+        self.debug('getRecord : %s' % q)
         try:
             cursor = self.query(q)
         except:
             self.error('Can\'t execute query : %s' % q)
+            return (RecordHolder, RecordValue)
 
-        self.debug('getRecord : %s' % q)
-        if cursor and (cursor.rowcount > 0):
+        if cursor and not cursor.EOF:
             r = cursor.getRow()
             # clients:899 -> m = re.match(r'^@([0-9]+)$', id) -> add @
-            id = '@' + str(r[self._db_playerid])
-            clientList = []
+            id = '@' + str(r['player_id'])
             clientList = self.console.clients.getByDB(id)
             if len(clientList):
                 RecordHolder = clientList[0].exactName
                 self.debug('record holder found: %s' % clientList[0].exactName)
-            RecordValue = r[self._db_score]
-        elif cursor and (cursor.rowcount == 0):
+            RecordValue = r['score']
+        else:
             RecordValue = 0
+
         return (RecordHolder, str(RecordValue))
