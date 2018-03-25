@@ -18,3 +18,5 @@ b3/docs/user_documentation/_build/*
 b3.test.xml
 b3.database.sqlite
 venv/
+b3_doc.htm
+scratch.py
