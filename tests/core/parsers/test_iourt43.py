@@ -504,8 +504,13 @@ class Test_kill_mods(Test_log_lines_parsing):
         assert_mod('39', 'UT_MOD_GLOCK')
         assert_mod('40', 'UT_MOD_COLT1911')
         assert_mod('41', 'UT_MOD_MAC11')
-        assert_mod('42', 'UT_MOD_FLAG')
-        assert_mod('43', 'UT_MOD_GOOMBA')
+        assert_mod('42', 'UT_MOD_FRF1')
+        assert_mod('43', 'UT_MOD_BENELLI')
+        assert_mod('44', 'UT_MOD_P90')
+        assert_mod('45', 'UT_MOD_MAGNUM')
+        assert_mod('46', 'UT_MOD_TOD50')
+        assert_mod('47', 'UT_MOD_FLAG')
+        assert_mod('48', 'UT_MOD_GOOMBA')
 
 
 class Test_OnClientuserinfo(Iourt43TestCase):

@@ -55,6 +55,7 @@ class Test_sqlite(B3TestCase, StorageAPITest):
              'groups',
              'penalties',
              'data',
+             'plugin_hof',
             ]), set(self.storage.getTables()))
 
 if __name__ == '__main__':

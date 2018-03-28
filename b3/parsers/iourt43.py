@@ -26,12 +26,18 @@ import re
 from b3.parsers.iourt42 import Iourt42Parser
 
 
-__version__ = '1.30.1'
+__version__ = '1.30.5'
 
 
 class Iourt43Parser(Iourt42Parser):
 
     gameName = 'iourt43'
+
+    _lineFormats = Iourt42Parser._lineFormats + (
+        # Assist: 0 14 15: -[TPF]-PtitBigorneau assisted Bot1 to kill Bot2
+        re.compile(r'^(?P<action>Assist):\s(?P<acid>[0-9]+)\s(?P<kcid>[0-9]+)\s(?P<dcid>[0-9]+):\s+(?P<text>.*)$',
+                   re.IGNORECASE),
+    )
 
     _rePlayerScore = re.compile(r'^(?P<slot>[0-9]+):(?P<name>.*)\s+'
                                 r'TEAM:(?P<team>RED|BLUE|SPECTATOR|FREE)\s+'

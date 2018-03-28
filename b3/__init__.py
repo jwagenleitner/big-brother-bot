@@ -38,7 +38,7 @@ from ConfigParser import NoOptionError
 from ConfigParser import NoSectionError
 
 __author__ = 'ThorN'
-__version__ = '1.30.4'
+__version__ = '1.30.5'
 
 modulePath = pkg_handler.resource_directory(__name__)
 
@@ -137,7 +137,7 @@ def getConfPath(decode=False, conf=None):
         else:
             raise TypeError('invalid configuration type specified: expected str|XmlConfigParser|CfgConfigParser|MainConfig, got %s instead' % type(conf))
     else:
-        path = confdir
+        path = confdir or os.path.dirname(console.config.fileName)
 
     if not decode:
         return path
