@@ -34,7 +34,7 @@ import pkg_handler
 import traceback
 
 from b3 import HOMEDIR, B3_CONFIG_GENERATOR
-from b3.functions import main_is_frozen, console_exit
+from b3.functions import console_exit
 from b3.update import DBUpdate
 from time import sleep
 
@@ -47,18 +47,13 @@ def run_autorestart(args=None):
     """
     restart_num = 0
 
-    if main_is_frozen():
-        # if we are running the frozen application we do not
-        # need to run any script, just the executable itself
-        script = ''
-    else:
-        # if we are running from sources, then sys.executable is set to `python`
-        script = os.path.join(modulePath[:-3], 'b3_run.py')
-        if not os.path.isfile(script):
-            # must be running from the wheel, so there is no b3_run
-            script = os.path.join(modulePath[:-3], 'b3', 'run.py')
-        if os.path.isfile(script + 'c'):
-            script += 'c'
+    # if we are running from sources, then sys.executable is set to `python`
+    script = os.path.join(modulePath[:-3], 'b3_run.py')
+    if not os.path.isfile(script):
+        # must be running from the wheel, so there is no b3_run
+        script = os.path.join(modulePath[:-3], 'b3', 'run.py')
+    if os.path.isfile(script + 'c'):
+        script += 'c'
 
     if args:
         script = '%s %s %s --autorestart' % (sys.executable, script, ' '.join(args))
@@ -181,12 +176,6 @@ def run(options):
             print 'CRITICAL: invalid configuration file specified!'
         raise SystemExit(1)
     except SystemExit, msg:
-        if not printexit and main_is_frozen():
-            if sys.stdout != sys.__stdout__:
-                sys.stdout = sys.__stdout__
-                sys.stderr = sys.__stderr__
-            print msg
-            raw_input("press any key to continue...")
         raise
     except:
         if sys.stdout != sys.__stdout__:

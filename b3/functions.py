@@ -64,13 +64,6 @@ def getCmd(instance, cmd):
     return None
 
 
-def main_is_frozen():
-    """
-    Detect if B3 is running from compiled binary.
-    """
-    return hasattr(sys, "frozen")
-
-
 def splitDSN(url):
     """
     Return a dict containing the database connection
@@ -265,15 +258,7 @@ def console_exit(message=''):
     Will make sure that the user is able to see the exit message.
     :param message: the message to prompt to the user
     """
-    if main_is_frozen():
-        if sys.stdout != sys.__stdout__:
-            sys.stdout = sys.__stdout__
-            sys.stderr = sys.__stderr__
-        print message
-        raw_input("press any key to continue...")
-        raise SystemExit()
-    else:
-        raise SystemExit(message)
+    raise SystemExit(message)
 
 
 def clearscreen():

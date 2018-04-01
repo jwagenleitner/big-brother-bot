@@ -92,16 +92,8 @@ def getHomePath():
     Return the path to the B3 home directory.
     """
     path = os.path.normpath(os.path.expanduser('~/.b3')).decode(sys.getfilesystemencoding())
-
-    ## RENAME v1.10.1 -> v1.10.7
-    path_1 = os.path.normpath(os.path.expanduser('~/BigBrotherBot')).decode(sys.getfilesystemencoding())
-    if os.path.isdir(path_1):
-        shutil.move(path_1, path)
-
-    ## CREATE IT IF IT DOESN'T EXISTS
     if not os.path.isdir(path):
         os.mkdir(path)
-
     return path
 
 
@@ -114,10 +106,7 @@ def getB3Path(decode=False):
     Return the path to the main B3 directory.
     :param decode: if True will decode the path string using the default file system encoding before returning it
     """
-    if main_is_frozen():
-        path = os.path.dirname(sys.executable)
-    else:
-        path = modulePath
+    path = modulePath
     if not decode:
         return os.path.normpath(os.path.expanduser(path))
     return decode_(os.path.normpath(os.path.expanduser(path)))
@@ -191,9 +180,6 @@ def getB3versionString():
     Return the B3 version as a string.
     """
     sversion = re.sub(r'\^[0-9a-z]', '', version)
-    if main_is_frozen():
-        vinfo = getB3versionInfo()
-        sversion = '%s [%s%s]' % (sversion, vinfo[1], vinfo[2])
     return sversion
 
 
@@ -342,6 +328,5 @@ def start(mainconfig, options):
 from b3.config import XmlConfigParser, CfgConfigParser, MainConfig
 from b3.functions import clearscreen
 from b3.functions import decode as decode_
-from b3.functions import main_is_frozen
 from b3.functions import right_cut
 from b3.update import checkUpdate

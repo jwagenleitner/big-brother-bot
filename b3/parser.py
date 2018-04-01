@@ -58,7 +58,6 @@ from b3.decorators import Memoize
 from b3.exceptions import MissingRequirement
 from b3.functions import getModule
 from b3.functions import vars2printf
-from b3.functions import main_is_frozen
 from b3.functions import splitDSN
 from b3.functions import right_cut
 from b3.functions import topological_sort
@@ -1681,8 +1680,7 @@ class StubParser(object):
             def write(self, *args, **kwargs):
                 pass
 
-        if not main_is_frozen():
-            self.screen = StubSTDOut()
+        self.screen = StubSTDOut()
 
     def bot(self, msg, *args, **kwargs):
         pass

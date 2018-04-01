@@ -27,7 +27,6 @@ __version__ = '1.4'
 
 import os
 import sys
-from b3.functions import main_is_frozen
 
 __all__ = ['resource_directory']
 
@@ -39,18 +38,17 @@ def resource_directory(module):
     return os.path.dirname(sys.modules[module].__file__)
 
 
-if not main_is_frozen():
-    try:
-        import pkg_resources
-    except ImportError:
-        pkg_resources = None
-        pass
-    else:
-        # package tools is installed
-        def resource_directory_from_pkg_resources(module):
-            """
-            Use this if pkg_resources is installed
-            """
-            return pkg_resources.resource_filename(module, '')
+try:
+    import pkg_resources
+except ImportError:
+    pkg_resources = None
+    pass
+else:
+    # package tools is installed
+    def resource_directory_from_pkg_resources(module):
+        """
+        Use this if pkg_resources is installed
+        """
+        return pkg_resources.resource_filename(module, '')
 
-        resource_directory = resource_directory_from_pkg_resources
+    resource_directory = resource_directory_from_pkg_resources

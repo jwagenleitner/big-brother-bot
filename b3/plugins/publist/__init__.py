@@ -172,10 +172,7 @@ class PublistPlugin(b3.plugin.Plugin):
             database = "unknown"
 
         version = getattr(b3, '__version__', 'unknown')
-        if b3.functions.main_is_frozen():
-            version_info = b3.getB3versionInfo()
-            version = '%s %s%s' % (version, version_info[1], version_info[2])
-            
+
         info = {
             'action': 'update',
             'ip': self.console._publicIp,
