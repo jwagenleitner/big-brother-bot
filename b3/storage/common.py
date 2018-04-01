@@ -22,12 +22,16 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
+from __future__ import print_function, absolute_import
+
 import os
 import re
 import sys
 import thread
+from contextlib import contextmanager
+from time import time
 
+import b3
 from b3.clients import Client
 from b3.clients import ClientBan
 from b3.clients import ClientKick
@@ -38,8 +42,7 @@ from b3.clients import Penalty
 from b3.querybuilder import QueryBuilder
 from b3.storage import Storage
 from b3.storage.cursor import Cursor as DBCursor
-from contextlib import contextmanager
-from time import time
+
 
 class DatabaseStorage(Storage):
 

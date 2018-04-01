@@ -22,14 +22,17 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
+from __future__ import print_function, absolute_import
+
 import re
 import sys
-
-from b3.storage.cursor import Cursor as DBCursor
-from b3.storage.common import DatabaseStorage
 from time import time
 from traceback import extract_tb
+
+import b3
+from b3.storage.common import DatabaseStorage
+from b3.storage.cursor import Cursor as DBCursor
+
 
 class PostgresqlStorage(DatabaseStorage):
 

@@ -22,15 +22,17 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-import b3.config
+from __future__ import print_function, absolute_import
+
 import os
 import re
 import string
-
 from distutils import version
 from time import sleep
 from types import StringType
+
+import b3
+import b3.config
 
 
 class B3version(version.StrictVersion):
@@ -170,7 +172,7 @@ class DBUpdate(object):
                 for e in ('ini', 'cfg', 'xml'):
                     path = b3.getAbsolutePath(p % e, True)
                     if os.path.isfile(path):
-                        print "Using configuration file: %s" % path
+                        print("Using configuration file: %s" % path)
                         config = path
                         sleep(3)
                         break
@@ -191,7 +193,7 @@ class DBUpdate(object):
         Run the DB update
         """
         clearscreen()
-        print """
+        print("""
                         _\|/_
                         (o o)    {:>32}
                 +----oOO---OOo----------------------------------+
@@ -200,7 +202,7 @@ class DBUpdate(object):
                 |                                               |
                 +-----------------------------------------------+
 
-        """.format('B3 : %s' % b3.__version__)
+        """.format('B3 : %s' % b3.__version__))
 
         raw_input("press any key to start the update...")
 
@@ -214,16 +216,16 @@ class DBUpdate(object):
                 sql = b3.getAbsolutePath('@b3/sql/%s/b3-update-%s.sql' % (storage.protocol, update_version))
                 if os.path.isfile(sql):
                     try:
-                        print '>>> updating database to version %s' % update_version
+                        print('>>> updating database to version %s' % update_version)
                         sleep(.5)
                         storage.queryFromFile(sql)
                     except Exception, err:
-                        print 'WARNING: could not update database properly: %s' % err
+                        print('WARNING: could not update database properly: %s' % err)
                         sleep(3)
 
         dsn = self.config.get('b3', 'database')
         dsndict = splitDSN(dsn)
-        database = getStorage(dsn, dsndict, StubParser())
+        database = getStorage(dsn, dsndict, b3.parser.StubParser())
 
         _update_database(database, '1.3.0')
         _update_database(database, '1.6.0')
@@ -238,5 +240,4 @@ class DBUpdate(object):
 
 from b3 import B3_CONFIG_GENERATOR, HOMEDIR
 from b3.functions import console_exit, splitDSN, clearscreen
-from b3.parser import StubParser
 from b3.storage import getStorage

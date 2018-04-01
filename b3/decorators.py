@@ -22,13 +22,16 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
+import functools
+import re
+
+from b3.exceptions import ProgrammingError
+
 __author__ = 'Courgette, Fenix'
 __version__ = '1.3'
 
-import re
-import functools
-
-from b3.exceptions import ProgrammingError
 
 class Memoize(object):
     """

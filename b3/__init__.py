@@ -22,21 +22,22 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
 
 import os
-import re
-import sys
 import platform
-import pkg_handler
-import traceback
+import re
 import signal
-
+import sys
+import traceback
 from tempfile import TemporaryFile
+
+import b3.pkg_handler
 
 __author__ = 'ThorN'
 __version__ = '1.30.5'
 
-modulePath = pkg_handler.resource_directory(__name__)
+modulePath = b3.pkg_handler.resource_directory(__name__)
 
 versionId = 'v%s' % __version__
 version = '^0(^8b3^0) ^9%s ^9[VaCampsALot Edition^9]^3' % versionId
@@ -289,13 +290,13 @@ def start(mainconfig, options):
         console.start()
     except KeyboardInterrupt:
         console.shutdown()
-        print 'Goodbye'
+        print('Goodbye')
         return
     except SystemExit, msg:
-        print 'EXITING: %s' % msg
+        print('EXITING: %s' % msg)
         raise
     except Exception, msg:
-        print 'ERROR: %s' % msg
+        print('ERROR: %s' % msg)
         traceback.print_exc()
         sys.exit(223)
 

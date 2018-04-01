@@ -22,21 +22,23 @@
 #                                                                     #
 # ################################################################### #
 
-__author__ = 'xlr8or, Courgette, Fenix'
-__version__ = '1.28'
+from __future__ import print_function, absolute_import
 
-import b3
-import b3.events
-import b3.clients
-import b3.parser
 import re
 import string
-import time
 import thread
+import time
 
+import b3
+import b3.clients
+import b3.events
+import b3.parser
 from b3.functions import getStuffSoundingLike
 from b3.functions import prefixText
 from b3.parsers.q3a.abstractParser import AbstractParser
+
+__author__ = 'xlr8or, Courgette, Fenix'
+__version__ = '1.28'
 
 
 class Iourt41Parser(AbstractParser):

@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__  = 'ThorN'
 __version__ = '1.2'
 
@@ -39,6 +41,7 @@ import b3.run
 
 def main():
     b3.run.main()
+
 
 if __name__ == '__main__':
     main()

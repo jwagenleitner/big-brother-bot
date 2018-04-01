@@ -22,17 +22,16 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
+from __future__ import print_function, absolute_import
+
 import re
-import new
 import time
 
+import b3
 from b3.clients import Client
 from b3.events import Event
 from b3.functions import time2minutes
 from b3.parsers.iourt41 import Iourt41Parser
-from b3.plugins.spamcontrol import SpamcontrolPlugin
-
 
 __author__ = 'Courgette, Fenix'
 __version__ = '1.35'
@@ -1329,7 +1328,7 @@ class Iourt42Parser(Iourt41Parser):
             new_event = Event(type=event.type, client=event.client, target=event.target, data=repr(event.data))
             this.onChat(new_event)
 
-        self.spamcontrolPlugin.onRadio = new.instancemethod(onRadio, self.spamcontrolPlugin, SpamcontrolPlugin)
+        self.spamcontrolPlugin.onRadio = onRadio
         self.spamcontrolPlugin.registerEvent('EVT_CLIENT_RADIO', self.spamcontrolPlugin.onRadio)
 
     @staticmethod

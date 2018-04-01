@@ -22,24 +22,24 @@
 #                                                                     #
 # ################################################################### #
 
-__author__ = 'ThorN, xlr8or'
-__version__ = '1.8.1'
-
+from __future__ import print_function, absolute_import
 
 import re
 import string
 import time
-import new
+
 import b3
-import b3.events
 import b3.clients
+import b3.cvar
+import b3.events
 import b3.functions
 import b3.parser
-import b3.cvar
-
-from b3.parsers.q3a import rcon
-from b3.parsers.punkbuster import PunkBuster
 from b3.functions import prefixText
+from b3.parsers.punkbuster import PunkBuster
+from b3.parsers.q3a import rcon
+
+__author__ = 'ThorN, xlr8or'
+__version__ = '1.8.1'
 
 
 class AbstractParser(b3.parser.Parser):
@@ -909,5 +909,5 @@ class AbstractParser(b3.parser.Parser):
 
         admin_plugin = self.getPlugin('admin')
         command = admin_plugin._commands['kick']
-        command.func = new.instancemethod(new_cmd_kick, admin_plugin)
+        command.func = new_cmd_kick
         command.help = new_cmd_kick.__doc__.strip()

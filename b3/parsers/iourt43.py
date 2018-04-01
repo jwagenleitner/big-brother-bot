@@ -22,9 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
-import re
-from b3.parsers.iourt42 import Iourt42Parser
+from __future__ import print_function, absolute_import
 
+import re
+
+from b3.parsers.iourt42 import Iourt42Parser
 
 __version__ = '1.30.5'
 
@@ -251,7 +253,6 @@ class Iourt43Parser(Iourt42Parser):
             scores['blue'] = int(m.group('BlueScore'))
 
         for line in data.split('\n')[3:]:
-            self.verbose("JMW: %s" % line)
             m = re.match(self._rePlayerScore, line.strip())
             if m:
                 scores['players'][int(m.group('slot'))] = {'kills': int(m.group('kill')),

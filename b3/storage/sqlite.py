@@ -22,9 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
+from __future__ import print_function, absolute_import
+
 import os
 
+import b3
 from b3.storage.common import DatabaseStorage
 
 

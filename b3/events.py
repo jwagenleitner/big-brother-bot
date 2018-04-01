@@ -22,17 +22,19 @@
 #                                                                     #
 # ################################################################### #
 
-__author__ = 'ThorN, xlr8or, Courgette'
-__version__ = '1.8.2'
+from __future__ import print_function, absolute_import
 
 import re
 import time
-
-from b3.functions import meanstdv
-from b3.decorators import Memoize
-from b3.output import VERBOSE
 from collections import deque
 from logging import DEBUG
+
+from b3.decorators import Memoize
+from b3.functions import meanstdv
+from b3.output import VERBOSE
+
+__author__ = 'ThorN, xlr8or, Courgette'
+__version__ = '1.8.2'
 
 
 class Events:

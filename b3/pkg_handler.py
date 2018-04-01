@@ -22,12 +22,13 @@
 #                                                                     #
 # ################################################################### #
 
-__author__ = 'ThorN'
-__version__ = '1.4'
+from __future__ import print_function, absolute_import
 
 import os
 import sys
 
+__author__ = 'ThorN'
+__version__ = '1.4'
 __all__ = ['resource_directory']
 
 

@@ -22,15 +22,18 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-import b3.events
-import functions
+from __future__ import print_function, absolute_import
+
 import re
 import string
 import sys
 import threading
 import time
 import traceback
+
+import b3
+import b3.events
+from b3 import functions
 
 
 class ClientVar(object):

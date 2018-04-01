@@ -22,18 +22,19 @@
 #                                                                     #
 # ################################################################### #
 
-__author__ = 'ThorN, Courgette'
-__version__ = '1.30.1'
-
+from __future__ import print_function, absolute_import
 
 import re
+from ConfigParser import NoOptionError
+
 import b3.clients
 import b3.config
 import b3.events
 import b3.functions
-
 from b3 import __version__ as b3_version
-from ConfigParser import NoOptionError
+
+__author__ = 'ThorN, Courgette'
+__version__ = '1.30.1'
 
 
 class Plugin(object):

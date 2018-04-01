@@ -22,14 +22,15 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
+import logging
+import sys
+from logging import CRITICAL, ERROR, INFO, WARNING, DEBUG
+from logging import handlers
+
 __author__  = 'ThorN'
 __version__ = '1.7.2'
-
-import sys
-import logging
-
-from logging import handlers
-from logging import CRITICAL, ERROR, INFO, WARNING, DEBUG
 
 CONSOLE = 22
 BOT = 21

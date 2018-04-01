@@ -22,16 +22,20 @@
 #                                                                     #
 # ################################################################### #
 #
+
+from __future__ import print_function, absolute_import
+
+import Queue
+import re
+import select
+import socket
+import thread
+import threading
+import time
+
 __author__ = 'ThorN'
 __version__ = '1.11'
 
-import re
-import socket
-import select
-import time
-import thread
-import threading
-import Queue
 
 class Rcon(object):
 

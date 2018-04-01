@@ -22,23 +22,25 @@
 #                                                                     #
 # ################################################################### #
 
-__author__  = 'ThorN'
-__version__ = '1.8'
+from __future__ import print_function, absolute_import
+
+import argparse
+import os
+import sys
+import traceback
+from time import sleep
 
 import b3
 import b3.config
-import os
-import sys
-import argparse
-import pkg_handler
-import traceback
-
+import b3.pkg_handler
 from b3 import HOMEDIR, B3_CONFIG_GENERATOR
 from b3.functions import console_exit
 from b3.update import DBUpdate
-from time import sleep
 
-modulePath = pkg_handler.resource_directory(__name__)
+__author__ = 'ThorN'
+__version__ = '1.8'
+
+modulePath = b3.pkg_handler.resource_directory(__name__)
 
 
 def run_autorestart(args=None):
@@ -111,7 +113,7 @@ def run_autorestart(args=None):
             sleep(4)
 
         except KeyboardInterrupt:
-            print 'Quit'
+            print('Quit')
             break
 
 
@@ -130,14 +132,12 @@ def run(options):
     :param options: command line options
     """
     analysis = None     # main config analysis result
-    printexit = False   # whether the exit message has been printed alreadty or not
 
     try:
 
         if options.config:
             config = b3.getAbsolutePath(options.config, True)
             if not os.path.isfile(config):
-                printexit = True
                 console_exit('ERROR: configuration file not found (%s).\n'
                              'Please visit %s to create one.' % (config, B3_CONFIG_GENERATOR))
         else:
@@ -148,34 +148,31 @@ def run(options):
                 for e in ('ini', 'cfg', 'xml'):
                     path = b3.getAbsolutePath(p % e, True)
                     if os.path.isfile(path):
-                        print "Using configuration file: %s" % path
+                        print("Using configuration file: %s" % path)
                         config = path
                         sleep(3)
                         break
 
             if not config:
-                printexit = True
                 console_exit('ERROR: could not find any valid configuration file.\n'
                              'Please visit %s to create one.' % B3_CONFIG_GENERATOR)
 
-        # LOADING MAIN CONFIGURATION
         main_config = b3.config.MainConfig(b3.config.load(config))
         analysis = main_config.analyze()
         if analysis:
             raise b3.config.ConfigFileNotValid('invalid configuration file specified')
 
-        # START B3
         b3.start(main_config, options)
 
     except b3.config.ConfigFileNotValid:
         if analysis:
-            print 'CRITICAL: invalid configuration file specified:\n'
+            print('CRITICAL: invalid configuration file specified:\n')
             for problem in analysis:
-                print"  >>> %s\n" % problem
+                print("  >>> %s\n" % problem)
         else:
-            print 'CRITICAL: invalid configuration file specified!'
+            print('CRITICAL: invalid configuration file specified!')
         raise SystemExit(1)
-    except SystemExit, msg:
+    except SystemExit:
         raise
     except:
         if sys.stdout != sys.__stdout__:
@@ -186,9 +183,6 @@ def run(options):
 
 
 def main():
-    """
-    Main execution.
-    """
     p = argparse.ArgumentParser()
     p.add_argument('-c', '--config', dest='config', default=None, metavar='b3.ini', help='B3 config file. Example: -c b3.ini')
     p.add_argument('-r', '--restart', action='store_true', dest='restart', default=False, help='Auto-restart B3 on crash')
@@ -203,23 +197,21 @@ def main():
         options.config = args[0]
 
     if options.setup:
-        # setup procedure is deprecated: show configuration file generator web tool url instead
         sys.stdout.write('\n')
         console_exit("  *** NOTICE: the console setup procedure is deprecated!\n" \
                      "  *** Please visit %s to generate a new B3 configuration file.\n" % B3_CONFIG_GENERATOR)
 
     if options.update:
-        ## UPDATE => CONSOLE
         run_update(config=options.config)
 
     if options.restart:
-        ## AUTORESTART => CONSOLE
         if options.config:
             run_autorestart(['--config', options.config] + args)
         else:
             run_autorestart([])
     else:
         run(options)
+
 
 if __name__ == '__main__':
     main()

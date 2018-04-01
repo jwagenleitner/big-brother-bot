@@ -22,8 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__  = 'ThorN'
 __version__ = '1.3.0'
+
 
 class QueryBuilder(object):
 
@@ -145,7 +148,7 @@ class QueryBuilder(object):
             if len(fields) == 1 and len(values) == 1:
                 sql.append(self.FieldClause(fields[0], values[0]))
             else:
-                print fields
+                print(fields)
                 for k, field in enumerate(fields):
                     v = values[k]
                     sql.append(self.FieldClause(field, v))

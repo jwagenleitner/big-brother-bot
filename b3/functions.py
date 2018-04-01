@@ -22,20 +22,22 @@
 #                                                                     #
 # ################################################################### #
 
-__author__    = 'ThorN, xlr8or, courgette'
-__version__   = '1.23'
+from __future__ import print_function, absolute_import
 
 import collections
 import os
 import re
-import sys
 import shutil
 import string
+import sys
 import urllib2
 import zipfile
-
 from hashlib import md5
+
 from b3.exceptions import ProgrammingError
+
+__author__    = 'ThorN, xlr8or, courgette'
+__version__   = '1.23'
 
 
 def getModule(name):
@@ -536,7 +538,7 @@ def left_cut(text, cut):
     :return: A string with the given prefix removed
     """
     if text.startswith(cut):
-        return text[len(cut)+1:]
+        return text[len(cut):]
     return text
 
 

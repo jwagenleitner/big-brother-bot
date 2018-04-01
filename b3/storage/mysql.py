@@ -22,12 +22,15 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-import sys
+from __future__ import print_function, absolute_import
 
-from b3.storage.common import DatabaseStorage
+import sys
 from time import time
 from traceback import extract_tb
+
+import b3
+from b3.storage.common import DatabaseStorage
+
 
 class PymysqlStorage(DatabaseStorage):
     """

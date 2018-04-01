@@ -22,10 +22,12 @@
 #                                                                     #
 # ################################################################### #
 
-__author__  = 'ThorN'
-__version__ = '1.3'
+from __future__ import print_function, absolute_import
 
 import re
+
+__author__ = 'ThorN'
+__version__ = '1.3'
 
 
 class PunkBuster(object):

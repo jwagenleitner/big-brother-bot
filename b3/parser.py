@@ -22,55 +22,55 @@
 #                                                                     #
 # ################################################################### #
 
-__author__ = 'ThorN, Courgette, xlr8or, Bakes, Ozon, Fenix'
-__version__ = '1.43.6'
+from __future__ import print_function, absolute_import
 
-
-import os
-import sys
-import re
-import time
-import thread
-import datetime
-import dateutil.tz
 import Queue
-import imp
 import atexit
-import socket
+import datetime
 import glob
+import imp
+import os
+import re
+import socket
+import sys
+import thread
+import time
+from ConfigParser import NoOptionError
+from collections import OrderedDict
+from textwrap import TextWrapper
+from traceback import extract_tb
+
+import dateutil.tz
 
 import b3
 import b3.config
-import b3.storage
-import b3.events
-import b3.output
-import b3.game
 import b3.cron
+import b3.events
+import b3.game
+import b3.output
 import b3.parsers.q3a.rcon
+import b3.storage
 import b3.timezones
-
-from ConfigParser import NoOptionError
-from collections import OrderedDict
 from b3 import __version__ as currentVersion
 from b3.clients import Clients
 from b3.clients import Group
 from b3.decorators import Memoize
 from b3.exceptions import MissingRequirement
 from b3.functions import getModule
-from b3.functions import vars2printf
-from b3.functions import splitDSN
 from b3.functions import right_cut
+from b3.functions import splitDSN
 from b3.functions import topological_sort
+from b3.functions import vars2printf
 from b3.plugin import PluginData
 from b3.update import B3version
-from textwrap import TextWrapper
-from traceback import extract_tb
-
 
 try:
     from xml.etree import cElementTree as ElementTree
 except ImportError:
     from xml.etree import ElementTree
+
+__author__ = 'ThorN, Courgette, xlr8or, Bakes, Ozon, Fenix'
+__version__ = '1.43.6'
 
 
 class Parser(object):

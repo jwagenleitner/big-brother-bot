@@ -22,22 +22,25 @@
 #                                                                     #
 # ################################################################### #
 
-__author__  = 'ThorN, Courgette, Fenix'
-__version__ = '1.7.9'
+from __future__ import print_function, absolute_import
 
+import ConfigParser
 import os
 import re
 import time
+
 import b3
-import b3.functions
 import b3.exceptions
+import b3.functions
 import b3.storage
-import ConfigParser
 
 try:
     from xml.etree import cElementTree as ElementTree
 except ImportError:
     from xml.etree import ElementTree
+
+__author__  = 'ThorN, Courgette, Fenix'
+__version__ = '1.7.9'
 
 
 ConfigFileNotFound = b3.exceptions.ConfigFileNotFound

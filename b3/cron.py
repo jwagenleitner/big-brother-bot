@@ -22,15 +22,18 @@
 #                                                                     #
 # ################################################################### #
 #
-__author__ = 'ThorN, Courgette'
-__version__ = '1.5'
+
+from __future__ import print_function, absolute_import
 
 import re
+import sys
 import thread
 import threading
 import time
 import traceback
-import sys
+
+__author__ = 'ThorN, Courgette'
+__version__ = '1.5'
 
 
 class ReMatcher(object):
