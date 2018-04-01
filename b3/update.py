@@ -24,24 +24,13 @@
 
 import b3
 import b3.config
-import json
 import os
 import re
 import string
-import sys
-import urllib2
 
 from distutils import version
 from time import sleep
 from types import StringType
-
-## url from where we can get the latest B3 version number
-URL_B3_LATEST_VERSION = 'http://master.bigbrotherbot.net/version.json'
-
-## supported update channels
-UPDATE_CHANNEL_STABLE = 'stable'
-UPDATE_CHANNEL_BETA = 'beta'
-UPDATE_CHANNEL_DEV = 'dev'
 
 
 class B3version(version.StrictVersion):
@@ -156,111 +145,6 @@ $''', re.VERBOSE)
             return 1
         elif self.build_num and other.build_num:
             return cmp(self.build_num, other.build_num)
-
-
-def getDefaultChannel(currentVersion):
-    """
-    Return an update channel according to the current B3 version.
-    :param currentVersion: The B3 version to use to compute the update channel
-    """
-    if currentVersion is None:
-        return UPDATE_CHANNEL_STABLE
-
-    version_re = re.compile(r'''^
-(?P<major>\d+)\.(?P<minor>\d+)   # 1.2
-(?:\. (?P<patch>\d+))?           # 1.2.45
-(?P<prerelease>                  # 1.2.45b2
-  (?P<tag>a|b|dev)
-  (?P<tag_num>\d+)?
-)?
-(?P<daily>                       # 1.2.45b2.daily4-20120901
-    \.daily(?P<build_num>\d+?)
-    (?:-20\d\d\d\d\d\d)?
-)?
-$''', re.VERBOSE)
-
-    m = version_re.match(currentVersion)
-    if not m or m.group('tag') is None:
-        return UPDATE_CHANNEL_STABLE
-    elif m.group('tag').lower() in ('dev', 'a'):
-        return UPDATE_CHANNEL_DEV
-    elif m.group('tag').lower() == 'b':
-        return UPDATE_CHANNEL_BETA
-
-
-def checkUpdate(currentVersion, channel=None, singleLine=True, showErrormsg=False, timeout=4):
-    """
-    Check if an update of B3 is available.
-    """
-    if channel is None:
-        channel = getDefaultChannel(currentVersion)
-
-    if not singleLine:
-        sys.stdout.write("checking for updates... \n")
-
-    message = None
-    errormessage = None
-    
-    try:
-        json_data = urllib2.urlopen(URL_B3_LATEST_VERSION, timeout=timeout).read()
-        version_info = json.loads(json_data)
-    except IOError, e:
-        if hasattr(e, 'reason'):
-            errormessage = '%s' % e.reason
-        elif hasattr(e, 'code'):
-            errormessage = 'error code: %s' % e.code
-        else:
-            errormessage = '%s' % e
-    except Exception, e:
-        errormessage = repr(e)
-    else:
-        latestVersion = None
-        try:
-            channels = version_info['B3']['channels']
-        except KeyError, err:
-            errormessage = repr(err) + '. %s' % version_info
-        else:
-            if channel not in channels:
-                errormessage = "unknown channel '%s': expecting (%s)"  % (channel, ', '.join(channels.keys()))
-            else:
-                try:
-                    latestVersion = channels[channel]['latest-version']
-                except KeyError, err:
-                    errormessage = repr(err) + '. %s' % version_info
-
-        if not errormessage:
-            try:
-                latestUrl = version_info['B3']['channels'][channel]['url']
-            except KeyError:
-                latestUrl = "www.bigbrotherbot.net"
-
-            not singleLine and sys.stdout.write('latest B3 %s version is %s\n' % (channel, latestVersion))
-            _lver = B3version(latestVersion)
-            _cver = B3version(currentVersion)
-            if _cver < _lver:
-                if singleLine:
-                    message = 'update available (v%s : %s)' % (latestVersion, latestUrl)
-                else:
-                    message = """
-                 _\|/_
-                 (o o)    {version:^21}
-         +----oOO---OOo-----------------------+
-         |                                    |
-         |                                    |
-         | A newer version of B3 is available |
-         |                                    |
-         | {url:^34} |
-         |                                    |
-         +------------------------------------+
-
-        """.format(version=latestVersion, url=latestUrl)
-
-    if errormessage and showErrormsg:
-        return errormessage
-    elif message:
-        return message
-    else:
-        return None
 
 
 class DBUpdate(object):

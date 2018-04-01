@@ -29,13 +29,9 @@ import sys
 import platform
 import pkg_handler
 import traceback
-import time
 import signal
-import shutil
 
 from tempfile import TemporaryFile
-from ConfigParser import NoOptionError
-from ConfigParser import NoSectionError
 
 __author__ = 'ThorN'
 __version__ = '1.30.5'
@@ -262,27 +258,6 @@ def start(mainconfig, options):
 
     sys.stdout.flush()
 
-    try:
-        update_channel = mainconfig.get('update', 'channel')
-    except (NoSectionError, NoOptionError):
-        pass
-    else:
-        sys.stdout.write('Checking update  : ')
-        sys.stdout.flush()
-        if update_channel == 'skip':
-            sys.stdout.write('SKIP\n')
-            sys.stdout.flush()
-        else:
-            updatetext = checkUpdate(__version__, channel=update_channel, singleLine=True, showErrormsg=True)
-            if updatetext:
-                sys.stdout.write('%s\n' % updatetext)
-                sys.stdout.flush()
-                time.sleep(2)
-            else:
-                sys.stdout.write('no update available\n')
-                sys.stdout.flush()
-                time.sleep(1)
-
     # not real loading but the user will get what's configuration he is using
     sys.stdout.write('Loading config   : %s\n' % getShortPath(mainconfig.fileName, True))
     sys.stdout.flush()
@@ -329,4 +304,3 @@ from b3.config import XmlConfigParser, CfgConfigParser, MainConfig
 from b3.functions import clearscreen
 from b3.functions import decode as decode_
 from b3.functions import right_cut
-from b3.update import checkUpdate
