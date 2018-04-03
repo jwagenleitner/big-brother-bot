@@ -46,12 +46,6 @@ class PymysqlStorage(DatabaseStorage):
         """
         super(PymysqlStorage, self).__init__(dsn, dsnDict, console)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CONNECTION INITIALIZATION/TERMINATION/RETRIEVAL                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def getConnection(self):
         """
         Return the database connection. If the connection has not been established yet, will establish a new one.
@@ -71,20 +65,12 @@ class PymysqlStorage(DatabaseStorage):
             self.db.close()
         self.db = None
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   UTILITY METHODS                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def status(self):
         """
         Check whether the connection with the storage layer is active or not.
         :return True if the connection is active, False otherwise.
         """
-        if self.db and self.db.open:
-           return True
-        return False
+        return self.db and self.db.open
 
 
 class MysqlConnectorStorage(DatabaseStorage):
@@ -100,12 +86,6 @@ class MysqlConnectorStorage(DatabaseStorage):
         :param console: The console instance.
         """
         super(MysqlConnectorStorage, self).__init__(dsn, dsnDict, console)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CONNECTION INITIALIZATION/TERMINATION/RETRIEVAL                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def getConnection(self):
         """
@@ -126,20 +106,12 @@ class MysqlConnectorStorage(DatabaseStorage):
             self.db.shutdown()
         self.db = None
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   UTILITY METHODS                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def status(self):
         """
         Check whether the connection with the storage layer is active or not.
         :return True if the connection is active, False otherwise.
         """
-        if self.db and self.db._socket is not None:
-            return True
-        return False
+        return self.db and self.db._socket is not None
 
 
 class MySQLdbStorage(DatabaseStorage):
@@ -155,12 +127,6 @@ class MySQLdbStorage(DatabaseStorage):
         :param console: The console instance.
         """
         super(MySQLdbStorage, self).__init__(dsn, dsnDict, console)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CONNECTION INITIALIZATION/TERMINATION/RETRIEVAL                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def getConnection(self):
         """
@@ -181,20 +147,12 @@ class MySQLdbStorage(DatabaseStorage):
             self.db.close()
         self.db = None
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   UTILITY METHODS                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def status(self):
         """
         Check whether the connection with the storage layer is active or not.
         :return True if the connection is active, False otherwise.
         """
-        if self.db and self.db.open:
-           return True
-        return False
+        return self.db and self.db.open
 
 
 class MysqlStorage(DatabaseStorage):
@@ -208,8 +166,6 @@ class MysqlStorage(DatabaseStorage):
         :raise ImportError: If the system misses the necessary libraries needed to setup the storage module.
         """
         try:
-
-            # PREFER PYMYSQL
             import pymysql as mysqldriver
             cls.__bases__ = (PymysqlStorage,)
             cls.__driver = mysqldriver
@@ -217,7 +173,6 @@ class MysqlStorage(DatabaseStorage):
         except ImportError:
 
             try:
-                # BACKUP USING MYSQL.CONNECTOR
                 import mysql.connector as mysqldriver
                 cls.__bases__ = (MysqlConnectorStorage,)
                 cls.__driver = mysqldriver
@@ -225,7 +180,6 @@ class MysqlStorage(DatabaseStorage):
             except ImportError:
 
                 try:
-                    # USE MYSQLDB AS LAST OPTION
                     import MySQLdb as mysqldriver
                     cls.__bases__ = (MySQLdbStorage,)
                     cls.__driver = mysqldriver
@@ -250,18 +204,10 @@ class MysqlStorage(DatabaseStorage):
         :raise AttributeError: if the given dsnDict is missing required information.
         """
         super(MysqlStorage, self).__init__(dsn, dsnDict, console)
-        # check for valid MySQL host
         if not self.dsnDict['host']:
             raise AttributeError("invalid MySQL host in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
-        # check for valid MySQL database name
         if not self.dsnDict['path'] or not self.dsnDict['path'][1:]:
             raise AttributeError("missing MySQL database name in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CONNECTION INITIALIZATION/TERMINATION/RETRIEVAL                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def connect(self):
         """
@@ -319,12 +265,6 @@ class MysqlStorage(DatabaseStorage):
                     self._consoleNotice = False
 
         return self.db
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   STORAGE INTERFACE                                                                                              #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def getTables(self):
         """

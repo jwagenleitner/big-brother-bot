@@ -69,12 +69,6 @@ class DatabaseStorage(Storage):
         self.db = None
         self._lock = thread.allocate_lock()
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CONNECTION INITIALIZATION/TERMINATION/RETRIEVAL                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def connect(self):
         """
         Establish and return a connection with the storage layer.
@@ -100,12 +94,6 @@ class DatabaseStorage(Storage):
         Just an alias for shutdown (backwards compatibility).
         """
         self.shutdown()
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   STORAGE INTERFACE                                                                                              #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def getCounts(self):
         """
@@ -592,12 +580,6 @@ class DatabaseStorage(Storage):
         """
         raise NotImplementedError
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   QUERY PROCESSING                                                                                               #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def _query(self, query, bindata=None):
         """
         Execute a query on the storage layer (internal method).
@@ -694,12 +676,6 @@ class DatabaseStorage(Storage):
 
         # reset standard error output
         sys.stderr = orig_stderr
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   UTILITY METHODS                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def status(self):
         """

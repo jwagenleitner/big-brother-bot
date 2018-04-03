@@ -47,10 +47,8 @@ class PostgresqlStorage(DatabaseStorage):
         :raise ImportError: If the system misses the necessary libraries needed to setup the storage module.
         """
         try:
-            # prefer pymysql
             import psycopg2
         except ImportError:
-            psycopg2 = None
             raise ImportError("missing PostgreSQL connector driver. You need to install 'psycopg2': "
                               "look for 'dependencies' in B3 documentation.")
 
@@ -64,21 +62,12 @@ class PostgresqlStorage(DatabaseStorage):
         :param console: The console instance.
         """
         super(PostgresqlStorage, self).__init__(dsn, dsnDict, console)
-        # check for valid PostgreSQL host
         if not self.dsnDict['host']:
             raise AttributeError("invalid PostgreSQL host in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
-        # check for valid PostgreSQL database name
         if not self.dsnDict['path'] or not self.dsnDict['path'][1:]:
             raise AttributeError("missing PostgreSQL database name in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
 
-        # patch the QueryBuilder class
         patch_query_builder(self.console)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CONNECTION INITIALIZATION/TERMINATION/RETRIEVAL                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def connect(self):
         """
@@ -94,12 +83,10 @@ class PostgresqlStorage(DatabaseStorage):
             self.console.bot('New PostgreSQL database connection requested but last connection attempt '
                              'failed less than %s seconds ago: exiting...' % self._reconnectDelay)
         else:
-            # close the active connection (if any)
             self.shutdown()
             self.console.bot('Connecting to PostgreSQL database: %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s...', self.dsnDict)
 
             try:
-
                 import psycopg2
                 self.db = psycopg2.connect(host=self.dsnDict['host'],
                                            port=self.dsnDict['port'],
@@ -160,12 +147,6 @@ class PostgresqlStorage(DatabaseStorage):
             self.db.close()
         self.db = None
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   STORAGE INTERFACE                                                                                              #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def getTables(self):
         """
         List the tables of the current database.
@@ -198,12 +179,6 @@ class PostgresqlStorage(DatabaseStorage):
                  raise KeyError("could not find table '%s' in the database" % table)
             self.query("TRUNCATE %s RESTART IDENTITY CASCADE;" % table)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   QUERY PROCESSING                                                                                               #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def _query(self, query, bindata=None):
         """
         Execute a query on the storage layer (internal method).
@@ -224,7 +199,6 @@ class PostgresqlStorage(DatabaseStorage):
             else:
                 cursor.execute(newquery, bindata)
 
-            # create our cursor instance
             dbcursor = DBCursor(cursor, self.db)
 
             if self._reInsert.match(newquery):
@@ -247,28 +221,16 @@ class PostgresqlStorage(DatabaseStorage):
 
         return dbcursor
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   UTILITY METHODS                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def status(self):
         """
         Check whether the connection with the storage layer is active or not.
         :return True if the connection is active, False otherwise.
         """
-        if self.db and not self.db.closed:
-            return True
-        return False
+        return self.db and not self.db.closed
 
-########################################################################################################################
-##                                                                                                                    ##
-##  PATCH THE QUERYBUILDER CLASS                                                                                      ##
-##                                                                                                                    ##
-########################################################################################################################
 
 from b3.querybuilder import QueryBuilder
+
 
 def patch_query_builder(console):
 

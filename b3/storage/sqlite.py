@@ -43,12 +43,6 @@ class SqliteStorage(DatabaseStorage):
         """
         super(SqliteStorage, self).__init__(dsn, dsnDict, console)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CONNECTION INITIALIZATION/TERMINATION/RETRIEVAL                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def connect(self):
         """
         Establish and return a connection with the storage layer.
@@ -99,12 +93,6 @@ class SqliteStorage(DatabaseStorage):
             self.db.close()
         self.db = None
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   STORAGE INTERFACE                                                                                              #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def getTables(self):
         """
         List the tables of the current database.
@@ -139,15 +127,9 @@ class SqliteStorage(DatabaseStorage):
             self.query("DELETE FROM %s;" % table)
             self.query("DELETE FROM sqlite_sequence WHERE name='%s';" % table)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   UTILITY METHODS                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def status(self):
         """
         Check whether the connection with the storage layer is active or not.
         :return True if the connection is active, False otherwise.
         """
-        return self.db is None
+        return self.db is not None
