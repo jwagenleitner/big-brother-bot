@@ -30,7 +30,10 @@ import time
 import threading
 import sys
 import traceback
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 import random
 import copy
 import b3.cron
@@ -41,7 +44,10 @@ from b3.clients import Client
 from b3.clients import Group
 from b3.functions import minutesStr
 from b3.functions import getCmd
-from ConfigParser import NoOptionError
+try:
+    from ConfigParser import NoOptionError
+except ImportError:
+    from configparser import NoOptionError
 
 # pylint: disable-msg=E1103
 class AdminPlugin(b3.plugin.Plugin):

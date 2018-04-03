@@ -88,7 +88,7 @@ def getHomePath():
     """
     Return the path to the B3 home directory.
     """
-    path = os.path.normpath(os.path.expanduser('~/.b3')).decode(sys.getfilesystemencoding())
+    path = os.path.normpath(os.path.expanduser('~/.b3'))
     if not os.path.isdir(path):
         os.mkdir(path)
     return path
@@ -291,10 +291,10 @@ def start(mainconfig, options):
         console.shutdown()
         print('Goodbye')
         return
-    except SystemExit, msg:
+    except SystemExit as msg:
         print('EXITING: %s' % msg)
         raise
-    except Exception, msg:
+    except Exception as msg:
         print('ERROR: %s' % msg)
         traceback.print_exc()
         sys.exit(223)

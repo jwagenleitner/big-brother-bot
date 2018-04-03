@@ -22,7 +22,10 @@
 #                                                                     #
 # ################################################################### #
 
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import logging
 from unittest import TestCase
 import unittest2 as unittest

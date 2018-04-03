@@ -36,7 +36,10 @@ import random
 import re
 import string
 import StringIO
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 import time
 import urllib2
 

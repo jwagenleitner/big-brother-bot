@@ -28,7 +28,10 @@ import b3.events
 import b3.plugin
 import b3.cron
 import time
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 import threading
 import re
 import os

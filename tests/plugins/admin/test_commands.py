@@ -22,7 +22,10 @@
 #                                                                     #
 # ################################################################### #
 
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 import time
 import sys
 

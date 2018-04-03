@@ -27,7 +27,10 @@ from __future__ import print_function, absolute_import
 import os
 import re
 import sys
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 from contextlib import contextmanager
 from time import time
 
@@ -395,11 +398,11 @@ class DatabaseStorage(Storage):
             if hasattr(self.console, "encoding") and self.console.encoding:
                 try:
                     penalty.reason = penalty.reason.decode(self.console.encoding)
-                except Exception, msg:
+                except Exception as msg:
                     self.console.warning('ERROR: decoding reason: %r', msg)
                 try:
                     penalty.reason = penalty.reason.encode('UTF-8', 'replace')
-                except Exception, msg:
+                except Exception as msg:
                     self.console.warning('ERROR: encoding reason: %r', msg)
 
         for f in fields:
@@ -614,7 +617,7 @@ class DatabaseStorage(Storage):
         try:
             # always return a cursor instance (also when EOF is reached)
             return self._query(query=query, bindata=bindata)
-        except Exception, e:
+        except Exception as e:
             # log so we can inspect the issue and raise again
             self.console.error('Query failed [%s] %r: %s', query, bindata, e)
             raise e

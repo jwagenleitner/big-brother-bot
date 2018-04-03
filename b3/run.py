@@ -105,7 +105,7 @@ def run(options):
             sys.stdout = sys.__stdout__
             sys.stderr = sys.__stderr__
         traceback.print_exc()
-        raw_input("press any key to continue...")
+        input("press any key to continue...")
 
 
 def main():

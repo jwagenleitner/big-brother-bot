@@ -30,7 +30,10 @@ import re
 import shutil
 import string
 import sys
-import urllib2
+try:
+    import urllib2
+except ImportError:
+    import urllib
 import zipfile
 from hashlib import md5
 
@@ -236,7 +239,9 @@ def decode(text):
     :param text: the text to decode
     :return: string
     """
-    return text.decode(sys.getfilesystemencoding())
+    if hasattr(text, 'decode'):
+        return text.decode(sys.getfilesystemencoding())
+    return text
 
 
 def clamp(value, minv=None, maxv=None):

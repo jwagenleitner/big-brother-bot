@@ -29,7 +29,6 @@ import re
 import string
 from distutils import version
 from time import sleep
-from types import StringType
 
 import b3
 import b3.config
@@ -104,7 +103,7 @@ $''', re.VERBOSE)
         Compare current object with another one.
         :param other: The other object
         """
-        if isinstance(other, StringType):
+        if isinstance(other, basestring):
             other = B3version(other)
 
         compare = cmp(self.version, other.version)
@@ -219,7 +218,7 @@ class DBUpdate(object):
                         print('>>> updating database to version %s' % update_version)
                         sleep(.5)
                         storage.queryFromFile(sql)
-                    except Exception, err:
+                    except Exception as err:
                         print('WARNING: could not update database properly: %s' % err)
                         sleep(3)
 

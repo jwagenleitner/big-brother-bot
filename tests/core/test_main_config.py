@@ -23,7 +23,10 @@
 # ################################################################### #
 
 import b3
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import logging
 import unittest2 as unittest
 from b3 import getAbsolutePath

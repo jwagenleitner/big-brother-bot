@@ -31,7 +31,10 @@ import b3.cron
 import b3.functions
 import b3.plugin
 import os
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 
 from b3.functions import clamp
 

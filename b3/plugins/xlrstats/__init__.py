@@ -34,7 +34,10 @@ import datetime
 import time
 import os
 import re
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 import threading
 import urllib2
 

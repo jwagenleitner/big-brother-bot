@@ -33,7 +33,10 @@ import new
 import os
 import re
 
-from ConfigParser import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 from ConfigParser import NoOptionError
 from ConfigParser import NoSectionError
 from b3.config import XmlConfigParser

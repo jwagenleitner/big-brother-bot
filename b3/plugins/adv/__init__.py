@@ -33,7 +33,10 @@ import b3.plugin
 import b3.cron
 
 from b3 import B3_RSS
-from ConfigParser import NoOptionError
+try:
+    from ConfigParser import NoOptionError
+except ImportError:
+    from configparser import NoOptionError
 
 
 class MessageLoop(object):

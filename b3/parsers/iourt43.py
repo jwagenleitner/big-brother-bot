@@ -26,7 +26,10 @@ from __future__ import print_function, absolute_import
 
 import re
 import string
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 import time
 
 import b3
@@ -53,7 +56,7 @@ class Iourt43Client(Client):
         self.console.debug("Auth by guid: %r", self.guid)
         try:
             return self.console.storage.getClient(self)
-        except KeyError, msg:
+        except KeyError as msg:
             self.console.debug('User not found %s: %s', self.guid, msg)
             return False
 
@@ -129,7 +132,7 @@ class Iourt43Client(Client):
                     # fix up corrupted data due to bug #162
                     if in_storage and in_storage.pbid == 'None':
                         in_storage.pbid = None
-                except Exception, e:
+                except Exception as e:
                     self.console.error("Auth by guid failed", exc_info=e)
                     self.authorizing = False
                     return False
@@ -137,7 +140,7 @@ class Iourt43Client(Client):
                 # auth with FSA
                 try:
                     in_storage = self.auth_by_pbid()
-                except Exception, e:
+                except Exception as e:
                     self.console.error("Auth by FSA failed", exc_info=e)
                     self.authorizing = False
                     return False
@@ -146,7 +149,7 @@ class Iourt43Client(Client):
                     # fallback on auth with cl_guid only
                     try:
                         in_storage = self.auth_by_guid()
-                    except Exception, e:
+                    except Exception as e:
                         self.console.error("Auth by guid failed (when no known FSA)", exc_info=e)
                         self.authorizing = False
                         return False
@@ -580,7 +583,7 @@ class Iourt43Parser(AbstractParser):
             if not self.is_valid_game(gamename):
                 self.critical(
                     "The %s B3 parser cannot be used with a game server other than [%s]" % (self.gameName, gamename))
-        except Exception, e:
+        except Exception as e:
             self.warning("Could not query server for gamename.", exc_info=e)
 
         if not self.config.has_option('server', 'game_log'):
@@ -607,7 +610,7 @@ class Iourt43Parser(AbstractParser):
         """
         try:
             frozensand_auth_available = self.is_frozensand_auth_available()
-        except Exception, e:
+        except Exception as e:
             self.warning("Could not query server for cvar auth", exc_info=e)
             frozensand_auth_available = False
         self.info("Frozen Sand auth system enabled : %s" % ('yes' if frozensand_auth_available else 'no'))
@@ -618,7 +621,7 @@ class Iourt43Parser(AbstractParser):
                 frozensand_auth_owners = cvar.getString()
             else:
                 frozensand_auth_owners = None
-        except Exception, e:
+        except Exception as e:
             self.warning("Could not query server for cvar auth_owners", exc_info=e)
             frozensand_auth_owners = ""
 
@@ -645,7 +648,7 @@ class Iourt43Parser(AbstractParser):
         if self.config.has_option('server', 'permban_with_frozensand'):
             try:
                 self._permban_with_frozensand = self.config.getboolean('server', 'permban_with_frozensand')
-            except ValueError, err:
+            except ValueError as err:
                 self.warning(err)
 
         self.info("Send permbans to Frozen Sand : %s" % ('yes' if self._permban_with_frozensand else 'no'))
@@ -658,7 +661,7 @@ class Iourt43Parser(AbstractParser):
         if self.config.has_option('server', 'tempban_with_frozensand'):
             try:
                 self._tempban_with_frozensand = self.config.getboolean('server', 'tempban_with_frozensand')
-            except ValueError, err:
+            except ValueError as err:
                 self.warning(err)
 
         self.info("Send temporary bans to Frozen Sand : %s" % ('yes' if self._tempban_with_frozensand else 'no'))
@@ -671,7 +674,7 @@ class Iourt43Parser(AbstractParser):
         if self.config.has_option('server', 'allow_userinfo_overflow'):
             try:
                 self._allow_userinfo_overflow = self.config.getboolean('server', 'allow_userinfo_overflow')
-            except ValueError, err:
+            except ValueError as err:
                 self.warning(err)
 
         self.info("Allow userinfo string overflow : %s" % ('yes' if self._allow_userinfo_overflow else 'no'))
@@ -837,7 +840,7 @@ class Iourt43Parser(AbstractParser):
                             plist = self.getPlayerList()
                             client_data = plist[bclient['cid']]
                             bclient['ip'] = client_data['ip']
-                        except Exception, err:
+                        except Exception as err:
                             bclient['ip'] = ''
                             self.warning("Failed to get client %s ip address" % bclient['cid'], err)
 
@@ -2212,7 +2215,7 @@ class Iourt43Parser(AbstractParser):
             points = self.damage[weapon][int(hitloc) - 1]
             self.debug("_getDamagePoints(%s, %s) -> %d" % (weapon, hitloc, points))
             return points
-        except (KeyError, IndexError), err:
+        except (KeyError, IndexError) as err:
             self.warning("_getDamagePoints(%s, %s) cannot find value : %s" % (weapon, hitloc, err))
             return 15
 
@@ -2223,7 +2226,7 @@ class Iourt43Parser(AbstractParser):
         """
         try:
             return self.hitweapon2killweapon[int(hitweapon_id)]
-        except KeyError, err:
+        except KeyError as err:
             self.warning("Unknown weapon ID on Hit line: %s", err)
             return None
 

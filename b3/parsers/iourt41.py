@@ -26,7 +26,10 @@ from __future__ import print_function, absolute_import
 
 import re
 import string
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 import time
 
 import b3

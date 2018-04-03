@@ -24,7 +24,10 @@
 
 from __future__ import print_function, absolute_import
 
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import os
 import re
 import time
@@ -146,7 +149,7 @@ class XmlConfigParser(B3ConfigParserMixin):
         """
         try:
             self._xml = ElementTree.parse(fp)
-        except Exception, e:
+        except Exception as e:
             raise ConfigFileNotValid("%s" % e)
 
         self._loadSettings()
@@ -256,9 +259,8 @@ class XmlConfigParser(B3ConfigParserMixin):
         if not os.path.isfile(filename):
             raise ConfigFileNotFound(filename)
 
-        f = file(filename, 'r')
-        self.readfp(f)
-        f.close()
+        with open(filename, 'r') as f:
+            self.readfp(f)
 
         self.fileName = filename
         self.fileMtime = os.path.getmtime(self.fileName)
@@ -273,7 +275,7 @@ class XmlConfigParser(B3ConfigParserMixin):
 
         try:
             self._xml = ElementTree.XML(xmlstring)
-        except Exception, e:
+        except Exception as e:
             raise ConfigFileNotValid("%s" % e)
 
         self._loadSettings()
@@ -359,7 +361,7 @@ class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
         """
         try:
             ConfigParser.ConfigParser.readfp(self, fp, filename)
-        except Exception, e:
+        except Exception as e:
             raise ConfigFileNotValid("%s" % e)
 
     def save(self):
@@ -519,8 +521,8 @@ class MainConfig(B3ConfigParserMixin):
         if self.has_option('b3', 'parser'):
             try:
                 b3.functions.getModule('b3.parsers.%s' % self.get('b3', 'parser'))
-            except ImportError:
-                analysis.append('invalid parser specified in b3::parser (%s)' % self.get('b3', 'parser'))
+            except ImportError as ie:
+                analysis.append('invalid parser specified in b3::parser (%s-%s)' % (self.get('b3', 'parser'), ie))
 
         ## DSN DICT
         if self.has_option('b3', 'database'):

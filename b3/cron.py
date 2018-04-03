@@ -27,7 +27,10 @@ from __future__ import print_function, absolute_import
 
 import re
 import sys
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 import threading
 import time
 import traceback
@@ -361,7 +364,7 @@ class Cron(object):
                         c.numRuns += 1
                         try:
                             c.run()
-                        except Exception, msg:
+                        except Exception as msg:
                             self.console.error('Exception raised while executing crontab %s: %s\n%s', c.command,
                                                msg, traceback.extract_tb(sys.exc_info()[2]))
             nexttime += 1

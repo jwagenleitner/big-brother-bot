@@ -24,7 +24,10 @@
 
 from __future__ import print_function, absolute_import
 
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 
 
 class ConfigFileNotFound(Exception):
