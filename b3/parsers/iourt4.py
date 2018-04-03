@@ -191,7 +191,7 @@ class Iourt4Client(Client):
 class Iourt4Parser(AbstractParser):
     """Forked from the Iourt41 parser with 4.2 and 4.3 additions.
 
-    This parser is meant to server as the new base parser for
+    This parser is meant to serve as the new base parser for
     all UrT version from 4.3.3 on.
     """
     gameName = 'iourt4'
@@ -340,6 +340,10 @@ class Iourt4Parser(AbstractParser):
                    r'(?P<aweap>[0-9]+):\s+'
                    r'(?P<text>.*))$', re.IGNORECASE),
 
+        # Assist: 0 14 15: -[TPF]-PtitBigorneau assisted Bot1 to kill Bot2
+        re.compile(r'^(?P<action>Assist):\s(?P<acid>[0-9]+)\s(?P<kcid>[0-9]+)\s(?P<dcid>[0-9]+):\s+(?P<text>.*)$',
+                   re.IGNORECASE),
+
         # ThawOutStarted: 0 1: Fenix started thawing out Biddle
         # ThawOutFinished: 0 1: Fenix thawed out Biddle
         re.compile(r'^(?P<action>ThawOut(Started|Finished)):\s'
@@ -421,11 +425,13 @@ class Iourt4Parser(AbstractParser):
                                r'R:(?P<RedScore>.+)\s+'
                                r'B:(?P<BlueScore>.+)$', re.IGNORECASE)
 
-    _rePlayerScore = re.compile(r'^(?P<slot>[0-9]+): '
-                                r'(?P<name>.*) '
-                                r'(?P<team>RED|BLUE|SPECTATOR|FREE) '
-                                r'k:(?P<kill>[0-9]+) d:(?P<death>[0-9]+) ping:(?P<ping>[0-9]+|CNCT|ZMBI)( '
-                                r'(?P<ip>[0-9.]+):(?P<port>[0-9-]+))?$', re.IGNORECASE)
+    _rePlayerScore = re.compile(r'^(?P<slot>[0-9]+):(?P<name>.*)\s+'
+                                r'TEAM:(?P<team>RED|BLUE|SPECTATOR|FREE)\s+'
+                                r'KILLS:(?P<kill>[0-9]+)\s+'
+                                r'DEATHS:(?P<death>[0-9]+)\s+'
+                                r'ASSISTS:(?P<assist>[0-9]+)\s+'
+                                r'PING:(?P<ping>[0-9]+|CNCT|ZMBI)\s+'
+                                r'AUTH:(?P<auth>.*)\s+IP:(?P<ip>.*)$', re.IGNORECASE)
 
     # /rcon auth-whois replies patterns
     # 'auth: id: 0 - name: ^7Courgette - login: courgette - notoriety: serious - level: -1  \n'
@@ -470,8 +476,13 @@ class Iourt4Parser(AbstractParser):
     UT_MOD_GLOCK = '39'
     UT_MOD_COLT1911 = '40'
     UT_MOD_MAC11 = '41'
-    UT_MOD_FLAG = '42'
-    UT_MOD_GOOMBA = '43'
+    UT_MOD_FRF1 = '42'
+    UT_MOD_BENELLI = '43'
+    UT_MOD_P90 = '44'
+    UT_MOD_MAGNUM = '45'
+    UT_MOD_TOD50 = '46'
+    UT_MOD_FLAG = '47'
+    UT_MOD_GOOMBA = '48'
 
     # HIT LOCATIONS
     HL_HEAD = '1'
@@ -511,8 +522,13 @@ class Iourt4Parser(AbstractParser):
         20: UT_MOD_GLOCK,
         21: UT_MOD_COLT1911,
         22: UT_MOD_MAC11,
-        24: UT_MOD_KICKED,
-        25: UT_MOD_KNIFE_THROWN,
+        23: UT_MOD_FRF1,
+        24: UT_MOD_BENELLI,
+        25: UT_MOD_P90,
+        26: UT_MOD_MAGNUM,
+        27: UT_MOD_TOD50,
+        28: UT_MOD_KICKED,
+        29: UT_MOD_KNIFE_THROWN,
     }
 
     ## damage table
@@ -524,27 +540,32 @@ class Iourt4Parser(AbstractParser):
         MOD_TELEFRAG: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         UT_MOD_KNIFE: [100, 60, 44, 35, 20, 20, 40, 37, 20, 20, 18, 18, 15, 15],
         UT_MOD_KNIFE_THROWN: [100, 60, 44, 35, 20, 20, 40, 37, 20, 20, 18, 18, 15, 15],
-        UT_MOD_BERETTA: [100, 34, 30, 20, 11, 11, 25, 22, 15, 15, 13, 13, 11, 11],
-        UT_MOD_DEAGLE: [100, 66, 57, 38, 22, 22, 45, 41, 28, 28, 22, 22, 18, 18],
-        UT_MOD_SPAS: [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25],
-        UT_MOD_UMP45: [100, 51, 44, 29, 17, 17, 36, 32, 21, 21, 17, 17, 14, 14],
-        UT_MOD_MP5K: [50, 34, 30, 20, 11, 11, 25, 22, 15, 15, 13, 13, 11, 11],
-        UT_MOD_LR300: [100, 51, 44, 29, 17, 17, 37, 33, 20, 20, 17, 17, 14, 14],
-        UT_MOD_G36: [100, 51, 44, 29, 17, 17, 37, 33, 20, 20, 17, 17, 14, 14],
-        UT_MOD_PSG1: [100, 100, 97, 63, 36, 36, 70, 70, 41, 41, 36, 36, 29, 29],
+        UT_MOD_BERETTA: [100, 40, 33, 22, 13, 13, 22, 22, 15, 15, 13, 13, 11, 11],
+        UT_MOD_DEAGLE: [100, 66, 57, 38, 22, 22, 42, 38, 28, 28, 22, 22, 18, 18],
+        UT_MOD_SPAS: [100 ,80 ,80 ,40 ,32 ,32 ,59 ,59 ,40 ,40 ,40 ,40 ,40 ,40],
+        UT_MOD_UMP45: [100, 51, 44, 29, 17, 17, 31, 28, 20, 20, 17, 17, 14, 14],
+        UT_MOD_MP5K: [50, 34, 30, 22, 13, 13, 22, 20, 15, 15, 13, 13, 11, 11],
+        UT_MOD_LR300: [100, 51, 44, 29, 17, 17, 31, 28, 20, 20, 17, 17, 14, 14],
+        UT_MOD_G36: [100, 51, 44, 29, 17, 17, 29, 28, 20, 20, 17, 17, 14, 14],
+        UT_MOD_PSG1: [100, 100, 97, 70, 36, 36, 75, 70, 41, 41, 36, 36, 29, 29],
         UT_MOD_HK69: [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
         UT_MOD_BLED: [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
         UT_MOD_KICKED: [30, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
         UT_MOD_HEGRENADE: [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
-        UT_MOD_SR8: [100, 100, 100, 100, 50, 50, 80, 70, 60, 60, 50, 50, 40, 40],
-        UT_MOD_AK103: [100, 58, 51, 34, 19, 19, 41, 34, 22, 22, 19, 19, 15, 15],
-        UT_MOD_NEGEV: [50, 34, 30, 20, 11, 11, 25, 22, 13, 13, 11, 11, 9, 9],
+        UT_MOD_SR8: [100, 100, 100, 100, 50, 50, 100, 100, 60, 60, 50, 50, 40, 40],
+        UT_MOD_AK103: [100, 58, 51, 34, 19, 19, 39, 35, 22, 22, 19, 19, 15, 15],
+        UT_MOD_NEGEV: [50, 34, 30, 22, 11, 11, 23, 21, 13, 13, 11, 11, 9, 9],
         UT_MOD_HK69_HIT: [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
-        UT_MOD_M4: [100, 51, 44, 29, 17, 17, 37, 33, 20, 20, 17, 17, 14, 14],
-        UT_MOD_GLOCK: [60, 40, 33, 23, 14, 14, 28, 25, 17, 17, 14, 14, 11, 11],
-        UT_MOD_COLT1911: [100, 60, 37, 27, 15, 15, 32, 29, 22, 22, 15, 15, 11, 11],
-        UT_MOD_MAC11: [34, 29, 20, 15, 11, 11, 18, 17, 15, 15, 13, 13, 11, 11],
+        UT_MOD_M4: [100, 51, 44, 29, 17, 17, 31, 28, 20, 20, 17, 17, 14, 14],
+        UT_MOD_GLOCK: [100, 45, 29, 35, 15, 15, 29, 27, 20, 20, 15, 15, 11, 11],
+        UT_MOD_COLT1911: [100, 60, 40, 30, 15, 15, 32, 29, 22, 22, 15, 15, 11, 11],
+        UT_MOD_MAC11: [50, 29, 20, 16, 13, 13, 16, 15, 15, 15, 13, 13, 11, 11],
         UT_MOD_GOOMBA: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+        UT_MOD_TOD50: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+        UT_MOD_FRF1: [100, 100, 96, 76, 40, 40, 76, 74, 50, 50, 40, 40, 30, 30],
+        UT_MOD_BENELLI: [100, 100, 90, 67, 32, 32, 60, 50, 35, 35, 30, 30, 20, 20],
+        UT_MOD_P90: [50, 40, 33, 27, 16, 16, 27, 25, 17, 17, 15, 15, 12, 12],
+        UT_MOD_MAGNUM: [100, 82, 66, 50, 33, 33, 57, 52, 40, 33, 25, 25],
     }
 
     def __new__(cls, *args, **kwargs):
@@ -594,6 +615,8 @@ class Iourt4Parser(AbstractParser):
         self.Events.createEvent('EVT_CLIENT_THAWOUT_STARTED', 'Event client thawout started')
         self.Events.createEvent('EVT_CLIENT_THAWOUT_FINISHED', 'Event client thawout finished')
         self.Events.createEvent('EVT_CLIENT_MELTED', 'Event client melted')
+        # add UrT 4.3 specific events
+        self.Events.createEvent('EVT_ASSIST', 'Event assist')
 
         # add event mappings
         self._eventMap['warmup'] = self.getEventID('EVT_GAME_WARMUP')
@@ -1326,6 +1349,29 @@ class Iourt4Parser(AbstractParser):
         # need to pass some amount of damage for the teamkill plugin - 100 is a kill
         return self.getEvent(event, (last_damage_data[0], weapon, last_damage_data[2], damagetype), attacker, victim)
 
+    def OnAssist(self, action, data, match=None):
+        # Assist: 0 14 15: -[TPF]-PtitBigorneau assisted Bot1 to kill Bot2
+        cid = match.group('acid')
+        vid = match.group('dcid')
+        aid = match.group('kcid')
+
+        client = self.getByCidOrJoinPlayer(cid)
+        if not client:
+            self.debug('No client')
+            return None
+
+        victim = self.getByCidOrJoinPlayer(vid)
+        if not victim:
+            self.debug('No victim')
+            return None
+
+        attacker = self.getByCidOrJoinPlayer(aid)
+        if not attacker:
+            self.debug('No attacker')
+            return None
+
+        return self.getEvent('EVT_ASSIST', client=client, target=victim, data=attacker)
+
     def OnClientdisconnect(self, action, data, match=None):
         client = self.clients.getByCID(data)
         if client:
@@ -1764,7 +1810,7 @@ class Iourt4Parser(AbstractParser):
         Translate the gametype to a readable format (also for teamkill plugin!)
         """
         gametype = str(gametype_int)
-
+        # TODO: should it `gametype == ?`
         if gametype_int == '0':
             gametype = 'ffa'
         elif gametype_int == '1':  # Last Man Standing
@@ -1787,6 +1833,8 @@ class Iourt4Parser(AbstractParser):
             gametype = 'jump'
         elif gametype_int == '10':
             gametype = 'freeze'
+        elif gametype_int == '11':
+            gametype = 'gungame'
 
         return gametype
 
@@ -2099,7 +2147,7 @@ class Iourt4Parser(AbstractParser):
         if not data:
             return None
 
-        line = data.split('\n')[2]
+        line = data.split('\n')[3]
         m = re.match(self._reTeamScores, line.strip())
         if m:
             return [int(m.group('RedScore')), int(m.group('BlueScore'))]
@@ -2115,7 +2163,7 @@ class Iourt4Parser(AbstractParser):
             return None
 
         scores = {'red': None, 'blue': None, 'players': {}}
-        line = data.split('\n')[2]
+        line = data.split('\n')[3]
         m = re.match(self._reTeamScores, line.strip())
         if m:
             scores['red'] = int(m.group('RedScore'))
