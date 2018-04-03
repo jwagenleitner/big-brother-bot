@@ -113,3 +113,6 @@ class Poweradminurt43Plugin(Poweradminurt42Plugin):
         elif data.lower() == 'off':
             self.console.setCvar('g_hardcore', 0)
             self.console.say('^7Hardcore: ^1OFF')
+
+    def _gear_contains_sniper(self, gear):
+        return 'Z' in gear or 'N' in gear or 'i' in gear

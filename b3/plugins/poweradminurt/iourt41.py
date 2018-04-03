@@ -837,10 +837,13 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                 continue
                 # Count players with SR8 and PSG1
             gear = getattr(c, 'gear', '')
-            if 'Z' in gear or 'N' in gear:
+            if self._gear_contains_sniper(gear):
                 n += 1
 
         return n
+
+    def _gear_contains_sniper(self, gear):
+        return 'Z' in gear or 'N' in gear
 
     def _move(self, blue, red, scores=None):
         self.debug('move: final blue team: ' + ' '.join(c.name for c in blue))
