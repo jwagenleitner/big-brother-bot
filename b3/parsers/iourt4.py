@@ -24,7 +24,6 @@
 
 from __future__ import print_function, absolute_import
 
-import new
 import re
 import string
 import thread
@@ -40,7 +39,6 @@ from b3.functions import getStuffSoundingLike
 from b3.functions import prefixText
 from b3.functions import time2minutes
 from b3.parsers.q3a.abstractParser import AbstractParser
-from b3.plugins.spamcontrol import SpamcontrolPlugin
 
 __author__ = 'xlr8or, Courgette, Fenix'
 __version__ = '4.33'
@@ -1848,7 +1846,7 @@ class Iourt4Parser(AbstractParser):
             new_event = Event(type=event.type, client=event.client, target=event.target, data=repr(event.data))
             this.onChat(new_event)
 
-        self.spamcontrolPlugin.onRadio = new.instancemethod(onRadio, self.spamcontrolPlugin, SpamcontrolPlugin)
+        self.spamcontrolPlugin.onRadio = onRadio
         self.spamcontrolPlugin.registerEvent('EVT_CLIENT_RADIO', self.spamcontrolPlugin.onRadio)
 
     @staticmethod
