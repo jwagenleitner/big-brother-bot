@@ -43,80 +43,6 @@ __version__ = '1.8'
 modulePath = b3.pkg_handler.resource_directory(__name__)
 
 
-def run_autorestart(args=None):
-    """
-    Run B3 in auto-restart mode.
-    """
-    restart_num = 0
-
-    # if we are running from sources, then sys.executable is set to `python`
-    script = os.path.join(modulePath[:-3], 'b3_run.py')
-    if not os.path.isfile(script):
-        # must be running from the wheel, so there is no b3_run
-        script = os.path.join(modulePath[:-3], 'b3', 'run.py')
-    if os.path.isfile(script + 'c'):
-        script += 'c'
-
-    if args:
-        script = '%s %s %s --autorestart' % (sys.executable, script, ' '.join(args))
-    else:
-        script = '%s %s --autorestart' % (sys.executable, script)
-
-    while True:
-
-        try:
-
-            try:
-                import subprocess32 as subprocess
-            except ImportError:
-                import subprocess
-
-            status = subprocess.call(script, shell=True)
-
-            sys.stdout.write('Exited with status: %s ... ' % status)
-            sys.stdout.flush()
-            sleep(2)
-
-            if status == 221:
-                restart_num += 1
-                sys.stdout.write('restart requested (%s)\n' % restart_num)
-                sys.stdout.flush()
-            elif status == 222:
-                sys.stdout.write('shutdown requested!\n')
-                sys.stdout.flush()
-                break
-            elif status == 220 or status == 223:
-                sys.stdout.write('B3 error (check log file)\n')
-                sys.stdout.flush()
-                break
-            elif status == 224:
-                sys.stdout.write('B3 error (check console)\n')
-                sys.stdout.flush()
-                break
-            elif status == 256:
-                sys.stdout.write('python error, (check log file)\n')
-                sys.stdout.flush()
-                break
-            elif status == 0:
-                sys.stdout.write('normal shutdown\n')
-                sys.stdout.flush()
-                break
-            elif status == 1:
-                sys.stdout.write('general error (check console)\n')
-                sys.stdout.flush()
-                break
-            else:
-                restart_num += 1
-                sys.stdout.write('unknown exit code (%s), restarting (%s)...\n' % (status, restart_num))
-                sys.stdout.flush()
-
-            sleep(4)
-
-        except KeyboardInterrupt:
-            print('Quit')
-            break
-
-
 def run_update(config=None):
     """
     Run the B3 update.
@@ -185,32 +111,18 @@ def run(options):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('-c', '--config', dest='config', default=None, metavar='b3.ini', help='B3 config file. Example: -c b3.ini')
-    p.add_argument('-r', '--restart', action='store_true', dest='restart', default=False, help='Auto-restart B3 on crash')
-    p.add_argument('-s', '--setup',  action='store_true', dest='setup', default=False, help='Setup main b3.ini config file')
     p.add_argument('-u', '--update', action='store_true', dest='update', default=False, help='Update B3 database to latest version')
     p.add_argument('-v', '--version', action='version', default=False, version=b3.getB3versionString(), help='Show B3 version and exit')
-    p.add_argument('-a', '--autorestart', action='store_true', dest='autorestart', default=False, help=argparse.SUPPRESS)
 
     (options, args) = p.parse_known_args()
 
     if not options.config and len(args) == 1:
         options.config = args[0]
 
-    if options.setup:
-        sys.stdout.write('\n')
-        console_exit("  *** NOTICE: the console setup procedure is deprecated!\n" \
-                     "  *** Please visit %s to generate a new B3 configuration file.\n" % B3_CONFIG_GENERATOR)
-
     if options.update:
         run_update(config=options.config)
 
-    if options.restart:
-        if options.config:
-            run_autorestart(['--config', options.config] + args)
-        else:
-            run_autorestart([])
-    else:
-        run(options)
+    run(options)
 
 
 if __name__ == '__main__':

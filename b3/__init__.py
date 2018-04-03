@@ -255,7 +255,6 @@ def start(mainconfig, options):
     confdir = os.path.dirname(mainconfig.fileName)
 
     sys.stdout.write('Starting B3      : %s\n' % getB3versionString())
-    sys.stdout.write('Autorestart mode : %s\n' % ('ON' if options.autorestart else 'OFF'))
 
     sys.stdout.flush()
 

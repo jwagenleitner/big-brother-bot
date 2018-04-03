@@ -103,7 +103,6 @@ class Parser(object):
     _timeStart = None  # timestamp when B3 has first started
     _use_color_codes = True  # whether the game supports color codes or not
 
-    autorestart = False  # whether B3 has been started in autorestart mode
     clients = None
     config = None  # parser configuration file instance
     delay = 0.33  # time between each game log lines fetching
@@ -194,10 +193,6 @@ class Parser(object):
         """
         self._timeStart = self.time()
 
-        # store in the parser whether we are running B3 in autorestart mode so
-        # plugins can react on this and perform different operations
-        self.autorestart = options.autorestart
-
         if not self.loadConfig(conf):
             print('CRITICAL ERROR : COULD NOT LOAD CONFIG')
             raise SystemExit(220)
@@ -273,9 +268,9 @@ class Parser(object):
         self.bot('%s', b3.getB3versionString())
         self.bot('Python: %s', sys.version.replace('\n', ''))
         self.bot('Default encoding: %s', sys.getdefaultencoding())
-        self.bot('Starting %s v%s for server %s:%s (autorestart = %s)', self.__class__.__name__,
+        self.bot('Starting %s v%s for server %s:%s', self.__class__.__name__,
                                                      getattr(getModule(self.__module__), '__version__', ' Unknown'),
-                                                     self._rconIp, self._port, 'ON' if self.autorestart else 'OFF')
+                                                     self._rconIp, self._port)
 
         # get events
         self.Events = b3.events.eventManager
