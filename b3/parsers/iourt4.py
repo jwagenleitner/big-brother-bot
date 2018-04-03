@@ -1401,14 +1401,6 @@ class Iourt4Parser(AbstractParser):
             return self.getEvent('EVT_CLIENT_ITEM_PICKUP', data=item, client=client)
         return None
 
-    def OnSurvivorwinner(self, action, data, match=None):
-        # SurvivorWinner: Blue
-        # SurvivorWinner: Red
-        # self.debug('EVENT: on_survivorwinner')
-        # queue round and in any case (backwards compatibility for plugins)
-        self.queueEvent(self.getEvent('EVT_GAME_ROUND_END'))
-        return self.getEvent('EVT_SURVIVOR_WIN', data=data)
-
     def OnSay(self, action, data, match=None):
         # 3:53 say: 8 denzel: lol
         if match is None:
