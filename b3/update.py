@@ -81,9 +81,9 @@ $''', re.VERBOSE)
 
         patch = match.group('patch')
         if patch:
-            self.version = tuple(map(string.atoi, [major, minor, patch]))
+            self.version = tuple(map(int, [major, minor, patch]))
         else:
-            self.version = tuple(map(string.atoi, [major, minor]) + [0])
+            self.version = tuple(map(int, [major, minor]) + [0])
 
         prerelease = match.group('tag')
         prerelease_num = match.group('tag_num')

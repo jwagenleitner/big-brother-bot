@@ -31,6 +31,7 @@ except ImportError:
 import os
 import re
 import time
+import six
 
 import b3
 import b3.exceptions
@@ -324,7 +325,17 @@ class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
         Return a configuration value as a string.
         """
         try:
-            value = ConfigParser.ConfigParser.get(self, section, option, *args, **kwargs)
+            if six.PY2:
+                value = ConfigParser.ConfigParser.get(self, section, option, *args, **kwargs)
+            else:
+                # TODO: fix this hack, PY3 configparser requires named params for `raw` and `vars`
+                opts = {"self": self, "section": section, "option": option}
+                opts.update(kwargs)
+                if len(args) > 0:
+                    opts["raw"] = args[0]
+                    if len(args) > 1:
+                        opts["vars"] = args[1]
+                value = ConfigParser.ConfigParser.get(**opts)
             if value is None:
                 return ""
             return value
@@ -336,9 +347,8 @@ class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
         """
         Load a configuration file.
         """
-        f = file(filename, 'r')
-        self.readfp(f)
-        f.close()
+        with open(filename, 'r') as f:
+            self.readfp(f)
         self.fileName = filename
         self.fileMtime = os.path.getmtime(self.fileName)
         return True
@@ -347,7 +357,7 @@ class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
         """
         Read the cfg config from a string.
         """
-        import StringIO
+        from six import StringIO
         fp = StringIO.StringIO(cfg_string)
         self.readfp(fp)
         fp.close()
@@ -368,9 +378,8 @@ class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
         """
         Save the configuration file.
         """
-        f = file(self.fileName, 'w')
-        self.write(f)
-        f.close()
+        with open(self.fileName, 'w') as f:
+            self.write(f)
         return True
 
     def write(self, fp):

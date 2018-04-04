@@ -276,7 +276,7 @@ class MysqlStorage(DatabaseStorage):
         if cursor and not cursor.EOF:
             while not cursor.EOF:
                 row = cursor.getRow()
-                tables.append(row.values()[0])
+                tables.append(list(row.values())[0])
                 cursor.moveNext()
         cursor.close()
         return tables

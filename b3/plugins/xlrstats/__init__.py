@@ -39,12 +39,12 @@ try:
 except ImportError:
     import _thread as thread
 import threading
-import urllib2
+from six.moves import urllib as urllib2
 
 from b3.functions import escape
 from b3.functions import getCmd
 from b3.functions import right_cut
-from ConfigParser import NoOptionError
+from six.moves.configparser import NoOptionError
 
 KILLER = "killer"
 VICTIM = "victim"
@@ -345,7 +345,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
                         with open(sql_path, 'r') as sql_file:
                             query = self.console.storage.getQueriesFromFile(sql_file)[0]
                         self.console.storage.query(query % v)
-                    except Exception, e:
+                    except Exception as e:
                         self.error("could not create schema for database table '%s': %s", v, e)
                     else:
                         self.info('created database table: %s', v)
@@ -392,9 +392,9 @@ class XlrstatsPlugin(b3.plugin.Plugin):
                     raise ValueError("invalid table name for %s: %r" % (setting_option, table_name))
                 setattr(self, property_to_set, table_name)
                 self._defaultTableNames = False
-            except NoOptionError, err:
+            except NoOptionError as err:
                 self.debug(err)
-            except Exception, err:
+            except Exception as err:
                 self.error(err)
             self.info('using value "%s" for tables::%s' % (property_to_set, setting_option))
 
@@ -1446,7 +1446,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
     def _addTableColumn(self, c1, t1, specs):
         try:
             self.query("""SELECT %s FROM %s limit 1;""" % (c1, t1))
-        except Exception, e:
+        except Exception as e:
             if e[0] == 1054:
                 self.console.debug('column does not yet exist: %s' % e)
                 self.query("""ALTER TABLE %s ADD %s %s ;""" % (t1, c1, specs))
@@ -1489,7 +1489,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
         try:
             self.query('OPTIMIZE TABLE %s' % _tables)
             self.debug('optimize success')
-        except Exception, msg:
+        except Exception as msg:
             self.error('optimizing table(s) failed: %s: trying to repair...', msg)
             self.repairTables(t)
 
@@ -1504,7 +1504,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
         try:
             self.query('REPAIR TABLE %s' % _tables)
             self.debug('repair success')
-        except Exception, msg:
+        except Exception as msg:
             self.error('repairing table(s) failed: %s' % msg)
 
     def calculateKillBonus(self):
@@ -1971,7 +1971,7 @@ class XlrstatshistoryPlugin(b3.plugin.Plugin):
             self.console.cron + self._cronTabMonth
             self._cronTabWeek = b3.cron.PluginCronTab(self, self.snapshot_week, 0, 0, 0, '*', '*', 1)  # day 1 is monday
             self.console.cron + self._cronTabWeek
-        except Exception, msg:
+        except Exception as msg:
             self.error('unable to install history crontabs: %s', msg)
 
         # purge the tables on startup
@@ -1995,7 +1995,7 @@ class XlrstatshistoryPlugin(b3.plugin.Plugin):
         try:
             self.query(sql)
             self.verbose('monthly XLRstats snapshot created')
-        except Exception, msg:
+        except Exception as msg:
             self.error('creating history snapshot failed: %s' % msg)
 
     def snapshot_week(self):
@@ -2010,7 +2010,7 @@ class XlrstatshistoryPlugin(b3.plugin.Plugin):
         try:
             self.query(sql)
             self.verbose('weekly XLRstats snapshot created')
-        except Exception, msg:
+        except Exception as msg:
             self.error('creating history snapshot failed: %s', msg)
 
     def purge(self):
@@ -2608,7 +2608,7 @@ class PlayerBattles(StatObject):
 
 
 if __name__ == '__main__':
-    print '\nThis is version ' + __version__ + ' by ' + __author__ + ' for BigBrotherBot.\n'
+    print('\nThis is version ' + __version__ + ' by ' + __author__ + ' for BigBrotherBot.\n')
 
 """
 Crontab:

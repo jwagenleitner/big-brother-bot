@@ -31,7 +31,7 @@ import re
 import threading
 import time
 
-from ConfigParser import NoOptionError
+from six.moves.configparser import NoOptionError
 
 __version__ = '1.5'
 __author__ = 'ThorN, mindriot, Courgette, xlr8or, SGT, 82ndab-Bravo17, ozon, Fenix'
@@ -223,7 +223,7 @@ class TkPlugin(b3.plugin.Plugin):
         except NoOptionError:
             self.warning('could not find levels in config file, '
                          'using default: %s' % ','.join(map(str, self._levels.keys())))
-        except ValueError, e:
+        except ValueError as e:
             self.error('could not load levels from config value: %s' % e)
             self.debug('using default levels' % ','.join(map(str, self._levels.keys())))
 
@@ -284,7 +284,7 @@ class TkPlugin(b3.plugin.Plugin):
             except NoOptionError:
                 self.error("option kill_multiplier is missing in section %s" % section_name)
                 is_valid = False
-            except ValueError, err:
+            except ValueError as err:
                 self.error("value for kill_multiplier is invalid. %s" % err)
                 is_valid = False
 
@@ -293,7 +293,7 @@ class TkPlugin(b3.plugin.Plugin):
             except NoOptionError:
                 self.error("option damage_multiplier is missing in section %s" % section_name)
                 is_valid = False
-            except ValueError, err:
+            except ValueError as err:
                 self.error("value for damage_multiplier is invalid. %s" % err)
                 is_valid = False
 
@@ -302,7 +302,7 @@ class TkPlugin(b3.plugin.Plugin):
             except NoOptionError:
                 self.error("option ban_length is missing in section %s" % section_name)
                 is_valid = False
-            except ValueError, err:
+            except ValueError as err:
                 self.error("value for ban_length is invalid. %s" % err)
                 is_valid = False
 

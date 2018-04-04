@@ -30,6 +30,7 @@ import sys
 import threading
 import time
 import traceback
+import six
 
 import b3
 import b3.events
@@ -129,7 +130,7 @@ class Client(object):
         if 'console' in kwargs:
             self.console = kwargs['console']
             
-        for k, v in kwargs.iteritems():
+        for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
 
     ####################################################################################################################
@@ -226,7 +227,7 @@ class Client(object):
     # -----------------------
 
     def _set_data(self, data):
-        for k, v in data.iteritems():
+        for k, v in six.iteritems(data):
             self._data[k] = v
 
     def _get_data(self):
@@ -933,7 +934,7 @@ class Struct(object):
         """
         Object constructor.
         """
-        for k, v in kwargs.iteritems():
+        for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
 
     def _set_id(self, v):
@@ -1639,7 +1640,7 @@ class Clients(dict):
         # remove existing clients
         self.clear()
         # add list of matching clients
-        for cid, c in mlist.iteritems():
+        for cid, c in six.iteritems(mlist):
             self[cid] = c
 
     def authorizeClients(self):

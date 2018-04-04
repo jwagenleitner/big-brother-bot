@@ -31,12 +31,12 @@ import b3.plugin
 import b3.events
 import os
 import re
-import StringIO
+from six import StringIO
 import time
 
 from b3 import functions
 from b3.functions import sanitizeMe
-from ConfigParser import NoOptionError
+from six.moves.configparser import NoOptionError
 from ftplib import FTP
 from xml.dom.minidom import Document
 
@@ -171,7 +171,7 @@ class StatusPlugin(b3.plugin.Plugin):
             self.debug('using custom value for settings/interval: %s' % self._interval)
         except NoOptionError:
             self.warning('could not find settings/interval in config file, using default: %s' % self._interval)
-        except ValueError, e:
+        except ValueError as e:
             self.error('could not load settings/interval config value: %s' % e)
             self.debug('using default value (%s) for settings/interval' % self._interval)
 
@@ -180,7 +180,7 @@ class StatusPlugin(b3.plugin.Plugin):
             self.debug('using custom value for settings/enableDBsvarSaving: %s' % self._enableDBsvarSaving)
         except NoOptionError:
             self.warning('could not find settings/enableDBsvarSaving in config file, using default: %s' % self._enableDBsvarSaving)
-        except ValueError, e:
+        except ValueError as e:
             self.error('could not load settings/enableDBsvarSaving config value: %s' % e)
             self.debug('using default value (%s) for settings/enableDBsvarSaving' % self._enableDBsvarSaving)
 
@@ -189,7 +189,7 @@ class StatusPlugin(b3.plugin.Plugin):
             self.debug('using custom value for settings/enableDBclientSaving: %s' % self._enableDBclientSaving)
         except NoOptionError:
             self.warning('could not find settings/enableDBclientSaving in config file, using default: %s' % self._enableDBclientSaving)
-        except ValueError, e:
+        except ValueError as e:
             self.error('could not load settings/enableDBclientSaving config value: %s' % e)
             self.debug('using default value (%s) for settings/enableDBclientSaving' % self._enableDBclientSaving)
 
@@ -439,7 +439,7 @@ class StatusPlugin(b3.plugin.Plugin):
 
                     try:
                         clean_data = sanitizeMe(str(v))
-                    except Exception, err:
+                    except Exception as err:
                         self.error("could not sanitize %r" % v, exc_info=err)
                         data.setAttribute("Value", "")
                     else:
@@ -460,11 +460,11 @@ class StatusPlugin(b3.plugin.Plugin):
                                     attacker.setAttribute("CID", str(acid))
                                     attacker.setAttribute("Points", str(points))
                                     tkplugin.appendChild(attacker)
-                                except Exception, e:
+                                except Exception as e:
                                     self.warning('could not append child node in XML tree: %s' % e)
                                     pass
                                 
-            except Exception, err:
+            except Exception as err:
                 self.error('XML Failed: %r' % err, exc_info=err)
                 pass
 

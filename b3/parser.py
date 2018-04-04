@@ -48,6 +48,7 @@ except ImportError:
 from collections import OrderedDict
 from textwrap import TextWrapper
 from traceback import extract_tb
+import six
 
 import dateutil.tz
 
@@ -1055,7 +1056,7 @@ class Parser(object):
         <data> can be either a group keyword or a group level.
         Raises KeyError if group is not found.
         """
-        if type(data) is int or isinstance(data, basestring) and data.isdigit():
+        if type(data) is int or isinstance(data, six.string_types) and data.isdigit():
             g = Group(level=data)
         else:
             g = Group(keyword=data)

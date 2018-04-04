@@ -33,6 +33,7 @@ except ImportError:
     import _thread as thread
 from contextlib import contextmanager
 from time import time
+import six
 
 import b3
 from b3.clients import Client
@@ -131,7 +132,7 @@ class DatabaseStorage(Storage):
                 raise KeyError('no client matching guid %s' % client.guid)
 
             found = False
-            for k, v in cursor.getRow().iteritems():
+            for k, v in six.iteritems(cursor.getRow()):
                 #if hasattr(client, k) and getattr(client, k):
                 #    # don't set already set items
                 #    continue
@@ -169,7 +170,7 @@ class DatabaseStorage(Storage):
         while not cursor.EOF:
             g = cursor.getRow()
             client = Client()
-            for k, v in g.iteritems():
+            for k, v in six.iteritems(g):
                 setattr(client, self.getVar(k), v)
             clients.append(client)
             cursor.moveNext()

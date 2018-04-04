@@ -31,14 +31,14 @@ import b3.events
 import b3.plugin
 import sys
 import urllib
-import urllib2
+from six.moves import urllib as urllib2
 import socket
 import os
 import random
 
 from b3 import functions
 from b3.functions import getModule
-from ConfigParser import NoOptionError
+from six.moves.configparser import NoOptionError
 from time import strftime
 
 
@@ -163,7 +163,7 @@ class PublistPlugin(b3.plugin.Plugin):
                 p_module = getModule(pl.__module__)
                 p_version = getattr(p_module, '__version__', 'unknown')
                 plugins.append("%s/%s" % (pname, p_version))
-            except Exception, e:
+            except Exception as e:
                 self.warning("could not get version for plugin named '%s'" % pname, exc_info=e)
           
         try:
@@ -196,7 +196,7 @@ class PublistPlugin(b3.plugin.Plugin):
                 cvar_banner_url = self.console.getCvar('bannerUrl')
                 if cvar_banner_url is not None:
                     info.update({'bannerUrl': cvar_banner_url.value})
-            except Exception, e:
+            except Exception as e:
                 self.debug(e)
         
         self.debug(info)
@@ -226,7 +226,7 @@ class PublistPlugin(b3.plugin.Plugin):
             replybody = opener.open(request).read()
             if len(replybody) > 0:
                 self.debug("master replied: %s" % replybody)
-        except IOError, e:
+        except IOError as e:
             if hasattr(e, 'reason'):
                 self.error('unable to reach B3 masterserver: maybe the service is down or internet was unavailable')
                 self.debug(e.reason)
@@ -242,4 +242,4 @@ class PublistPlugin(b3.plugin.Plugin):
                     self.debug(e)
         except Exception:
             self.warning('unable to reach B3 masterserver: unknown error')
-            print sys.exc_info()
+            print(sys.exc_info())

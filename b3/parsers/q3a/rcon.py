@@ -25,19 +25,14 @@
 
 from __future__ import print_function, absolute_import
 
-try:
-    import Queue
-except ImportError:
-    import queue as Queue
+from six.moves import queue as Queue
+from six.moves import _thread as thread
 import re
 import select
 import socket
-try:
-    import thread
-except ImportError:
-    import _thread as thread
 import threading
 import time
+import six
 
 __author__ = 'ThorN'
 __version__ = '1.11'
@@ -103,7 +98,7 @@ class Rcon(object):
         :param source: Who requested the encoding
         """
         try:
-            if isinstance(data, str):
+            if six.PY2 and isinstance(data, str):
                 data = unicode(data, errors='ignore')
             data = data.encode(self.console.encoding, 'replace')
         except Exception as msg:
@@ -178,7 +173,7 @@ class Rcon(object):
 
         data = data.strip()
         # encode the data
-        if self.console.encoding:
+        if self.console.encoding and six.PY2:
             data = self.encode_data(data, 'RCON')
 
         self.console.verbose('RCON sending (%s:%s) %r', self.host[0], self.host[1], data)
@@ -192,7 +187,10 @@ class Rcon(object):
                 self.console.warning('RCON: %s', str(errors))
             elif len(writeables) > 0:
                 try:
-                    writeables[0].send(self.rconsendstring % (self.password, data))
+                    payload = self.rconsendstring % (self.password, data)
+                    if six.PY3:
+                        payload = payload.encode(encoding="latin-1")
+                    writeables[0].send(payload)
                 except Exception as msg:
                     self.console.warning('RCON: error sending: %r', msg)
                 else:
@@ -322,7 +320,11 @@ class Rcon(object):
             return ''
 
         while len(readables):
-            d = str(sock.recv(size))
+            payload = sock.recv(size)
+            if six.PY2:
+                d = str(payload)
+            else:
+                d = payload.decode(encoding="latin-1")
 
             if d:
                 # remove rcon header

@@ -35,7 +35,8 @@ import b3.plugin
 
 from b3.config import XmlConfigParser
 from b3 import functions
-from ConfigParser import NoOptionError
+import six
+from six.moves.configparser import NoOptionError
 
 
 class PenaltyData:
@@ -46,7 +47,7 @@ class PenaltyData:
     duration = 0
 
     def __init__(self, **kwargs):
-        for k, v in kwargs.iteritems():
+        for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
 
     def __repr__(self):
@@ -65,7 +66,7 @@ class CensorData:
     regexp = None
 
     def __init__(self, **kwargs):
-        for k, v in kwargs.iteritems():
+        for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
 
     def __repr__(self):
@@ -114,7 +115,7 @@ class CensorPlugin(b3.plugin.Plugin):
         except NoOptionError:
             self.warning('could not find settings/max_level in config file, '
                          'using default: %s' % self._maxLevel)
-        except ValueError, e:
+        except ValueError as e:
             self.error('could not load settings/max_level config value: %s' % e)
             self.debug('using default value (%s) for settings/max_level' % self._maxLevel)
 
@@ -124,7 +125,7 @@ class CensorPlugin(b3.plugin.Plugin):
         except NoOptionError:
             self.warning('could not find settings/ignore_length in config file, '
                          'using default: %s' % self._ignoreLength)
-        except ValueError, e:
+        except ValueError as e:
             self.error('could not load settings/ignore_length config value: %s' % e)
             self.debug('using default value (%s) for settings/ignore_length' % self._ignoreLength)
 
@@ -267,7 +268,7 @@ class CensorPlugin(b3.plugin.Plugin):
 
         except b3.events.VetoEvent:
             raise
-        except Exception, msg:
+        except Exception as msg:
             self.error('censor plugin error: %s - %s', msg, traceback.extract_tb(sys.exc_info()[2]))
 
     def penalizeClient(self, penalty, client, data=''):

@@ -124,6 +124,9 @@ class STDOutLogger:
         """
         self.logger.info('STDOUT %r' % msg)
 
+    def flush(self):
+        pass
+
 
 class STDErrLogger:
     """
@@ -142,6 +145,9 @@ class STDErrLogger:
         :param msg: The message to write
         """
         self.logger.error('STDERR %r' % msg)
+
+    def flush(self):
+        pass
 
 
 logging.setLoggerClass(OutputHandler)

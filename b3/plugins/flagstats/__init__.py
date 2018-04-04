@@ -474,18 +474,18 @@ if __name__ == '__main__':
     class UrtClient():
         def takesFlag(self):
             if self.team == b3.TEAM_BLUE:
-                print "\n%s takes red flag" % self.name
+                print("\n%s takes red flag" % self.name)
                 self.doAction('team_CTF_redflag')
             elif self.team == b3.TEAM_RED:
-                print "\n%s takes blue flag" % self.name
+                print("\n%s takes blue flag" % self.name)
                 self.doAction('team_CTF_blueflag')
 
         def returnsFlag(self):
-            print "\n%s returns flag" % self.name
+            print("\n%s returns flag" % self.name)
             self.doAction('flag_returned')
 
         def capturesFlag(self):
-            print "\n%s captures flag" % self.name
+            print("\n%s captures flag" % self.name)
             self.doAction('flag_captured')
 
 
@@ -511,7 +511,7 @@ if __name__ == '__main__':
 
     ############# END setup test environment ##################
 
-    print "================= ROUND 1 ==================="
+    print("================= ROUND 1 ===================")
 
     joe.takesFlag()
     joe.says('!flag')
@@ -538,7 +538,7 @@ if __name__ == '__main__':
     fakeConsole.queueEvent(b3.events.Event(b3.events.EVT_GAME_EXIT, None))
     time.sleep(1)
 
-    print "\n================= ROUND 2 ==================="
+    print("\n================= ROUND 2 ===================")
 
     joe.takesFlag()
     time.sleep(0.88)

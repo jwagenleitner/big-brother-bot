@@ -37,7 +37,7 @@ import re
 import os
 import random
 import string
-
+from six.moves import range as xrange
 from b3.functions import getCmd
 from b3.functions import clamp
 from . import __version__
@@ -157,19 +157,19 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         
         try:
             self._hitlocations['HL_HEAD'] = self.console.HL_HEAD
-        except AttributeError, e:
+        except AttributeError as e:
             self._hitlocations['HL_HEAD'] = '0'
             self.warning("could not get HL_HEAD value from B3 parser: %s", e)
 
         try:
             self._hitlocations['HL_HELMET'] = self.console.HL_HELMET
-        except AttributeError, e:
+        except AttributeError as e:
             self._hitlocations['HL_HELMET'] = '1'
             self.warning("could not get HL_HELMET value from B3 parser: %s", e)
 
         try:
             self._hitlocations['HL_TORSO'] = self.console.HL_TORSO
-        except AttributeError, e:
+        except AttributeError as e:
             self._hitlocations['HL_TORSO'] = '2'
             self.warning("could not get HL_TORSO value from B3 parser: %s", e)
 
@@ -206,7 +206,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         try:
             # save original vote settings
             self._origvote = self.console.getCvar('g_allowvote').getInt()
-        except ValueError, e:
+        except ValueError as e:
             self.warning("could not retrieve g_allowvote CVAR value: %s", e)
             self._origvote = 0  # no votes
 
@@ -224,7 +224,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         try:
             # save original gear settings
             self._origgear = self.console.getCvar('g_gear').getInt()
-        except ValueError, e:
+        except ValueError as e:
             if self.console.gameName == 'iourt41':
                 # if the game is iourt42 don't log since the above cvar retrieval
                 # is going to raise an exception everytime: iourt42 uses a gear
@@ -368,7 +368,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                 else:
                     self.warning('dictionary is enabled but the file doesn\'t exists: switching to default')
 
-        except Exception, e:
+        except Exception as e:
             self.error('could not load dictionary config: %s' % e)
             self.debug('using default dictionary')
 
@@ -386,7 +386,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
             # load all the configuration files into a dict
             for key, value in self.config.items('matchmode_configs'):
                 self._gameconfig[key] = value
-        except (b3.config.NoSectionError, b3.config.NoOptionError, KeyError), e:
+        except (b3.config.NoSectionError, b3.config.NoOptionError, KeyError) as e:
             self.warning('could not read matchmode configs: %s' % e)
 
     def loadBotSupport(self):

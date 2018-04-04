@@ -24,6 +24,8 @@
 
 from __future__ import print_function, absolute_import
 
+import six
+
 __author__  = 'ThorN'
 __version__ = '1.3.0'
 
@@ -42,7 +44,7 @@ class QueryBuilder(object):
         Escape quotes from a given string.
         :param word: The string on which to perform the escape
         """
-        if isinstance(word, int) or isinstance(word, long) or isinstance(word, complex) or isinstance(word, float):
+        if isinstance(word, int) or isinstance(word, six.integer_types) or isinstance(word, complex) or isinstance(word, float):
             return str(word)
         elif word is None:
             return '"None"'
@@ -170,7 +172,7 @@ class QueryBuilder(object):
                 sql.append(self.FieldClause(field, ''))
 
         elif isinstance(fields, dict):
-            for k, v in fields.iteritems():
+            for k, v in six.iteritems(fields):
                 sql.append(self.FieldClause(k, v))
 
         else:
@@ -227,7 +229,7 @@ class QueryBuilder(object):
         sql += table + " SET "
 
         sets = []
-        for k, v in data.iteritems():
+        for k, v in six.iteritems(data):
             sets.append(self.FieldClause(k, v))
 
         sql += ", ".join(sets)
@@ -251,7 +253,7 @@ class QueryBuilder(object):
 
         keys = []
         values = []
-        for k, v in data.iteritems():
+        for k, v in six.iteritems(data):
             keys.append(k)
             values.append(self.escape(v))
 
@@ -275,7 +277,7 @@ class QueryBuilder(object):
 
         keys = []
         values = []
-        for k, v in data.iteritems():
+        for k, v in six.iteritems(data):
             keys.append(k)
             values.append(self.escape(v))
 

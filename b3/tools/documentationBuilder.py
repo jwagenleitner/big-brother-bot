@@ -34,7 +34,7 @@ __version__ = '1.2.9'
 import datetime
 import os
 import re
-import StringIO
+from six import StringIO
 import time
 
 from b3 import getConfPath, getB3Path, getWritableFilePath
