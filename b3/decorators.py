@@ -27,6 +27,8 @@ from __future__ import print_function, absolute_import
 import functools
 import re
 
+import six
+
 from b3.exceptions import ProgrammingError
 
 __author__ = 'Courgette, Fenix'
@@ -140,7 +142,7 @@ class GameEventRouter(object):
             for param in decorator_param:
                 if isinstance(param, type(re.compile(''))):
                     self._gameevents_mapping.append((param, func))
-                elif isinstance(param, basestring):
+                elif isinstance(param, six.string_types):
                     self._gameevents_mapping.append((re.compile(str(param)), func))
             return func
         return wrapper

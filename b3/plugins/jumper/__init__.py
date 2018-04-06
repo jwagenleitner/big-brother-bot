@@ -798,7 +798,7 @@ class JumperPlugin(b3.plugin.Plugin):
                     client.message('do you mean: ^3%s?' % '^7, ^3'.join(mp[:5]))
                     return
 
-                if not isinstance(mp, basestring):
+                if not isinstance(mp, six.string_types):
                     client.message('^7could not find any map matching ^1%s' % ps[1])
                     return
 
@@ -829,7 +829,7 @@ class JumperPlugin(b3.plugin.Plugin):
                 client.message('do you mean: ^3%s?' % '^7, ^3'.join(mp[:5]))
                 return
 
-            if not isinstance(mp, basestring):
+            if not isinstance(mp, six.string_types):
                 client.message('^7could not find any map matching ^1%s' % data)
                 return
 
@@ -860,7 +860,7 @@ class JumperPlugin(b3.plugin.Plugin):
                 client.message('do you mean: ^3%s?' % '^7, ^3'.join(mp[:5]))
                 return
 
-            if not isinstance(mp, basestring):
+            if not isinstance(mp, six.string_types):
                 client.message('^7could not find any map matching ^1%s' % data)
                 return
 
@@ -908,7 +908,7 @@ class JumperPlugin(b3.plugin.Plugin):
                     client.message('do you mean: ^3%s?' % '^7, ^3'.join(mp[:5]))
                     return
 
-                if not isinstance(mp, basestring):
+                if not isinstance(mp, six.string_types):
                     client.message('^7could not find any map matching ^1%s' % ps[1])
                     return
 
@@ -1038,7 +1038,7 @@ class JumperPlugin(b3.plugin.Plugin):
             client.message('^7do you mean: %s?' % ', '.join(match[:5]))
             return
 
-        if isinstance(match, basestring):
+        if isinstance(match, six.string_types):
             cmd.sayLoudOrPM(client, '^7changing map to ^3%s' % match)
             time.sleep(1)
             self.console.write('map %s' % match)
@@ -1060,7 +1060,7 @@ class JumperPlugin(b3.plugin.Plugin):
             client.message('^7do you mean: %s?' % ', '.join(match[:5]))
             return
 
-        if isinstance(match, basestring):
+        if isinstance(match, six.string_types):
             self.console.setCvar('g_nextmap', match)
             if client:
                 client.message('^7nextmap set to ^3%s' % match)

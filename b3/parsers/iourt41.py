@@ -1139,7 +1139,7 @@ class Iourt41Parser(AbstractParser):
         Load a given map/level.
         """
         rv = self.getMapsSoundingLike(map_name)
-        if isinstance(rv, basestring):
+        if isinstance(rv, six.string_types):
             self.say('^7Changing map to %s' % rv)
             time.sleep(1)
             self.write('map %s' % rv)

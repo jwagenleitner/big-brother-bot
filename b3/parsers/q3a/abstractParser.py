@@ -495,7 +495,7 @@ class AbstractParser(b3.parser.Parser):
         :param admin: The admin who performed the kick
         :param silent: Whether or not to announce this kick
         """
-        if isinstance(client, basestring) and re.match('^[0-9]+$', client):
+        if isinstance(client, six.string_types) and re.match('^[0-9]+$', client):
             self.write(self.getCommand('kick', cid=client, reason=reason))
             return
 

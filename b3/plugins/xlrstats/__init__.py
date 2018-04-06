@@ -1482,7 +1482,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
     def optimizeTables(self, t=None):
         if not t:
             t = self.showTables()
-        if isinstance(t, basestring):
+        if isinstance(t, six.string_types):
             _tables = str(t)
         else:
             _tables = ', '.join(t)
@@ -1497,7 +1497,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
     def repairTables(self, t=None):
         if not t:
             t = self.showTables()
-        if isinstance(t, basestring):
+        if isinstance(t, six.string_types):
             _tables = str(t)
         else:
             _tables = ', '.join(t)

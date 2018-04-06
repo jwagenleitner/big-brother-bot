@@ -27,6 +27,7 @@ from __future__ import print_function, absolute_import
 import os
 import re
 import string
+import six
 from distutils import version
 from time import sleep
 
@@ -103,7 +104,7 @@ $''', re.VERBOSE)
         Compare current object with another one.
         :param other: The other object
         """
-        if isinstance(other, basestring):
+        if isinstance(other, six.string_types):
             other = B3version(other)
 
         compare = cmp(self.version, other.version)

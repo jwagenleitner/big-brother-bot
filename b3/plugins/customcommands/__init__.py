@@ -24,6 +24,8 @@
 
 import re
 
+import six
+
 from functools import partial
 from b3.functions import getStuffSoundingLike
 from b3.plugin import Plugin
@@ -211,7 +213,7 @@ class CustomcommandsPlugin(Plugin):
             if not data:
                 raise ValueError("missing parameter")
             result = self.getMapsSoundingLike(data)
-            if isinstance(result, basestring):
+            if isinstance(result, six.string_types):
                 command = command.replace("<ARG:FIND_MAP>", result)
             elif isinstance(result, list):
                 raise ValueError('do you mean : %s ?' % ', '.join(result))

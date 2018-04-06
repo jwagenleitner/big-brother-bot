@@ -31,7 +31,7 @@ class UrtbslapPlugin(b3.plugin.Plugin):
         if not input:
             client.message('^7command is !mslap <playername or partialname> <number of slaps>')
             return False
-        if len(input) < 2:
+        if len(input) < 2 or not input[1] or not input[1].isdigit():
             client.message('^7 correct syntax is !mslap <playername or part> <number of slaps>')
             return False
         cname = input[0]

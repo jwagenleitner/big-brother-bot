@@ -28,12 +28,12 @@ import collections
 import os
 import re
 import shutil
-import string
 import sys
-import zipfile
 import threading
+import zipfile
 from hashlib import md5
 
+import six
 from six.moves import urllib
 
 from b3.exceptions import ProgrammingError
@@ -229,7 +229,7 @@ def escape(text, esc):
     :param esc: The character to escape
     :return: string
     """
-    return string.replace(text, esc, '\\%s' % esc)
+    return text.replace(esc, '\\%s' % esc)
 
 
 def decode(text):
@@ -310,13 +310,19 @@ def soundex(s1):
     Return the soundex value to a string argument.
     """
     ignore = "~!@#$%^&*()_+=-`[]\|;:'/?.,<>\" \t\f\v"
-    table = string.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '01230120022455012623010202')
+    if six.PY2:
+        table = str.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '01230120022455012623010202')
+    else:
+        table = str.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '01230120022455012623010202', ignore)
 
-    s1 = string.strip(string.upper(s1))
+    s1 = s1.upper().strip()
     if not s1:
         return "Z000"
     s2 = s1[0]
-    s1 = string.translate(s1.encode('ascii', 'ignore'), table, ignore)
+    if six.PY2:
+        s1 = s1.encode('ascii', 'ignore').translate(table, ignore)
+    else:
+        s1 = s1.encode('ascii', 'ignore').translate(table)
     if not s1:
         return "Z000"
     prev = s1[0]
@@ -673,7 +679,7 @@ def topological_sort(source):
         emitted = next_emitted
 
 
-def start_daemon_thread(target, args, kwargs=None):
+def start_daemon_thread(target, args=(), kwargs=None):
     """Start a new daemon thread"""
     t = threading.Thread(target=target, args=args, kwargs=kwargs)
     t.setDaemon(True)

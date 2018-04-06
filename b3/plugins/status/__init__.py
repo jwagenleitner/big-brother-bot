@@ -417,7 +417,7 @@ class StatusPlugin(b3.plugin.Plugin):
                     for k, v in client.attributes.items():
                         # build the qrystring
                         builder_key = "%s%s," % (builder_key, k)
-                        if isinstance(v, basestring):
+                        if isinstance(v, six.string_types):
                             if "'" in v:
                                 v = "%s" % v.replace("'", "\\'")
                         builder_value = "%s'%s'," % (builder_value, v)
