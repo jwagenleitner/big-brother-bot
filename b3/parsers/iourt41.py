@@ -537,7 +537,7 @@ class Iourt41Parser(AbstractParser):
                             plist = self.getPlayerList()
                             client_data = plist[bclient['cid']]
                             bclient['ip'] = client_data['ip']
-                        except Exception, err:
+                        except Exception as err:
                             bclient['ip'] = ''
                             self.warning("Failed to get client %s ip address" % bclient['cid'], err)
 
@@ -1470,7 +1470,7 @@ class Iourt41Parser(AbstractParser):
             points = self.damage[weapon][int(hitloc)]
             self.debug("_getDamagePoints(%s, %s) -> %s" % (weapon, hitloc, points))
             return points
-        except KeyError, err:
+        except KeyError as err:
             self.warning("_getDamagePoints(%s, %s) cannot find value : %s" % (weapon, hitloc, err))
             return 15
         

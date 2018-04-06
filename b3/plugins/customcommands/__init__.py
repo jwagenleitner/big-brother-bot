@@ -109,7 +109,7 @@ class CustomcommandsPlugin(Plugin):
             try:
                 self._validate_cmd_name(command_name)
                 self._validate_cmd_name_not_already_registered(command_name)
-            except ValueError, err:
+            except ValueError as err:
                 self.error(str(err))
                 continue
 
@@ -117,7 +117,7 @@ class CustomcommandsPlugin(Plugin):
 
             try:
                 self._validate_cmd_template(command_template)
-            except ValueError, err:
+            except ValueError as err:
                 self.error("command template invalid for %r: %s" % (command_name, err))
                 continue
 
@@ -186,7 +186,7 @@ class CustomcommandsPlugin(Plugin):
         """
         try:
             rcon_command = self._render_cmd_template(command_template, data, client)
-        except ValueError, err:
+        except ValueError as err:
             client.message("Error: %s" % err)
         else:
             if rcon_command:
