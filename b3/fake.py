@@ -24,24 +24,25 @@
 
 from __future__ import print_function, absolute_import
 
+import logging
+import re
+import sys
+import time
+import traceback
+from sys import stdout
+
+from six import StringIO
+
 import b3.events
 import b3.output
 import b3.parser
 import b3.parsers.punkbuster
-import logging
-import re
-import StringIO
-import sys
-import time
-import traceback
-
 from b3.clients import Clients
 from b3.cvar import Cvar
 from b3.functions import splitDSN
 from b3.game import Game
 from b3.plugins.admin import AdminPlugin
 from b3.storage.sqlite import SqliteStorage
-from sys import stdout
 
 """
 This module make plugin testing simple. It provides you
@@ -132,9 +133,9 @@ class FakeConsole(b3.parser.Parser):
                 # plugin called for event hault, do not continue processing
                 self.bot('Event %s vetoed by %s', self.Events.getName(event.type), str(hfunc))
                 nomore = True
-            except SystemExit, e:
+            except SystemExit as e:
                 self.exitcode = e.code
-            except Exception, msg:
+            except Exception as msg:
                 self.error('handler %s could not handle event %s: %s: %s %s',
                            hfunc.__class__.__name__, self.Events.getName(event.type),
                            msg.__class__.__name__, msg, traceback.extract_tb(sys.exc_info()[2]))
@@ -152,7 +153,7 @@ class FakeConsole(b3.parser.Parser):
                     self._cron.stop()
                 self.bot('shutting down database connections...')
                 self.storage.shutdown()
-        except Exception, e:
+        except Exception as e:
             self.error(e)
 
     def getPlugin(self, name):

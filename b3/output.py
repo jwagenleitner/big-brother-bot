@@ -29,7 +29,7 @@ import sys
 from logging import CRITICAL, ERROR, INFO, WARNING, DEBUG
 from logging import handlers
 
-__author__  = 'ThorN'
+__author__ = 'ThorN'
 __version__ = '1.7.2'
 
 CONSOLE = 22

@@ -7,6 +7,7 @@ import b3
 import b3.events
 import b3.plugin
 import string
+import six
 try:
     import thread
 except ImportError:
@@ -268,7 +269,7 @@ class NaderPlugin(b3.plugin.Plugin):
         # From stats plugin
         listKills = []
         he = self._nadeKillers
-        for cid, c in he.iteritems():
+        for cid, c in six.iteritems(he):
             listKills.append((c, he[cid].var(self, 'hegrenadeKills', 0).value))
 
         if len(listKills):
@@ -385,7 +386,7 @@ class NaderPlugin(b3.plugin.Plugin):
         # Find the best nade player
         listKills = []
         he = nadeKillers
-        for cid, c in he.iteritems():
+        for cid, c in six.iteritems(he):
             listKills.append((c, he[cid].var(self, 'hegrenadeKills', 0).value))
 
         if len(listKills):

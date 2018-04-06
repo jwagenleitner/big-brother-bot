@@ -1,5 +1,6 @@
 # Excerpt from pstats.py rev 1.0  4/1/94 (from python v2.6) which define this class only when it's the entry point (main), so it is here copied to avoid compatibility issues with the next python's releases.
 
+import six
 from pstats import *
 
 import cmd
@@ -108,7 +109,7 @@ class ProfileBrowser(cmd.Cmd):
             self.stats.sort_stats(*line.split())
         else:
             print >> self.stream, "Valid sort keys (unique prefixes are accepted):"
-            for (key, value) in Stats.sort_arg_dict_default.iteritems():
+            for (key, value) in six.iteritems(Stats.sort_arg_dict_default):
                 print >> self.stream, "%s -- %s" % (key, value[1])
         return 0
     def help_sort(self):

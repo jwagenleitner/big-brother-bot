@@ -23,10 +23,10 @@
 # ################################################################### #
 
 import re
-import b3.plugin
 
-from .iourt41 import Poweradminurt41Plugin
+import b3.plugin
 from b3.functions import clamp
+from .iourt41 import Poweradminurt41Plugin
 
 
 class Poweradminurt42Plugin(Poweradminurt41Plugin):

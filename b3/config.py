@@ -24,14 +24,12 @@
 
 from __future__ import print_function, absolute_import
 
-try:
-    import ConfigParser
-except ImportError:
-    import configparser as ConfigParser
 import os
 import re
 import time
+
 import six
+from six.moves import configparser
 
 import b3
 import b3.exceptions
@@ -182,7 +180,7 @@ class XmlConfigParser(B3ConfigParserMixin):
                 else:
                     return data
             except KeyError:
-                raise ConfigParser.NoOptionError(setting, section)
+                raise configparser.NoOptionError(setting, section)
 
     def getint(self, section, setting):
         """
@@ -291,7 +289,7 @@ class XmlConfigParser(B3ConfigParserMixin):
         pass
 
 
-class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
+class CfgConfigParser(B3ConfigParserMixin, configparser.ConfigParser):
     """
     A config parser class that mimics the ConfigParser, reads the cfg format.
     """
@@ -303,7 +301,10 @@ class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
         Object constructor.
         :param allow_no_value: Whether or not to allow empty values in configuration sections
         """
-        ConfigParser.ConfigParser.__init__(self, allow_no_value=allow_no_value)
+        opts = {"allow_no_value": allow_no_value}
+        if not six.PY2:
+            opts["inline_comment_prefixes"] = (";",)
+        configparser.ConfigParser.__init__(self, **opts)
 
     def add_comment(self, section, comment):
         """
@@ -317,7 +318,7 @@ class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
             try:
                 sectdict = self._sections[section]
             except KeyError:
-                raise ConfigParser.NoSectionError(section)
+                raise configparser.NoSectionError(section)
         sectdict['; %s' % (comment,)] = None
 
     def get(self, section, option, *args, **kwargs):
@@ -326,7 +327,7 @@ class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
         """
         try:
             if six.PY2:
-                value = ConfigParser.ConfigParser.get(self, section, option, *args, **kwargs)
+                value = configparser.ConfigParser.get(self, section, option, *args, **kwargs)
             else:
                 # TODO: fix this hack, PY3 configparser requires named params for `raw` and `vars`
                 opts = {"self": self, "section": section, "option": option}
@@ -335,13 +336,13 @@ class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
                     opts["raw"] = args[0]
                     if len(args) > 1:
                         opts["vars"] = args[1]
-                value = ConfigParser.ConfigParser.get(**opts)
+                value = configparser.ConfigParser.get(**opts)
             if value is None:
                 return ""
             return value
-        except ConfigParser.NoSectionError:
+        except configparser.NoSectionError:
             # plugins are used to only catch NoOptionError
-            raise ConfigParser.NoOptionError(option, section)
+            raise configparser.NoOptionError(option, section)
 
     def load(self, filename):
         """
@@ -367,10 +368,10 @@ class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
 
     def readfp(self, fp, filename=None):
         """
-        Inherits from ConfigParser.ConfigParser to throw our custom exception if needed
+        Inherits from configparser.ConfigParser to throw our custom exception if needed
         """
         try:
-            ConfigParser.ConfigParser.readfp(self, fp, filename)
+            configparser.ConfigParser.readfp(self, fp, filename)
         except Exception as e:
             raise ConfigFileNotValid("%s" % e)
 
@@ -387,7 +388,7 @@ class CfgConfigParser(B3ConfigParserMixin, ConfigParser.ConfigParser):
         Write an .ini-format representation of the configuration state.
         """
         if self._defaults:
-            fp.write("[%s]\n" % ConfigParser.DEFAULTSECT)
+            fp.write("[%s]\n" % configparser.DEFAULTSECT)
             for (key, value) in self._defaults.items():
                 self._write_item(fp, key, value)
             fp.write("\n")
@@ -458,7 +459,7 @@ class MainConfig(B3ConfigParserMixin):
         ## Load the list of disabled plugins
         try:
             disabled_plugins_raw = self._config_parser.get('b3', 'disabled_plugins')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             disabled_plugins = []
         else:
             disabled_plugins = re.split('\W+', disabled_plugins_raw.lower())
@@ -466,7 +467,7 @@ class MainConfig(B3ConfigParserMixin):
         def get_custom_plugin_path(plugin_name):
             try:
                 return self._config_parser.get('plugins_custom_path', plugin_name)
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 return None
 
         self._plugins = []
@@ -493,7 +494,7 @@ class MainConfig(B3ConfigParserMixin):
     def get_external_plugins_dir(self):
         """
         the directory path (as a string) where additional plugin modules can be found
-        :return: str or ConfigParser.NoOptionError
+        :return: str or configparser.NoOptionError
         """
         if isinstance(self._config_parser, XmlConfigParser):
             return self._config_parser.getpath("plugins", "external_dir")

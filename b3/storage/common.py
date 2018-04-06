@@ -27,12 +27,10 @@ from __future__ import print_function, absolute_import
 import os
 import re
 import sys
-try:
-    import thread
-except ImportError:
-    import _thread as thread
+import threading
 from contextlib import contextmanager
 from time import time
+
 import six
 
 import b3
@@ -71,7 +69,7 @@ class DatabaseStorage(Storage):
         self.dsnDict = dsnDict
         self.console = console
         self.db = None
-        self._lock = thread.allocate_lock()
+        self._lock = threading.Lock()
 
     def connect(self):
         """

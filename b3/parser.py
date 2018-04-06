@@ -1020,7 +1020,7 @@ class Parser(object):
                     cleanattr = pattern.sub('', attr)  # trim any underscore or any non alphanumeric character
                     variables[cleanattr] = getattr(obj, attr)
 
-        for key, obj in kwargs.iteritems():
+        for key, obj in six.iteritems(kwargs):
             #self.debug('Type of kwarg %s: %s' % (key, type(obj).__name__))
             if obj is None:
                 continue

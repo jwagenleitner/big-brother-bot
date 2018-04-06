@@ -24,10 +24,7 @@
 
 from __future__ import print_function, absolute_import
 
-try:
-    import ConfigParser
-except ImportError:
-    import configparser as ConfigParser
+from six.moves import configparser
 
 
 class ConfigFileNotFound(Exception):
@@ -102,5 +99,5 @@ class UpdateError(Exception):
         return repr(self.message)
 
 
-NoOptionError = ConfigParser.NoOptionError
-NoSectionError = ConfigParser.NoSectionError
+NoOptionError = configparser.NoOptionError
+NoSectionError = configparser.NoSectionError

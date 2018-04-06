@@ -161,9 +161,9 @@ def browseprofile(profilelog):
 	print('Starting the pstats profile browser...\n')
 	try:
 		browser = ProfileBrowser(profilelog)
-		print >> browser.stream, "Welcome to the profile statistics browser. Type help to get started."
+		print(browser.stream, "Welcome to the profile statistics browser. Type help to get started.")
 		browser.cmdloop()
-		print >> browser.stream, "Goodbye."
+		print(browser.stream, "Goodbye.")
 	except KeyboardInterrupt:
 		pass
 

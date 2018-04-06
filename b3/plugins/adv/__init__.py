@@ -25,18 +25,16 @@
 __author__ = 'ThorN'
 __version__ = '1.6.1'
 
-import b3
 import os
 import time
-import feedparser
-import b3.plugin
-import b3.cron
 
+import feedparser
+from six.moves.configparser import NoOptionError
+
+import b3
+import b3.cron
+import b3.plugin
 from b3 import B3_RSS
-try:
-    from ConfigParser import NoOptionError
-except ImportError:
-    from configparser import NoOptionError
 
 
 class MessageLoop(object):
@@ -209,11 +207,10 @@ class AdvPlugin(b3.plugin.Plugin):
         Save the current advertisements list.
         """
         if self._fileName:
-            f = file(self._fileName, 'w')
-            for msg in self._msg.items:
-                if msg:
-                    f.write(msg + "\n")
-            f.close()
+            with open(self._fileName, 'w') as f:
+                for msg in self._msg.items:
+                    if msg:
+                        f.write(msg + "\n")
         else:
             self.verbose('save to XML config not supported')
             raise Exception('save to XML config not supported')

@@ -22,6 +22,21 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
+import datetime
+import os
+import re
+import time
+from cgi import escape
+from ftplib import FTP
+from functools import cmp_to_key
+from xml.dom.minidom import Document
+
+from six import StringIO
+
+from b3 import getConfPath, getB3Path, getWritableFilePath
+from b3.functions import splitDSN
 
 """ 
 This module will generate a user documentation depending
@@ -30,18 +45,6 @@ on current config
 
 __author__ = 'Courgette, ozon'
 __version__ = '1.2.9'
-
-import datetime
-import os
-import re
-from six import StringIO
-import time
-
-from b3 import getConfPath, getB3Path, getWritableFilePath
-from b3.functions import splitDSN
-from cgi import escape
-from ftplib import FTP
-from xml.dom.minidom import Document
 
 
 class DocBuilder:
@@ -272,9 +275,7 @@ class DocBuilder:
             else:
                 return 0
 
-        listCommands = commands.values()
-        listCommands.sort(commands_compare)
-        return listCommands
+        return sorted(commands.values(), key=cmp_to_key(commands_compare))
     
     def _write(self, text):
         if text.strip() == '':
@@ -292,8 +293,7 @@ class DocBuilder:
         elif dsn['protocol'] == 'file':
             path = getWritableFilePath(dsn['path'], True)
             self._console.debug('AUTODOC: writing to %s', path)
-            f = file(path, 'w')
-            f.write(text)
-            f.close()
+            with open(path, 'w') as f:
+                f.write(text)
         else:
             self._console.error('AUTODOC: protocol [%s] is not supported' % dsn['protocol'])

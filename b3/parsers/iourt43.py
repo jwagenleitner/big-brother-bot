@@ -25,12 +25,9 @@
 from __future__ import print_function, absolute_import
 
 import re
-import string
-try:
-    import thread
-except ImportError:
-    import _thread as thread
 import time
+
+import six
 
 import b3
 import b3.clients
@@ -40,6 +37,7 @@ from b3.clients import Client
 from b3.events import Event
 from b3.functions import getStuffSoundingLike
 from b3.functions import prefixText
+from b3.functions import start_daemon_thread
 from b3.functions import time2minutes
 from b3.parsers.q3a.abstractParser import AbstractParser
 
@@ -726,7 +724,7 @@ class Iourt43Parser(AbstractParser):
         """
         # 2 \ip\145.99.135.227:27960\challenge\-232198920\qport\2781\protocol\68\battleye\1\name\[SNT]^1XLR^78or...
         # 7 n\[SNT]^1XLR^78or\t\3\r\2\tl\0\f0\\f1\\f2\\a0\0\a1\0\a2\0
-        player_id, info = string.split(info, ' ', 1)
+        player_id, info = info.split(' ', 1)
 
         if info[:1] != '\\':
             info = '\\' + info
@@ -787,7 +785,7 @@ class Iourt43Parser(AbstractParser):
 
             if client:
                 # update existing client
-                for k, v in bclient.iteritems():
+                for k, v in six.iteritems(bclient):
                     if hasattr(client, 'gear') and k == 'gear' and client.gear != v:
                         self.queueEvent(b3.events.Event(self.getEventID('EVT_CLIENT_GEAR_CHANGE'), v, client))
                     if not k.startswith('_') and k not in (
@@ -1340,7 +1338,7 @@ class Iourt43Parser(AbstractParser):
     def OnItem(self, action, data, match=None):
         # Item: 3 ut_item_helmet
         # Item: 0 team_CTF_redflag
-        cid, item = string.split(data, ' ', 1)
+        cid, item = data.split(' ', 1)
         client = self.getByCidOrJoinPlayer(cid)
         if client:
             # correct flag/bomb-pickups
@@ -1477,7 +1475,7 @@ class Iourt43Parser(AbstractParser):
         self.verbose('...self.console.game.gameType: %s' % self.game.gameType)
         self.game.startMap()
         self.game.rounds = 0
-        thread.start_new_thread(self.clients.sync, ())
+        start_daemon_thread(self.clients.sync)
         return self.getEvent('EVT_GAME_ROUND_START', data=self.game)
 
     def OnWarmup(self, action, data=None, match=None):
@@ -1506,7 +1504,7 @@ class Iourt43Parser(AbstractParser):
         self.verbose('...self.console.game.gameType: %s' % self.game.gameType)
         self.game.startMap()
         self.game.rounds = 0
-        thread.start_new_thread(self.clients.sync, ())
+        start_daemon_thread(self.clients.sync)
         return self.getEvent('EVT_GAME_ROUND_START', data=self.game)
 
     def broadcast(self, text):
@@ -1865,7 +1863,7 @@ class Iourt43Parser(AbstractParser):
         plist = self.getPlayerList(maxRetries=4)
         mlist = dict()
 
-        for cid, c in plist.iteritems():
+        for cid, c in six.iteritems(plist):
             client = self.getByCidOrJoinPlayer(cid)
             if client:
                 # Disconnect the zombies first

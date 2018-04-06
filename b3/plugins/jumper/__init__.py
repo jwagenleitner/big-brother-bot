@@ -33,11 +33,12 @@ import datetime
 import requests
 import os
 import re
+import six
 
 from b3.functions import getCmd
 from b3.functions import getStuffSoundingLike
 from b3.functions import right_cut
-from ConfigParser import NoOptionError
+from six.moves.configparser import NoOptionError
 from threading import Timer
 
 ########################################################################################################################
@@ -64,7 +65,7 @@ class JumpRun(object):
         Object constructor.
         """
         self.p = plugin
-        for k, v in kwargs.iteritems():
+        for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
 
     def start(self):

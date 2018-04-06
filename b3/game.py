@@ -24,7 +24,7 @@
 
 from __future__ import print_function, absolute_import
 
-__author__  = 'ThorN'
+__author__ = 'ThorN'
 __version__ = '1.6'
 
 

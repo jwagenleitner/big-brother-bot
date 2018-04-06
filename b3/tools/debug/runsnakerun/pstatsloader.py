@@ -1,5 +1,6 @@
 """Module to load cProfile/profile records as a tree of records"""
 import pstats, os, logging
+import six
 log = logging.getLogger( 'runsnake.pstatsloader' )
 #log.setLevel( logging.DEBUG )
 from gettext import gettext as _
@@ -18,10 +19,10 @@ class PStatsLoader( object ):
     def load( self, stats ):
         """Build a squaremap-compatible model from a pstats class"""
         rows = self.rows
-        for func, raw in stats.iteritems():
+        for func, raw in six.iteritems(stats):
             try:
                 rows[func] = row = PStatRow( func,raw )
-            except ValueError, err:
+            except ValueError as err:
                 log.info( 'Null row: %s', func )
         for row in rows.itervalues():
             row.weave( rows )
@@ -128,7 +129,7 @@ class PStatRow( BaseStat ):
         file,line,func = self.key = key
         try:
             dirname,basename = os.path.dirname(file),os.path.basename(file)
-        except ValueError, err:
+        except ValueError as err:
             dirname = ''
             basename = file
         nc, cc, tt, ct, callers = raw
@@ -157,7 +158,7 @@ class PStatRow( BaseStat ):
         self.children.append( child )
 
     def weave( self, rows ):
-        for caller,data in self.callers.iteritems():
+        for caller,data in six.iteritems(self.callers):
             # data is (cc,nc,tt,ct)
             parent = rows.get( caller )
             if parent:
@@ -168,7 +169,7 @@ class PStatRow( BaseStat ):
         if total:
             try:
                 (cc,nc,tt,ct) = child.callers[ self.key ]
-            except TypeError, err:
+            except TypeError as err:
                 ct = child.callers[ self.key ]
             return float(ct)/total
         return 0
@@ -260,4 +261,4 @@ if __name__ == "__main__":
     import sys
     p = PStatsLoader( sys.argv[1] )
     assert p.tree
-    print p.tree
+    print(p.tree)

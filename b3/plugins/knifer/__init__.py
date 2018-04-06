@@ -10,6 +10,7 @@ try:
 except ImportError:
     import _thread as thread
 import threading
+import six
 
 
 class KniferPlugin(b3.plugin.Plugin):
@@ -262,7 +263,7 @@ class KniferPlugin(b3.plugin.Plugin):
         # From stats plugin
         listKills = []
         ck = self._cutKillers
-        for cid, c in ck.iteritems():
+        for cid, c in six.iteritems(ck):
             listKills.append((c, ck[cid].var(self, 'knifeKills', 0).value))
 
         if len(listKills):
@@ -377,7 +378,7 @@ class KniferPlugin(b3.plugin.Plugin):
         # Find the best knife player
         listKills = []
         ck = cutKillers
-        for cid, c in ck.iteritems():
+        for cid, c in six.iteritems(ck):
             listKills.append((c, ck[cid].var(self, 'knifeKills', 0).value))
 
         if len(listKills):

@@ -30,7 +30,7 @@ import string
 import re
 import threading
 import time
-
+import six
 from six.moves.configparser import NoOptionError
 
 __version__ = '1.5'
@@ -485,7 +485,7 @@ class TkPlugin(b3.plugin.Plugin):
     
     def getMultipliers(self, client):
         level = ()
-        for lev, mult in self._levels.iteritems():
+        for lev, mult in six.iteritems(self._levels):
             if lev <= client.maxLevel:
                 level = mult
 

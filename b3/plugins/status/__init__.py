@@ -31,6 +31,7 @@ import b3.plugin
 import b3.events
 import os
 import re
+import six
 from six import StringIO
 import time
 
@@ -433,7 +434,7 @@ class StatusPlugin(b3.plugin.Plugin):
 
                 b3clients.appendChild(client)
 
-                for k, v in c.data.iteritems():
+                for k, v in six.iteritems(c.data):
                     data = xml.createElement("Data")
                     data.setAttribute("Name", "%s" % k)
 

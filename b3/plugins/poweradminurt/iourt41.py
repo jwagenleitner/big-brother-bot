@@ -22,26 +22,25 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-import b3.config
-import b3.events
-import b3.plugin
-import b3.cron
-import time
-try:
-    import thread
-except ImportError:
-    import _thread as thread
-import threading
-import re
 import os
 import random
+import re
 import string
+import threading
+import time
+
 from six.moves import range as xrange
-from b3.functions import getCmd
+
+import b3
+import b3.config
+import b3.cron
+import b3.events
+import b3.plugin
 from b3.functions import clamp
-from . import __version__
+from b3.functions import getCmd
+from b3.functions import start_daemon_thread
 from . import __author__
+from . import __version__
 
 
 class Poweradminurt41Plugin(b3.plugin.Plugin):
@@ -730,7 +729,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
 
         # distribute nonforced players
         random.shuffle(nonforced)
-        n = (len(nonforced) + len(blue) + len(red)) / 2 - len(blue)
+        n = (len(nonforced) + len(blue) + len(red)) // 2 - len(blue)
         blue.extend(nonforced[:n])
         red.extend(nonforced[n:])
         return blue, red
@@ -1187,7 +1186,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         decorated = [(scores.get(c.id, 0), c) for c in clients if c.team in (b3.TEAM_BLUE, b3.TEAM_RED)]
         decorated.sort()
         players = [c for score, c in decorated]
-        n = len(players) / 2
+        n = len(players) // 2
         blue = players[:n]
         red = players[n:]
         self.console.write('bigtext "Unskuffling! Noobs beware!"')
@@ -1555,7 +1554,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                 return
 
             if x in range(1, 26):
-                thread.start_new_thread(self.multipunish, (x, sclient, client, 'slap'))
+                start_daemon_thread(self.multipunish, (x, sclient, client, 'slap'))
             else:
                 client.message('^7Number of punishments out of range, must be 1 to 25')
         else:
@@ -1589,7 +1588,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                 return
 
             if x in range(1, 26):
-                thread.start_new_thread(self.multipunish, (x, sclient, client, 'nuke'))
+                start_daemon_thread(self.multipunish, (x, sclient, client, 'nuke'))
             else:
                 client.message('^7Number of punishments out of range, must be 1 to 25')
         else:

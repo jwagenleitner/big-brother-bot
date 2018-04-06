@@ -27,10 +27,6 @@ from __future__ import print_function, absolute_import
 
 import re
 import sys
-try:
-    import thread
-except ImportError:
-    import _thread as thread
 import threading
 import time
 import traceback
@@ -322,7 +318,11 @@ class Cron(object):
         """
         Start the cron scheduler in a separate thread.
         """
-        thread.start_new_thread(self.run, ())
+        # thread.start_new_thread(self.run, ())
+        t = threading.Thread(target=self.run, args=())
+        t.setName("b3_cron")
+        t.setDaemon(True)
+        t.start()
 
     @staticmethod
     def time():

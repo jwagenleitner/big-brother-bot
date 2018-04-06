@@ -25,14 +25,14 @@
 
 from __future__ import print_function, absolute_import
 
-from six.moves import queue as Queue
-from six.moves import _thread as thread
 import re
 import select
 import socket
 import threading
 import time
+
 import six
+from six.moves import queue as Queue
 
 __author__ = 'ThorN'
 __version__ = '1.11'
@@ -42,7 +42,7 @@ class Rcon(object):
 
     host = ()
     password = None
-    lock = thread.allocate_lock()
+    lock = threading.Lock()
     socket = None
     queue = None
     console = None
@@ -89,7 +89,10 @@ class Rcon(object):
         self.socket.connect(self.host)
 
         self._stopEvent = threading.Event()
-        thread.start_new_thread(self._writelines, ())
+        t = threading.Thread(target=self._writelines, args=())
+        t.setName("b3_rcon")
+        t.setDaemon(True)
+        t.start()
 
     def encode_data(self, data, source):
         """
@@ -354,45 +357,3 @@ class Rcon(object):
         finally:
             self.lock.release()
         return data if data else ''
-
-########################################################################################################################
-#
-# import sys
-#
-# if __name__ == '__main__':
-#     # To run tests : python b3/parsers/q3a_rcon.py <rcon_ip> <rcon_port> <rcon_password>
-#     from b3.fake import fakeConsole
-#     r = Rcon(fakeConsole, (sys.argv[1], int(sys.argv[2])), sys.argv[3])
-#
-#     for cmd in ['say "test1"', 'say "test2"', 'say "test3"', 'say "test4"', 'say "test5"']:
-#         fakeConsole.info('Writing %s', cmd)
-#         data = r.write(cmd)
-#         fakeConsole.info('Received %s', data)
-#
-#     print '----------------------------------------'
-#     for cmd in ['say "test1"', 'say "test2"', 'say "test3"', 'say "test4"', 'say "test5"']:
-#         fakeConsole.info('Writing %s', cmd)
-#         data = r.write(cmd, socketTimeout=0.45)
-#         fakeConsole.info('Received %s', data)
-#
-#     print '----------------------------------------'
-#     for cmd in ['.B3', '.Administrator', '.Admin', 'status', 'sv_mapRotation', 'players']:
-#         fakeConsole.info('Writing %s', cmd)
-#         data = r.write(cmd)
-#         fakeConsole.info('Received %s', data)
-#
-#     print '----------------------------------------'
-#     for cmd in ['.B3', '.Administrator', '.Admin', 'status', 'sv_mapRotation', 'players']:
-#         fakeConsole.info('Writing %s', cmd)
-#         data = r.write(cmd, socketTimeout=0.55)
-#         fakeConsole.info('Received %s', data)
-#
-#     print '----------------------------------------'
-#     fakeConsole.info('getRules')
-#     data = r.getRules()
-#     fakeConsole.info('Received %s', data)
-#
-#     print '----------------------------------------'
-#     fakeConsole.info('getInfo')
-#     data = r.getInfo()
-#     fakeConsole.info('Received %s', data)

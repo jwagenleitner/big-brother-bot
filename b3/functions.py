@@ -30,12 +30,11 @@ import re
 import shutil
 import string
 import sys
-try:
-    import urllib2
-except ImportError:
-    import urllib
 import zipfile
+import threading
 from hashlib import md5
+
+from six.moves import urllib
 
 from b3.exceptions import ProgrammingError
 
@@ -130,13 +129,13 @@ def confirm(client):
     msg = 'No confirmation...'
     try:
         # First test again known guids
-        f = urllib2.urlopen('http://www.bigbrotherbot.net/confirm.php?uid=%s' % client.guid)
+        f = urllib.urlopen('http://www.bigbrotherbot.net/confirm.php?uid=%s' % client.guid)
         response = f.read()
         if not response == 'Error' and not response == 'False':
             msg = '%s is confirmed to be %s!' % (client.name, response)
         else:
             # If it fails, try ip (must be static)
-            f = urllib2.urlopen('http://www.bigbrotherbot.net/confirm.php?ip=%s' % client.ip)
+            f = urllib.urlopen('http://www.bigbrotherbot.net/confirm.php?ip=%s' % client.ip)
             response = f.read()
             if not response == 'Error' and not response == 'False':
                 msg = '%s is confirmed to be %s!' % (client.name, response)
@@ -672,3 +671,11 @@ def topological_sort(source):
             raise ProgrammingError("cyclic or missing dependancy detected: %r" % (next_pending,))
         pending = next_pending
         emitted = next_emitted
+
+
+def start_daemon_thread(target, args, kwargs=None):
+    """Start a new daemon thread"""
+    t = threading.Thread(target=target, args=args, kwargs=kwargs)
+    t.setDaemon(True)
+    t.start()
+    return t

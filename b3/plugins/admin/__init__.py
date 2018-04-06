@@ -25,29 +25,25 @@
 __version__ = '1.35'
 __author__ = 'ThorN, xlr8or, Courgette, Ozon, Fenix'
 
-import re
-import time
-import threading
-import sys
-import traceback
-try:
-    import thread
-except ImportError:
-    import _thread as thread
-import random
 import copy
+import random
+import re
+import sys
+import threading
+import time
+import traceback
+
+import six
+from six.moves.configparser import NoOptionError
+
 import b3.cron
 import b3.plugin
-
 from b3 import functions
 from b3.clients import Client
 from b3.clients import Group
-from b3.functions import minutesStr
 from b3.functions import getCmd
-try:
-    from ConfigParser import NoOptionError
-except ImportError:
-    from configparser import NoOptionError
+from b3.functions import minutesStr
+
 
 # pylint: disable-msg=E1103
 class AdminPlugin(b3.plugin.Plugin):
@@ -771,7 +767,7 @@ class AdminPlugin(b3.plugin.Plugin):
         :param client: The client who executed the command
         """
         c_list = []
-        for c, cmd in self._commands.iteritems():
+        for c, cmd in six.iteritems(self._commands):
             if cmd.canUse(client):
                 if cmd.command not in c_list:
                     c_list.append(cmd.command)
@@ -1081,7 +1077,7 @@ class AdminPlugin(b3.plugin.Plugin):
                                                              duration=duration, reason='Too many warnings'))
 
             sclient.setvar(self, 'checkWarn', True)
-            t = threading.Timer(25, self.checkWarnKick, (sclient, admin, data))
+            t = threading.Timer(25.0, self.checkWarnKick, [sclient, admin, data])
             t.start()
 
         return warnrecord
@@ -1377,7 +1373,7 @@ class AdminPlugin(b3.plugin.Plugin):
                 client.message(self.getMessage('help_no_command', data))
             return
         else:
-            for c, cmd in self._commands.iteritems():
+            for c, cmd in six.iteritems(self._commands):
                 if cmd.canUse(client):
                     if cmd.command not in commands:
                         commands.append(cmd.command)
@@ -1395,13 +1391,13 @@ class AdminPlugin(b3.plugin.Plugin):
         """
         - list all connected players
         """
-        thread.start_new_thread(self.doList, (client, cmd))
+        functions.start_daemon_thread(self.doList, (client, cmd))
 
     def cmd_longlist(self, data, client, cmd=None):
         """
         - list all connected players one line at a time, helps find 'funny' unicode names
         """
-        thread.start_new_thread(self.doLonglist, (client, cmd))
+        functions.start_daemon_thread(self.doLonglist, (client, cmd))
 
     def cmd_regulars(self, data, client, cmd=None):
         """
@@ -1694,7 +1690,7 @@ class AdminPlugin(b3.plugin.Plugin):
         """
         <message> - yell a message to all player
         """
-        thread.start_new_thread(self.sayMany, (data, 5, 1))
+        functions.start_daemon_thread(self.sayMany, (data, 5, 1))
 
     def cmd_find(self, data, client=None, cmd=None):
         """
@@ -2276,14 +2272,14 @@ class AdminPlugin(b3.plugin.Plugin):
                             client.message('%s ^7already knows the rules' % sclient.exactName)
                         else:
                             client.message('^7Sir, Yes Sir!, spamming rules to %s' % sclient.exactName)
-                            thread.start_new_thread(self._sendRules, (), {'sclient': sclient})
+                            functions.start_daemon_thread(self._sendRules, (), {'sclient': sclient})
                 else:
                     client.message('^7Stop trying to spam other players')
             else:
                 if cmd.loud or cmd.big:
-                    thread.start_new_thread(self._sendRules, (), {'sclient': None, 'big': cmd.big})
+                    functions.start_daemon_thread(self._sendRules, (), {'sclient': None, 'big': cmd.big})
                 else:
-                    thread.start_new_thread(self._sendRules, (), {'sclient': client})
+                    functions.start_daemon_thread(self._sendRules, (), {'sclient': client})
 
     def cmd_spams(self, data, client=None, cmd=None):
         """

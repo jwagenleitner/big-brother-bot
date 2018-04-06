@@ -40,6 +40,7 @@ except ImportError:
     import _thread as thread
 import threading
 from six.moves import urllib as urllib2
+import six
 
 from b3.functions import escape
 from b3.functions import getCmd
@@ -792,7 +793,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
             target._attackers = {}
             ainfo = target._attackers
 
-        for k, v in ainfo.iteritems():
+        for k, v in six.iteritems(ainfo):
             if k == client.cid:
                 # don't award the killer for the assist aswell
                 continue

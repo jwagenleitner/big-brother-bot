@@ -25,11 +25,11 @@
 from __future__ import print_function, absolute_import
 
 import re
-import string
 import sys
 import threading
 import time
 import traceback
+
 import six
 
 import b3
@@ -1284,10 +1284,7 @@ class Clients(dict):
         self._guidIndex = {}
         self._nameIndex = {}
 
-        try:
-            self.escape_table = [unichr(x) for x in range(128)]
-        except:
-            self.escape_table = [chr(x) for x in range(128)]
+        self.escape_table = [six.unichr(x) for x in range(128)]
         self.escape_table[0] = u'\\0'
         self.escape_table[ord('\\')] = u'\\\\'
         self.escape_table[ord('\n')] = u'\\n'
@@ -1380,13 +1377,11 @@ class Clients(dict):
         Return a list of clients matching the given name.
         :param name: The name to match
         """
-        clist = []
         needle = re.sub(r'\s', '', name.lower())
-        for cid,c in self.items():
-            cleanname = re.sub(r'\s', '', c.name.lower())
-            if not c.hide and needle in cleanname:
-                clist.append(c)
-        return clist
+        return [
+            c for _, c in self.items()
+            if not c.hide and needle in re.sub(r'\s', '', c.name.lower())
+        ]
 
     def getClientLikeName(self, name):
         """
@@ -1394,21 +1389,17 @@ class Clients(dict):
         :param name: The name to match
         """
         name = name.lower()
-        for cid,c in self.items():
-            if not c.hide and string.find(c.name.lower(), name) != -1:
+        for cid, c in self.items():
+            if not c.hide and c.name.lower().find(name) != -1:
                 return c
         return None
 
     def getClientsByState(self, state):
         """
-        Return a list ofclients matching the given state.
+        Return a list of clients matching the given state.
         :param state: The clients state
         """
-        clist = []
-        for cid,c in self.items():
-            if not c.hide and c.state == state:
-                clist.append(c)
-        return clist
+        return [c for _, c in self.items() if not c.hide and c.state == state]
 
     def getByDB(self, client_id):
         """
@@ -1506,6 +1497,13 @@ class Clients(dict):
         Value should be bytes or unicode.
         Source - https://github.com/PyMySQL/PyMySQL/blob/40f6a706144a9b65baa123e6d5d89d23558646ac/pymysql/converters.py
         """
+        if six.PY2:
+            return self.__escape_string_py2(value, mapping)
+        else:
+            # TODO: fix me
+            return value
+
+    def __escape_string_py2(self, value, mapping=None):
         if isinstance(value, unicode):
             return value.translate(self.escape_table)
         if isinstance(value, (bytes, bytearray)):
@@ -1628,7 +1626,7 @@ class Clients(dict):
         Empty the clients list and reset the indexes.
         """
         self.resetIndex()
-        for cid, c in self.items():
+        for cid, c in list(self.items()):
             if not c.hide:
                 del self[cid]
 

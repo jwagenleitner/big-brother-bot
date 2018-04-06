@@ -25,12 +25,9 @@
 from __future__ import print_function, absolute_import
 
 import re
-import string
-try:
-    import thread
-except ImportError:
-    import _thread as thread
 import time
+
+import six
 
 import b3
 import b3.clients
@@ -38,6 +35,7 @@ import b3.events
 import b3.parser
 from b3.functions import getStuffSoundingLike
 from b3.functions import prefixText
+from b3.functions import start_daemon_thread
 from b3.parsers.q3a.abstractParser import AbstractParser
 
 __author__ = 'xlr8or, Courgette, Fenix'
@@ -434,7 +432,7 @@ class Iourt41Parser(AbstractParser):
         """
         # 2 \ip\145.99.135.227:27960\challenge\-232198920\qport\2781\protocol\68\battleye\1\name\[SNT]^1XLR^78or...
         # 7 n\[SNT]^1XLR^78or\t\3\r\2\tl\0\f0\\f1\\f2\\a0\0\a1\0\a2\0
-        player_id, info = string.split(info, ' ', 1)
+        player_id, info = info.split(' ', 1)
 
         if info[:1] != '\\':
             info = '\\' + info
@@ -487,7 +485,7 @@ class Iourt41Parser(AbstractParser):
 
         # split port from ip field
         if 'ip' in bclient:
-            ip_port_data = string.split(bclient['ip'], ':', 1)
+            ip_port_data = bclient['ip'].split(':', 1)
             bclient['ip'] = ip_port_data[0]
             if len(ip_port_data) > 1:
                 bclient['port'] = ip_port_data[1]
@@ -504,7 +502,7 @@ class Iourt41Parser(AbstractParser):
             client = self.clients.getByCID(bclient['cid'])
             if client:
                 # update existing client
-                for k, v in bclient.iteritems():
+                for k, v in six.iteritems(bclient):
                     if hasattr(client, 'gear') and k == 'gear' and client.gear != v:
                         self.queueEvent(b3.events.Event(self.getEventID('EVT_CLIENT_GEAR_CHANGE'), v, client))
                     if not k.startswith('_') and k not in ('login', 'password', 'groupBits', 'maskLevel',
@@ -793,7 +791,7 @@ class Iourt41Parser(AbstractParser):
     def OnItem(self, action, data, match=None):
         # Item: 3 ut_item_helmet
         # Item: 0 team_CTF_redflag
-        cid, item = string.split(data, ' ', 1)
+        cid, item = data.split(' ', 1)
         client = self.getByCidOrJoinPlayer(cid)
         if client:
             # correct flag/bomb-pickups
@@ -938,7 +936,7 @@ class Iourt41Parser(AbstractParser):
         self.verbose('...self.console.game.gameType: %s' % self.game.gameType)
         self.game.startMap()
         self.game.rounds = 0
-        thread.start_new_thread(self.clients.sync, ())
+        start_daemon_thread(self.clients.sync)
         return self.getEvent('EVT_GAME_ROUND_START', data=self.game)
 
     def OnWarmup(self, action, data=None, match=None):
@@ -967,7 +965,7 @@ class Iourt41Parser(AbstractParser):
         self.verbose('...self.console.game.gameType: %s' % self.game.gameType)
         self.game.startMap()
         self.game.rounds = 0
-        thread.start_new_thread(self.clients.sync, ())
+        start_daemon_thread(self.clients.sync)
         return self.getEvent('EVT_GAME_ROUND_START', data=self.game)
 
     ####################################################################################################################
@@ -1100,7 +1098,7 @@ class Iourt41Parser(AbstractParser):
         plist = self.getPlayerList(maxRetries=4)
         mlist = dict()
 
-        for cid, c in plist.iteritems():
+        for cid, c in six.iteritems(plist):
             client = self.getByCidOrJoinPlayer(cid)
             if client:
                 # Disconnect the zombies first
@@ -1483,7 +1481,7 @@ class Iourt41Parser(AbstractParser):
         """
         try:
             return self.hitweapon2killweapon[int(hitweapon_id)]
-        except KeyError, err:
+        except KeyError as err:
             self.warning("Unknown weapon ID on Hit line: %s", err)
             return None
 
@@ -1512,99 +1510,3 @@ class Iourt41Parser(AbstractParser):
             for m in re_line.finditer(raw_data):
                 cvars[m.group('cvar').lower()] = m.group('value')
         return cvars
-
-########################################################################################################################
-# ----- Actions --------------------------------------------------------------------------------------------------------
-# Item: 0 team_CTF_redflag -> Flag Taken/picked up
-# Flag: 0 0: team_CTF_blueflag -> Flag Dropped
-# Flag: 0 1: team_CTF_blueflag -> Flag Returned
-# Flag: 0 2: team_CTF_blueflag -> Flag Captured
-#
-# Bombholder is 5 -> Spawn with the bomb
-# Bomb was planted by 5
-# Bomb was defused by 6!
-# Bomb was tossed by 4 -> either manually or by being killed
-# Bomb has been collected by 6 -> Picking up a tossed bomb
-#
-# ----- Connection Info ------------------------------------------------------------------------------------------------
-# A little documentation on the ClientSlot states in relation to ping positions in the status response
-#
-# UrT ClientSlot states:
-# CS_FREE,     // can be reused for a new connection
-# CS_ZOMBIE,   // client has been disconnected, but don't reuse
-#              // connection for a couple seconds
-# CS_CONNECTED // has been assigned to a client_t, but no gamestate yet
-# CS_PRIMED,   // gamestate has been sent, but client hasn't sent a usercmd
-# CS_ACTIVE    // client is fully in game
-#
-# Snippet 1:
-# if (cl->state == CS_CONNECTED)
-#             Com_Printf ("CNCT ");
-#         else if (cl->state == CS_ZOMBIE)
-#             Com_Printf ("ZMBI ");
-#         else
-#         {
-#             ping = cl->ping < 9999 ? cl->ping : 9999;
-#             Com_Printf ("%4i ", ping);
-#         }
-#
-# Snippet 2:
-# if (cl->state == CS_ZOMBIE && cl->lastPacketTime < zombiepoint) {
-#   // using the client id cause the cl->name is empty at this point
-#   Com_DPrintf( "Going from CS_ZOMBIE to CS_FREE for client %d\n", i );
-#   cl->state = CS_FREE; // can now be reused
-# }
-#
-# ----- Available variables defined on Init ----------------------------------------------------------------------------
-# 081027 14:53:22 DEBUG   EVENT: on_initgame
-# 081027 14:53:22 VERBOSE ...self.console.game.sv_allowdownload: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.g_matchmode: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.sv_maxclients: 16
-# 081027 14:53:22 VERBOSE ...self.console.game.sv_floodprotect: 1
-# 081027 14:53:22 VERBOSE ...self.console.game.g_warmup: 15
-# 081027 14:53:22 VERBOSE ...self.console.game.capturelimit: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.sv_hostname:   ^1[SNT]^7 TDM #4 Dungeon (B3)
-# 081027 14:53:22 VERBOSE ...self.console.game.g_followstrict: 1
-# 081027 14:53:22 VERBOSE ...self.console.game.fraglimit: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.timelimit: 15
-# 081027 14:53:22 VERBOSE ...self.console.game.g_cahtime: 60
-# 081027 14:53:22 VERBOSE ...self.console.game.g_swaproles: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.g_roundtime: 3
-# 081027 14:53:22 VERBOSE ...self.console.game.g_bombexplodetime: 40
-# 081027 14:53:22 VERBOSE ...self.console.game.g_bombdefusetime: 10
-# 081027 14:53:22 VERBOSE ...self.console.game.g_hotpotato: 2
-# 081027 14:53:22 VERBOSE ...self.console.game.g_waverespawns: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.g_redwave: 15
-# 081027 14:53:22 VERBOSE ...self.console.game.g_bluewave: 15
-# 081027 14:53:22 VERBOSE ...self.console.game.g_respawndelay: 3
-# 081027 14:53:22 VERBOSE ...self.console.game.g_suddendeath: 1
-# 081027 14:53:22 VERBOSE ...self.console.game.g_maxrounds: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.g_friendlyfire: 1
-# 081027 14:53:22 VERBOSE ...self.console.game.g_allowvote: 536870920
-# 081027 14:53:22 VERBOSE ...self.console.game.g_armbands: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.g_survivorrule: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.g_gear: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.g_deadchat: 1
-# 081027 14:53:22 VERBOSE ...self.console.game.g_maxGameClients: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.sv_dlURL: sweetopia.snt.utwente.nl/xlr
-# 081027 14:53:22 VERBOSE ...self.console.game.sv_maxPing: 250
-# 081027 14:53:22 VERBOSE ...self.console.game.sv_minPing: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.sv_maxRate: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.sv_minRate: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.dmflags: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.version: ioq3 1.35urt linux-i386 Dec 20 2007
-# 081027 14:53:22 VERBOSE ...self.console.game.protocol: 68
-# 081027 14:53:22 VERBOSE ...self.console.game.mapname: ut4_turnpike
-# 081027 14:53:22 VERBOSE ...self.console.game.sv_privateClients: 4
-# 081027 14:53:22 VERBOSE ...self.console.game. Admin:  XLR8or
-# 081027 14:53:22 VERBOSE ...self.console.game. Email: admin@xlr8or.com
-# 081027 14:53:22 VERBOSE ...self.console.game.gameName: q3ut4
-# 081027 14:53:22 VERBOSE ...self.console.game.g_needpass: 1
-# 081027 14:53:22 VERBOSE ...self.console.game.g_enableDust: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.g_enableBreath: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.g_antilagvis: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.g_survivor: 0
-# 081027 14:53:22 VERBOSE ...self.console.game.g_enablePrecip: 2
-# 081027 14:53:22 VERBOSE ...self.console.game.g_modversion: 4.1
-# 081027 14:53:22 VERBOSE ...self.console.game.gameType: tdm
-########################################################################################################################

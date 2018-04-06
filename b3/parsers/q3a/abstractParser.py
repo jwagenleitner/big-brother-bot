@@ -28,6 +28,8 @@ import re
 import string
 import time
 
+import six
+
 import b3
 import b3.clients
 import b3.cvar
@@ -226,7 +228,7 @@ class AbstractParser(b3.parser.Parser):
         :param info: The infostring to be parsed.
         """
         # 0 \g_password\none\cl_guid\0A337702493AF67BB0B0F8565CE8BC6C\cl_wwwDownload\1\name\thorn\rate\25000...
-        cid, info = string.split(info, ' ', 1)
+        cid, info = info.split(' ', 1)
         if info[:1] != '\\':
             info = '\\' + info
 
@@ -259,7 +261,7 @@ class AbstractParser(b3.parser.Parser):
     ####################################################################################################################
 
     def OnSay(self, action, data, match=None):
-        msg = string.split(data, ': ', 1)
+        msg = data.split(': ', 1)
         if not len(msg) == 2:
             return None
 
@@ -278,7 +280,7 @@ class AbstractParser(b3.parser.Parser):
         return None
 
     def OnSayteam(self, action, data, match=None):
-        msg = string.split(data, ': ', 1)
+        msg = data.split(': ', 1)
         if not len(msg) == 2:
             return None
 
@@ -321,7 +323,7 @@ class AbstractParser(b3.parser.Parser):
 
             if client:
                 # update existing client
-                for k, v in bclient.iteritems():
+                for k, v in six.iteritems(bclient):
                     setattr(client, k, v)
             else:
                 self.clients.newClient(bclient['cid'], **bclient)
@@ -816,7 +818,7 @@ class AbstractParser(b3.parser.Parser):
         plist = self.getPlayerList()
         mlist = {}
 
-        for cid, c in plist.iteritems():
+        for cid, c in six.iteritems(plist):
             client = self.clients.getByCID(cid)
             if client:
                 if client.guid and 'guid' in c.keys():
@@ -849,7 +851,7 @@ class AbstractParser(b3.parser.Parser):
         players = self.getPlayerList(maxRetries=4)
         self.verbose('authorizeClients() = %s' % players)
 
-        for cid, p in players.iteritems():
+        for cid, p in six.iteritems(players):
             sp = self.clients.getByCID(cid)
             if sp:
                 # Only set provided data, otherwise use the currently set data

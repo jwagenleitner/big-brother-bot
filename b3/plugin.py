@@ -25,10 +25,8 @@
 from __future__ import print_function, absolute_import
 
 import re
-try:
-    from ConfigParser import NoOptionError
-except ImportError:
-    from configparser import NoOptionError
+
+from six.moves.configparser import NoOptionError
 
 import b3.clients
 import b3.config

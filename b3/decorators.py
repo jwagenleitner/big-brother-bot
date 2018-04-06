@@ -121,7 +121,7 @@ class GameEventRouter(object):
     
     >>> @ger.gameEvent("^join: (?P<name>.+), (?P<team>.+)$")
     >>> def on_connect(self, name, team):
-    >>>     print "%s joined team %s" % (name, team)
+    >>>     print("%s joined team %s" % (name, team))
     
     Note that the handler function must have parameters that matches the regular expression groups.
     The @ger.gameEvent decorator accepts multiple parameters if you need to have one handling function for
@@ -180,13 +180,13 @@ class Singleton(object):
     >>> @Singleton
     >>> class Foo(object):
     >>>     def __init__(self):
-    >>>         print 'Foo created'
+    >>>         print('Foo created')
     >>>
     >>> f = Foo() # raise b3.exceptions.ProgrammingError
     >>> g = Foo.Instance() # Good. Being explicit is in line with the Python Zen
     >>> h = Foo.Instance() # Returns already created instance
     >>>
-    >>> print f is g # True
+    >>> print(f is g) # True
     """
     def __init__(self, decorated):
         self._decorated = decorated
