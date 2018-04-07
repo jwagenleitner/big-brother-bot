@@ -24,6 +24,9 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'ThorN, Courgette, Fenix'
+__version__ = '1.7.9'
+
 import os
 import re
 import time
@@ -41,10 +44,6 @@ try:
 except ImportError:
     from xml.etree import ElementTree
 
-__author__  = 'ThorN, Courgette, Fenix'
-__version__ = '1.7.9'
-
-
 ConfigFileNotFound = b3.exceptions.ConfigFileNotFound
 ConfigFileNotValid = b3.exceptions.ConfigFileNotValid
 NoOptionError = b3.exceptions.NoOptionError
@@ -52,6 +51,7 @@ NoSectionError = b3.exceptions.NoSectionError
 
 # list of plugins that cannot be loaded as disabled from configuration file
 MUST_HAVE_PLUGINS = ('admin', 'publist', 'ftpytail', 'sftpytail', 'httpytail')
+
 
 class B3ConfigParserMixin(object):
     """
@@ -304,6 +304,7 @@ class CfgConfigParser(B3ConfigParserMixin, configparser.ConfigParser):
         opts = {"allow_no_value": allow_no_value}
         if not six.PY2:
             opts["inline_comment_prefixes"] = (";",)
+            opts["interpolation"] = None
         configparser.ConfigParser.__init__(self, **opts)
 
     def add_comment(self, section, comment):
@@ -411,6 +412,7 @@ class CfgConfigParser(B3ConfigParserMixin, configparser.ConfigParser):
                 fp.write("%s: %s\n" % (key, str(value).replace('\n', '\n\t')))
             else:
                 fp.write("%s: \n" % key)
+
 
 def load(filename):
     """

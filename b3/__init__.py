@@ -24,6 +24,9 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'ThorN'
+__version__ = '1.30.5'
+
 import os
 import platform
 import re
@@ -33,9 +36,6 @@ import traceback
 from tempfile import TemporaryFile
 
 import b3.pkg_handler
-
-__author__ = 'ThorN'
-__version__ = '1.30.5'
 
 modulePath = b3.pkg_handler.resource_directory(__name__)
 
@@ -244,6 +244,12 @@ def loadParser(pname):
     return mod
 
 
+def stdout_write(message, flush=True):
+    sys.stdout.write(message)
+    if flush:
+        sys.stdout.flush()
+
+
 def start(mainconfig, options):
     """
     Main B3 startup.
@@ -254,17 +260,13 @@ def start(mainconfig, options):
     global confdir
     confdir = os.path.dirname(mainconfig.fileName)
 
-    sys.stdout.write('Starting B3      : %s\n' % getB3versionString())
-
-    sys.stdout.flush()
+    stdout_write('Starting B3      : %s\n' % getB3versionString())
 
     # not real loading but the user will get what's configuration he is using
-    sys.stdout.write('Loading config   : %s\n' % getShortPath(mainconfig.fileName, True))
-    sys.stdout.flush()
+    stdout_write('Loading config   : %s\n' % getShortPath(mainconfig.fileName, True))
 
     parsertype = mainconfig.get('b3', 'parser')
-    sys.stdout.write('Loading parser   : %s\n' % parsertype)
-    sys.stdout.flush()
+    stdout_write('Loading parser   : %s\n' % parsertype)
 
     parser = loadParser(parsertype)
     global console

@@ -54,12 +54,12 @@
         <plugin name="poweradminurt" config="@conf/plugin_poweradminurt.ini" />
         <plugin name="spamcontrol" config="@conf/plugin_spamcontrol.ini" />
         <plugin name="spawnkill" config="@conf/plugin_spawnkill.ini"/>
-        <!-- <plugin name="spree" config="@conf/plugin_spree.ini"/> -->
+        <plugin name="spree" config="@conf/plugin_spree.ini"/>
         <plugin name="stats" config="@conf/plugin_stats.xml" />
-        <!-- <plugin name="status" config="@conf/plugin_status.ini" /> -->
-        <!-- <plugin name="tk" config="@conf/plugin_tk.ini" /> -->
+        <plugin name="status" config="@conf/plugin_status.ini" />
+        <plugin name="tk" config="@conf/plugin_tk.ini" />
         <plugin name="urtbslap" config="@conf/urtbslap.xml" />
-        <!-- <plugin name="welcome" config="@conf/plugin_welcome.ini" /> -->
+        <plugin name="welcome" config="@conf/plugin_welcome.ini" />
         <plugin name="xlrstats" config="@conf/plugin_xlrstats.ini"/>
     </plugins>
 </configuration>

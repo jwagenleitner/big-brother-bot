@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__ = 'Walker, ThorN'
 __version__ = '1.2.3'
 
@@ -30,6 +32,7 @@ import b3.events
 import b3.plugin
 
 from b3.functions import getCmd
+
 
 class SpreeStats(object):
     kills = 0
@@ -45,12 +48,6 @@ class SpreePlugin(b3.plugin.Plugin):
     _loosingspree_messages_dict = {}
     _reset_spree_stats = False
     _clientvar_name = 'spree_info'
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onStartup(self):
         """
@@ -85,12 +82,6 @@ class SpreePlugin(b3.plugin.Plugin):
         self._reset_spree_stats = self.getSetting('settings', 'reset_spree', b3.BOOL, self._reset_spree_stats)
         self.init_spreemessage_list()
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    HANDLE EVENTS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onClientKill(self, event):
         """
         Handle EVT_CLIENT_KILL
@@ -105,12 +96,6 @@ class SpreePlugin(b3.plugin.Plugin):
             for c in self.console.clients.getList():
                self.init_spree_stats(c)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   OTHER METHODS                                                                                                  #
-    #                                                                                                                  #
-    ####################################################################################################################
-              
     def init_spreemessage_list(self):
         # get the spree messages from the config
         # split the start and end spree messages and save it in the dictionary
@@ -221,12 +206,6 @@ class SpreePlugin(b3.plugin.Plugin):
             if victim:
                 message = message.replace('%victim%', victim.name)
             self.console.say(message)        
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   COMMANDS                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def cmd_spree(self, data, client, cmd=None):
         """
