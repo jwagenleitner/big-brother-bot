@@ -883,9 +883,6 @@ class Parser(object):
             finally:
                 console.screen.flush()
 
-        if 'publist' not in self._plugins:
-            _load_plugin(self, 'publist')
-
         if self.config.has_option('server', 'game_log'):
             game_log = self.config.get('server', 'game_log')
             remote_log_plugin = None
@@ -968,20 +965,20 @@ class Parser(object):
 
     def disablePlugins(self):
         """
-        Disable all plugins except for 'admin', 'publist', 'ftpytail', 'sftpytail', 'httpytail', 'cod7http'
+        Disable all plugins except for 'admin'
         """
         for k in self._plugins:
-            if k not in ('admin', 'publist', 'ftpytail', 'sftpytail', 'httpytail', 'cod7http'):
+            if k not in ('admin'):
                 p = self._plugins[k]
                 self.bot('Disabling plugin: %s', k)
                 p.disable()
 
     def enablePlugins(self):
         """
-        Enable all plugins except for 'admin', 'publist', 'ftpytail', 'sftpytail', 'httpytail', 'cod7http'
+        Enable all plugins except for 'admin'
         """
         for k in self._plugins:
-            if k not in ('admin', 'publist', 'ftpytail', 'sftpytail', 'httpytail', 'cod7http'):
+            if k not in ('admin'):
                 p = self._plugins[k]
                 self.bot('Enabling plugin: %s', k)
                 p.enable()
