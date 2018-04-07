@@ -24,6 +24,9 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'ThorN, xlr8or, Courgette'
+__version__ = '1.8.2'
+
 import re
 import time
 from collections import deque
@@ -34,9 +37,6 @@ import six
 from b3.decorators import Memoize
 from b3.functions import meanstdv
 from b3.output import VERBOSE
-
-__author__ = 'ThorN, xlr8or, Courgette'
-__version__ = '1.8.2'
 
 
 class Events:
@@ -76,7 +76,7 @@ class Events:
             ('EVT_CLIENT_DAMAGE_TEAM', 'Client Team Damage'),
             ('EVT_CLIENT_JOIN', 'Client Join Team'),
             ('EVT_CLIENT_NAME_CHANGE', 'Client Name Change'),
-            ('EVT_CLIENT_TEAM_CHANGE', 'Client Team Change'),     # provides only the new team
+            ('EVT_CLIENT_TEAM_CHANGE', 'Client Team Change'),  # provides only the new team
             ('EVT_CLIENT_TEAM_CHANGE2', 'Client Team Change 2'),  # provides the previous and new team
             ('EVT_CLIENT_ITEM_PICKUP', 'Client Item Pickup'),
             ('EVT_CLIENT_ACTION', 'Client Action'),
@@ -91,7 +91,7 @@ class Events:
             ('EVT_GAME_WARMUP', 'Game Warmup'),
             ('EVT_GAME_EXIT', 'Game Exit'),
             ('EVT_GAME_MAP_CHANGE', 'map changed'),
-        ))        
+        ))
 
     def createEvent(self, key, name=None):
         """
@@ -198,7 +198,7 @@ class EventsStats(object):
         self._max_samples = max_samples
         self._handling_timers = {}
         self._queue_wait = deque(maxlen=max_samples)
-        
+
     def add_event_handled(self, plugin_name, event_name, milliseconds_elapsed):
         """
         Add an event to the dict of handled ones.
@@ -219,7 +219,7 @@ class EventsStats(object):
         :param milliseconds_wait: The amount of milliseconds to wait
         """
         self._queue_wait.append(milliseconds_wait)
-        
+
     def dumpStats(self):
         """
         Print event stats in the log file.
@@ -238,12 +238,13 @@ class EventsStats(object):
             if len(self._queue_wait):
                 self.console.debug("Events waiting in queue stats : (ms) min(%0.1f), max(%0.1f), mean(%0.1f), "
                                    "stddev(%0.1f)", min(self._queue_wait), max(self._queue_wait), mean, stdv)
-    
+
 
 class VetoEvent(Exception):
     """
     Raised to cancel event processing.
     """
     pass
+
 
 eventManager = Events()

@@ -47,7 +47,6 @@ from b3.storage.cursor import Cursor as DBCursor
 
 
 class DatabaseStorage(Storage):
-
     _lock = None
     _lastConnectAttempt = 0
     _consoleNotice = True
@@ -131,7 +130,7 @@ class DatabaseStorage(Storage):
 
             found = False
             for k, v in six.iteritems(cursor.getRow()):
-                #if hasattr(client, k) and getattr(client, k):
+                # if hasattr(client, k) and getattr(client, k):
                 #    # don't set already set items
                 #    continue
                 setattr(client, self.getVar(k), v)
@@ -211,7 +210,7 @@ class DatabaseStorage(Storage):
         """
         self.console.debug('Storage: setClientAlias %s' % alias)
         fields = ('num_used', 'alias', 'client_id', 'time_add', 'time_edit')
-        data = {'id':alias.id} if alias.id else {}
+        data = {'id': alias.id} if alias.id else {}
 
         for f in fields:
             if hasattr(alias, self.getVar(f)):
@@ -219,7 +218,7 @@ class DatabaseStorage(Storage):
 
         self.console.debug('Storage: setClientAlias data %s' % data)
         if alias.id:
-            self.query(QueryBuilder(self.db).UpdateQuery(data, 'aliases', {'id':alias.id}))
+            self.query(QueryBuilder(self.db).UpdateQuery(data, 'aliases', {'id': alias.id}))
         else:
             cursor = self.query(QueryBuilder(self.db).InsertQuery(data, 'aliases'))
             alias.id = cursor.lastrowid
@@ -288,7 +287,7 @@ class DatabaseStorage(Storage):
         :param ipalias: The ipalias to be saved.
         """
         self.console.debug('Storage: setClientIpAddress %s' % ipalias)
-        fields = ('num_used', 'ip', 'client_id', 'time_add', 'time_edit' )
+        fields = ('num_used', 'ip', 'client_id', 'time_add', 'time_edit')
         data = {'id': ipalias.id} if ipalias.id else {}
 
         for f in fields:
@@ -328,7 +327,7 @@ class DatabaseStorage(Storage):
         row = cursor.getOneRow()
         ipalias.id = int(row['id'])
         ipalias.ip = row['ip']
-        ipalias.timeAdd  = int(row['time_add'])
+        ipalias.timeAdd = int(row['time_add'])
         ipalias.timeEdit = int(row['time_edit'])
         ipalias.clientId = int(row['client_id'])
         ipalias.numUsed = int(row['num_used'])
@@ -350,7 +349,7 @@ class DatabaseStorage(Storage):
             ip = b3.clients.IpAlias()
             ip.id = int(row['id'])
             ip.ip = row['ip']
-            ip.timeAdd  = int(row['time_add'])
+            ip.timeAdd = int(row['time_add'])
             ip.timeEdit = int(row['time_edit'])
             ip.clientId = int(row['client_id'])
             ip.numUsed = int(row['num_used'])

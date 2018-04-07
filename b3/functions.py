@@ -24,6 +24,9 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'ThorN, xlr8or, courgette'
+__version__ = '1.23'
+
 import collections
 import os
 import re
@@ -37,9 +40,6 @@ import six
 from six.moves import urllib
 
 from b3.exceptions import ProgrammingError
-
-__author__    = 'ThorN, xlr8or, courgette'
-__version__   = '1.23'
 
 
 def getModule(name):
@@ -328,7 +328,7 @@ def soundex(s1):
     prev = s1[0]
     for x in s1[1:]:
         if x != prev and x != "0":
-                s2 = s2 + x
+            s2 = s2 + x
         prev = x
     # pad with zeros
     s2 += "0000"
@@ -353,7 +353,7 @@ def meanstdv(x):
     for a in x:
         std += (a - mean) ** 2
     try:
-        std = sqrt(std / float(n-1))
+        std = sqrt(std / float(n - 1))
     except ZeroDivisionError:
         std = 0
     return mean, std
@@ -380,8 +380,9 @@ def fuzzyGuidMatch(a, b):
         distance = levenshteinDistance(a, b)
         if distance <= 1:
             return True
-    
+
     return False
+
 
 def sanitizeMe(s):
     """
@@ -459,6 +460,7 @@ def corrent_spell(c_word, wordbook):
     Simplified spell checker from Peter Norvig.
     http://www.norvig.com/spell-correct.html
     """
+
     def words(text):
         return re.findall('[a-z]+', text.lower())
 
@@ -659,21 +661,21 @@ def topological_sort(source):
     Source: http://stackoverflow.com/questions/11557241/python-sorting-a-dependency-list
     :param source: list of ``(name, set(names of dependancies))`` pairs
     """
-    pending = [(name, set(deps)) for name, deps in source] # copy deps so we can modify set in-place
+    pending = [(name, set(deps)) for name, deps in source]  # copy deps so we can modify set in-place
     emitted = []
     while pending:
         next_pending = []
         next_emitted = []
         for entry in pending:
             name, deps = entry
-            deps.difference_update(emitted) # remove deps we emitted last pass
-            if deps: # still has deps? recheck during next pass
+            deps.difference_update(emitted)  # remove deps we emitted last pass
+            if deps:  # still has deps? recheck during next pass
                 next_pending.append(entry)
-            else: # no more deps? time to emit
+            else:  # no more deps? time to emit
                 yield name
-                emitted.append(name) # <-- not required, but helps preserve original ordering
-                next_emitted.append(name) # remember what we emitted for difference_update() in next pass
-        if not next_emitted: # all entries have unmet deps, one of two things is wrong...
+                emitted.append(name)  # <-- not required, but helps preserve original ordering
+                next_emitted.append(name)  # remember what we emitted for difference_update() in next pass
+        if not next_emitted:  # all entries have unmet deps, one of two things is wrong...
             raise ProgrammingError("cyclic or missing dependancy detected: %r" % (next_pending,))
         pending = next_pending
         emitted = next_emitted
