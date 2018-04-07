@@ -29,7 +29,6 @@ __version__ = '1.6'
 
 
 class Game(object):
-
     _mapName = None
     _mapTimeStart = None
     _roundTimeStart = None
@@ -81,7 +80,7 @@ class Game(object):
             event = self.console.getEvent('EVT_GAME_MAP_CHANGE', data={'old': self._mapName, 'new': newmap})
             self.console.queueEvent(event)
         self._mapName = newmap
-    
+
     mapName = property(_get_mapName, _set_mapName)
 
     def mapTime(self):

@@ -31,7 +31,6 @@ from b3.storage.common import DatabaseStorage
 
 
 class SqliteStorage(DatabaseStorage):
-
     protocol = 'sqlite'
 
     def __init__(self, dsn, dsnDict, console):
@@ -123,7 +122,7 @@ class SqliteStorage(DatabaseStorage):
                 self.query("DELETE FROM sqlite_sequence WHERE name='%s';" % v)
         else:
             if not table in current_tables:
-                 raise KeyError("could not find table '%s' in the database" % table)
+                raise KeyError("could not find table '%s' in the database" % table)
             self.query("DELETE FROM %s;" % table)
             self.query("DELETE FROM sqlite_sequence WHERE name='%s';" % table)
 

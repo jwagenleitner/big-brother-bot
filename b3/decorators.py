@@ -24,15 +24,15 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'Courgette, Fenix'
+__version__ = '1.3'
+
 import functools
 import re
 
 import six
 
 from b3.exceptions import ProgrammingError
-
-__author__ = 'Courgette, Fenix'
-__version__ = '1.3'
 
 
 class Memoize(object):
@@ -55,6 +55,7 @@ class Memoize(object):
 
     See http://code.activestate.com/recipes/577452-a-memoize-decorator-for-instance-methods/
     """
+
     def __init__(self, func):
         """
         Object constructor.
@@ -129,6 +130,7 @@ class GameEventRouter(object):
     The @ger.gameEvent decorator accepts multiple parameters if you need to have one handling function for
     multiple kind of game events. Note that those regular expressions should all define the same groups.
     """
+
     def __init__(self):
         # will hold mapping between regular expressions and handler functions
         self._gameevents_mapping = list()
@@ -138,6 +140,7 @@ class GameEventRouter(object):
         Python decorator to easily map a handler function to
         a regular expression mathching a game event
         """
+
         def wrapper(func):
             for param in decorator_param:
                 if isinstance(param, type(re.compile(''))):
@@ -145,8 +148,8 @@ class GameEventRouter(object):
                 elif isinstance(param, six.string_types):
                     self._gameevents_mapping.append((re.compile(str(param)), func))
             return func
-        return wrapper
 
+        return wrapper
 
     def getHandler(self, gameEvent):
         """
@@ -190,6 +193,7 @@ class Singleton(object):
     >>>
     >>> print(f is g) # True
     """
+
     def __init__(self, decorated):
         self._decorated = decorated
 

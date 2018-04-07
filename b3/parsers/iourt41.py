@@ -24,6 +24,9 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'xlr8or, Courgette, Fenix'
+__version__ = '1.28'
+
 import re
 import time
 
@@ -38,12 +41,8 @@ from b3.functions import prefixText
 from b3.functions import start_daemon_thread
 from b3.parsers.q3a.abstractParser import AbstractParser
 
-__author__ = 'xlr8or, Courgette, Fenix'
-__version__ = '1.28'
-
 
 class Iourt41Parser(AbstractParser):
-
     gameName = 'iourt41'
 
     IpsOnly = False
@@ -72,8 +71,8 @@ class Iourt41Parser(AbstractParser):
     }
 
     _eventMap = {
-        #'warmup' : b3.events.EVT_GAME_WARMUP,
-        #'shutdowngame' : b3.events.EVT_GAME_ROUND_END
+        # 'warmup' : b3.events.EVT_GAME_WARMUP,
+        # 'shutdowngame' : b3.events.EVT_GAME_ROUND_END
     }
 
     # remove the time off of the line
@@ -140,7 +139,7 @@ class Iourt41Parser(AbstractParser):
                    r'(?P<subaction>[a-z]+)\sby\s'
                    r'(?P<cid>[0-9]+).*)$', re.IGNORECASE),
 
-        #17:24 Pop!
+        # 17:24 Pop!
         re.compile(r'^(?P<action>Pop)!$', re.IGNORECASE),
 
         # Falling thru Item stuff and so forth
@@ -330,7 +329,7 @@ class Iourt41Parser(AbstractParser):
         # force g_logsync
         self.debug('Forcing server cvar g_logsync to %s' % self._logSync)
         self.setCvar('g_logsync', self._logSync)
-        
+
         # get gamepaths/vars
         cvarlist = self.cvarList("fs_")
 
@@ -365,7 +364,7 @@ class Iourt41Parser(AbstractParser):
             userinfostring = self.queryClientUserInfoByCid(cid)
             if userinfostring:
                 self.OnClientuserinfo(None, userinfostring)
-        
+
         player_teams = dict()
         tries = 0
         while tries < 3:
@@ -387,7 +386,7 @@ class Iourt41Parser(AbstractParser):
                 if newteam != client.team:
                     self.debug('Fixing client team for %s : %s is now %s' % (client.name, client.team, newteam))
                     setattr(client, 'team', newteam)
-            
+
     def unpause(self):
         """
         Unpause B3 log parsing.
@@ -455,8 +454,8 @@ class Iourt41Parser(AbstractParser):
 
     def OnClientconnect(self, action, data, match=None):
         self.debug('Client connected: ready to parse userinfo line')
-        #client = self.clients.getByCID(data)
-        #return b3.events.Event(b3.events.EVT_CLIENT_JOIN, None, client)
+        # client = self.clients.getByCID(data)
+        # return b3.events.Event(b3.events.EVT_CLIENT_JOIN, None, client)
 
     def OnClientbegin(self, action, data, match=None):
         # we get user info in two parts:
@@ -586,8 +585,8 @@ class Iourt41Parser(AbstractParser):
                             setattr(client, 'racered', parseddata['r'])
 
                     if parseddata.get('f0') is not None \
-                        and parseddata.get('f1') is not None \
-                        and parseddata.get('f2') is not None:
+                            and parseddata.get('f1') is not None \
+                            and parseddata.get('f2') is not None:
 
                         data = "%s,%s,%s" % (parseddata['f0'], parseddata['f1'], parseddata['f2'])
                         if team == b3.TEAM_BLUE:
@@ -604,7 +603,7 @@ class Iourt41Parser(AbstractParser):
         victim = self.clients.getByCID(match.group('cid'))
         if not victim:
             self.debug('No victim')
-            #self.on_clientuserinfo(action, data, match)
+            # self.on_clientuserinfo(action, data, match)
             return None
 
         attacker = self.clients.getByCID(match.group('acid'))
@@ -623,7 +622,7 @@ class Iourt41Parser(AbstractParser):
         points = self._getDamagePoints(weapon, hitloc)
         event_data = (points, weapon, hitloc)
         victim.data['lastDamageTaken'] = event_data
-        #victim.state = b3.STATE_ALIVE
+        # victim.state = b3.STATE_ALIVE
         # need to pass some amount of damage for the teamkill plugin - 15 seems okay
         return self.getEvent(event, event_data, attacker, victim)
 
@@ -666,7 +665,7 @@ class Iourt41Parser(AbstractParser):
         victim = self.getByCidOrJoinPlayer(match.group('cid'))
         if not victim:
             self.debug('No victim')
-            #self.OnClientuserinfo(action, data, match)
+            # self.OnClientuserinfo(action, data, match)
             return None
 
         weapon = match.group('aweap')
@@ -840,7 +839,7 @@ class Iourt41Parser(AbstractParser):
         # 2:28 sayteam: 12 New_UrT_Player_v4.1: wokele
         if match is None:
             return
-        
+
         name = self.stripColors(match.group('name'))
         client = self.getByCidOrJoinPlayer(match.group('cid'))
 
@@ -890,19 +889,19 @@ class Iourt41Parser(AbstractParser):
         # 5:27 tell: woekele to XLR8or: test
         # We'll use saytell instead
         #
-        #client = self.clients.get_by_exact_name(match.group('name'))
-        #target = self.clients.get_by_exact_name(match.group('aname'))
+        # client = self.clients.get_by_exact_name(match.group('name'))
+        # target = self.clients.get_by_exact_name(match.group('aname'))
         #
-        #if not client:
+        # if not client:
         #    self.verbose('no client found!')
         #    return None
         #
-        #data = match.group('text')
-        #if data and ord(data[:1]) == 21:
+        # data = match.group('text')
+        # if data and ord(data[:1]) == 21:
         #    data = data[1:]
         #
-        #client.name = match.group('name')
-        #return self.get_Event('EVT_CLIENT_PRIVATE_SAY', data=data, client=client, target=target)
+        # client.name = match.group('name')
+        # return self.get_Event('EVT_CLIENT_PRIVATE_SAY', data=data, client=client, target=target)
         return None
 
     # endmap/shutdown
@@ -1241,9 +1240,9 @@ class Iourt41Parser(AbstractParser):
 
         if gametype_int == '0':
             _gametype = 'ffa'
-        elif gametype_int == '1':   # Dunno what this one is
+        elif gametype_int == '1':  # Dunno what this one is
             _gametype = 'dm'
-        elif gametype_int == '2':   # Dunno either
+        elif gametype_int == '2':  # Dunno either
             _gametype = 'dm'
         elif gametype_int == '3':
             _gametype = 'tdm'
@@ -1270,12 +1269,12 @@ class Iourt41Parser(AbstractParser):
         self.debug('g_nextmap: %s' % nmap)
         if nmap != "":
             return nmap
-        
+
         nmap = cvars.get('g_nextcyclemap')
         self.debug('g_nextcyclemap: %s' % nmap)
         if nmap != "":
             return nmap
-        
+
         return None
 
     def getMapsSoundingLike(self, mapname):
@@ -1379,7 +1378,7 @@ class Iourt41Parser(AbstractParser):
         data = self.write('dumpuser %s' % cid)
         if not data:
             return None
-        
+
         if data.split('\n')[0] != "userinfo":
             self.debug("dumpuser %s returned : %s" % (cid, data))
             self.debug('Client %s probably disconnected, but its character is still hanging in game...' % cid)
@@ -1473,7 +1472,7 @@ class Iourt41Parser(AbstractParser):
         except KeyError as err:
             self.warning("_getDamagePoints(%s, %s) cannot find value : %s" % (weapon, hitloc, err))
             return 15
-        
+
     def _convertHitWeaponToKillWeapon(self, hitweapon_id):
         """
         on Hit: lines identifiers for weapons are different than

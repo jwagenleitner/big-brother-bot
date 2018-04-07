@@ -25,6 +25,9 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'ThorN'
+__version__ = '1.11'
+
 import re
 import select
 import socket
@@ -34,12 +37,8 @@ import time
 import six
 from six.moves import queue as Queue
 
-__author__ = 'ThorN'
-__version__ = '1.11'
-
 
 class Rcon(object):
-
     host = ()
     password = None
     lock = threading.Lock()
@@ -107,9 +106,9 @@ class Rcon(object):
         except Exception as msg:
             self.console.warning('%s: error encoding data: %r', source, msg)
             data = 'Encoding error'
-            
+
         return data
-        
+
     def send(self, data, maxRetries=None, socketTimeout=None):
         """
         Send data over the socket.
@@ -274,7 +273,7 @@ class Rcon(object):
                         # to read a new value
                         self.status_cache_data = ''
                 return self.status_cache_data
-        
+
         with self.lock:
             data = self.sendRcon(cmd, maxRetries=maxRetries, socketTimeout=socketTimeout)
         return data if data else ''

@@ -24,6 +24,9 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'Courgette, Fenix'
+__version__ = '1.35'
+
 import re
 import time
 
@@ -34,9 +37,6 @@ from b3.clients import Client
 from b3.events import Event
 from b3.functions import time2minutes
 from b3.parsers.iourt41 import Iourt41Parser
-
-__author__ = 'Courgette, Fenix'
-__version__ = '1.35'
 
 
 class Iourt42Client(Client):
@@ -148,9 +148,11 @@ class Iourt42Client(Client):
 
             if in_storage:
                 self.lastVisit = self.timeEdit
-                self.console.bot("Client found in the storage @%s: welcome back %s [FSA: '%s']", self.id, self.name, self.pbid)
+                self.console.bot("Client found in the storage @%s: welcome back %s [FSA: '%s']", self.id, self.name,
+                                 self.pbid)
             else:
-                self.console.bot("Client not found in the storage %s [FSA: '%s'], create new", str(self.guid), self.pbid)
+                self.console.bot("Client not found in the storage %s [FSA: '%s'], create new", str(self.guid),
+                                 self.pbid)
 
             self.connections = int(self.connections) + 1
             self.name = name
@@ -160,7 +162,8 @@ class Iourt42Client(Client):
             self.save()
             self.authed = True
 
-            self.console.debug("Client authorized: %s [@%s] [GUID: '%s'] [FSA: '%s']", self.name, self.id, self.guid, self.pbid)
+            self.console.debug("Client authorized: %s [@%s] [GUID: '%s'] [FSA: '%s']", self.name, self.id, self.guid,
+                               self.pbid)
 
             # check for bans
             if self.numBans > 0:
@@ -182,7 +185,6 @@ class Iourt42Client(Client):
 
 
 class Iourt42Parser(Iourt41Parser):
-   
     gameName = 'iourt42'
     spamcontrolPlugin = None
 
@@ -519,7 +521,7 @@ class Iourt42Parser(Iourt41Parser):
         UT_MOD_COLT1911: [100, 60, 37, 27, 15, 15, 32, 29, 22, 22, 15, 15, 11, 11],
         UT_MOD_MAC11: [34, 29, 20, 15, 11, 11, 18, 17, 15, 15, 13, 13, 11, 11],
         UT_MOD_GOOMBA: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
-    }   
+    }
 
     ####################################################################################################################
     #                                                                                                                  #
@@ -539,7 +541,8 @@ class Iourt42Parser(Iourt41Parser):
             cvar = self.getCvar('gamename')
             gamename = cvar.getString() if cvar else None
             if not self.is_valid_game(gamename):
-                self.error("The %s B3 parser cannot be used with a game server other than [%s]" % (self.gameName, gamename))
+                self.error(
+                    "The %s B3 parser cannot be used with a game server other than [%s]" % (self.gameName, gamename))
                 raise SystemExit(220)
         except Exception as e:
             self.warning("Could not query server for gamename.", exc_info=e)
@@ -679,7 +682,7 @@ class Iourt42Parser(Iourt41Parser):
     #   EVENT HANDLERS                                                                                                 #
     #                                                                                                                  #
     ####################################################################################################################
-    
+
     def OnClientuserinfo(self, action, data, match=None):
         # 2 \ip\145.99.135.227:27960\challenge\-232198920\qport\2781\protocol\68\battleye\1\name\[SNT]^1XLR^78or..
         # 0 \gear\GMIORAA\team\blue\skill\5.000000\characterfile\bots/ut_chicken_c.c\color\4\sex\male\race\2\snaps\20\..
@@ -717,7 +720,8 @@ class Iourt42Parser(Iourt41Parser):
                 for k, v in six.iteritems(bclient):
                     if hasattr(client, 'gear') and k == 'gear' and client.gear != v:
                         self.queueEvent(b3.events.Event(self.getEventID('EVT_CLIENT_GEAR_CHANGE'), v, client))
-                    if not k.startswith('_') and k not in ('login', 'password', 'groupBits', 'maskLevel', 'autoLogin', 'greeting'):
+                    if not k.startswith('_') and k not in (
+                    'login', 'password', 'groupBits', 'maskLevel', 'autoLogin', 'greeting'):
                         setattr(client, k, v)
             else:
                 # make a new client
@@ -744,11 +748,13 @@ class Iourt42Parser(Iourt41Parser):
                                "nickname (%s characters)", bclient['name'], guid, fsa, len(bclient['name']))
                     if self._allow_userinfo_overflow:
                         x = bclient['name'][0:32]
-                        self.debug('Truncating %s (%s) nickname => %s (%s)', bclient['name'], len(bclient['name']), x, len(x))
+                        self.debug('Truncating %s (%s) nickname => %s (%s)', bclient['name'], len(bclient['name']), x,
+                                   len(x))
                         bclient['name'] = x
                     else:
                         self.debug("Connection denied to  %s [GUID: '%s'] [FSA: '%s']", bclient['name'], guid, fsa)
-                        self.write(self.getCommand('kick', cid=bclient['cid'], reason='userinfo string overflow protection'))
+                        self.write(
+                            self.getCommand('kick', cid=bclient['cid'], reason='userinfo string overflow protection'))
                         return
 
                 if 'ip' not in bclient:
@@ -784,7 +790,8 @@ class Iourt42Parser(Iourt41Parser):
                 if nguid != '':
                     guid = nguid
 
-                self.clients.newClient(bclient['cid'], name=bclient['name'], ip=bclient['ip'], bot=bot, guid=guid, pbid=fsa)
+                self.clients.newClient(bclient['cid'], name=bclient['name'], ip=bclient['ip'], bot=bot, guid=guid,
+                                       pbid=fsa)
 
         return None
 
@@ -812,8 +819,8 @@ class Iourt42Parser(Iourt41Parser):
                             setattr(client, 'racefree', parseddata['r'])
 
                     if parseddata.get('f0') is not None \
-                        and parseddata.get('f1') is not None \
-                        and parseddata.get('f2') is not None:
+                            and parseddata.get('f1') is not None \
+                            and parseddata.get('f2') is not None:
 
                         data = "%s,%s,%s" % (parseddata['f0'], parseddata['f1'], parseddata['f2'])
                         if team == b3.TEAM_BLUE:
@@ -905,7 +912,7 @@ class Iourt42Parser(Iourt41Parser):
                                                                               'way_time': way_time,
                                                                               'attempt_num': attempt_num,
                                                                               'attempt_max': attempt_max})
-    
+
     def OnClientjumpruncanceled(self, action, data, match=None):
         cid = match.group('cid')
         way_id = match.group('way_id')
@@ -918,7 +925,7 @@ class Iourt42Parser(Iourt41Parser):
         return self.getEvent('EVT_CLIENT_JUMP_RUN_CANCEL', client=client, data={'way_id': way_id,
                                                                                 'attempt_num': attempt_num,
                                                                                 'attempt_max': attempt_max})
-    
+
     def OnClientsaveposition(self, action, data, match=None):
         cid = match.group('cid')
         position = float(match.group('x')), float(match.group('y')), float(match.group('z'))
@@ -936,7 +943,7 @@ class Iourt42Parser(Iourt41Parser):
             self.debug('No client found')
             return None
         return self.getEvent('EVT_CLIENT_POS_LOAD', client=client, data={'position': position})
-    
+
     def OnClientgoto(self, action, data, match=None):
         cid = match.group('cid')
         tcid = match.group('tcid')
@@ -945,12 +952,12 @@ class Iourt42Parser(Iourt41Parser):
         if not client:
             self.debug('No client found')
             return None
-        
+
         target = self.getByCidOrJoinPlayer(tcid)
         if not target:
             self.debug('No target client found')
             return None
-            
+
         return self.getEvent('EVT_CLIENT_GOTO', client=client, target=target, data={'position': position})
 
     def OnClientspawn(self, action, data, match=None):
@@ -1344,8 +1351,8 @@ class Iourt42Parser(Iourt41Parser):
             self[client.cid] = client
             self.resetIndex()
 
-            self.console.debug('Urt42 Client Connected: [%s] %s - %s (%s)',  self[client.cid].cid, self[client.cid].name,
-                                                                             self[client.cid].guid, self[client.cid].data)
+            self.console.debug('Urt42 Client Connected: [%s] %s - %s (%s)', self[client.cid].cid, self[client.cid].name,
+                               self[client.cid].guid, self[client.cid].data)
 
             self.console.queueEvent(self.console.getEvent('EVT_CLIENT_CONNECT', data=client, client=client))
 

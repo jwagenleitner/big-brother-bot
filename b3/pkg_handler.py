@@ -24,12 +24,12 @@
 
 from __future__ import print_function, absolute_import
 
-import os
-import sys
-
 __author__ = 'ThorN'
 __version__ = '1.4'
 __all__ = ['resource_directory']
+
+import os
+import sys
 
 
 def resource_directory(module):
@@ -51,5 +51,6 @@ else:
         Use this if pkg_resources is installed
         """
         return pkg_resources.resource_filename(module, '')
+
 
     resource_directory = resource_directory_from_pkg_resources

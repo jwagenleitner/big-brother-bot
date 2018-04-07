@@ -29,7 +29,6 @@ __version__ = '1.1'
 
 
 class Cvar(object):
-
     name = ''
     value = None
     default = None
@@ -83,7 +82,7 @@ class Cvar(object):
         :return basestring
         """
         return str(self.value)
-        
+
     def getInt(self):
         """
         Return the CVAR value as an integer.

@@ -24,10 +24,9 @@
 
 from __future__ import print_function, absolute_import
 
-try:
-    import Queue
-except ImportError:
-    import queue as Queue
+__author__ = 'ThorN, Courgette, xlr8or, Bakes, Ozon, Fenix'
+__version__ = '1.43.6'
+
 import atexit
 import datetime
 import glob
@@ -36,19 +35,14 @@ import os
 import re
 import socket
 import sys
-try:
-    import thread
-except ImportError:
-    import _thread as thread
+import threading
 import time
-try:
-    from ConfigParser import NoOptionError
-except ImportError:
-    from configparser import NoOptionError
 from collections import OrderedDict
 from textwrap import TextWrapper
 from traceback import extract_tb
 import six
+from six.moves import queue
+from six.moves.configparser import NoOptionError
 
 import dateutil.tz
 
@@ -69,6 +63,7 @@ from b3.exceptions import MissingRequirement
 from b3.functions import getModule
 from b3.functions import right_cut
 from b3.functions import splitDSN
+from b3.functions import start_daemon_thread
 from b3.functions import topological_sort
 from b3.functions import vars2printf
 from b3.plugin import PluginData
@@ -79,12 +74,8 @@ try:
 except ImportError:
     from xml.etree import ElementTree
 
-__author__ = 'ThorN, Courgette, xlr8or, Bakes, Ozon, Fenix'
-__version__ = '1.43.6'
-
 
 class Parser(object):
-
     OutputClass = b3.parsers.q3a.rcon.Rcon  # default output class set to the q3a rcon class
 
     _commands = {}  # will hold RCON commands for the current game
@@ -99,8 +90,8 @@ class Parser(object):
     _line_length = 80  # max wrap length
     _messages = {}  # message template cache
     _message_delay = 0  # delay between consequent sent say messages (apply also to private messages)
-    _multiline = False # whether linebreaks \n can be manually used in messages
-    _multiline_noprefix = False # whether B3 adds > to multiline messages
+    _multiline = False  # whether linebreaks \n can be manually used in messages
+    _multiline_noprefix = False  # whether B3 adds > to multiline messages
     _paused = False  # set to True when B3 is paused
     _pauseNotice = False  # whether to notice B3 being paused
     _plugins = OrderedDict()  # plugin instances
@@ -109,7 +100,7 @@ class Parser(object):
     _rconIp = ''  # the ip address where to forward RCON commands
     _rconPort = None  # the virtual port where to forward RCON commands
     _rconPassword = ''  # the rcon password set on the server
-    _reColor = re.compile(r'\^[0-9a-z]') # regex used to strip out color codes from a given string
+    _reColor = re.compile(r'\^[0-9a-z]')  # regex used to strip out color codes from a given string
     _timeStart = None  # timestamp when B3 has first started
     _use_color_codes = True  # whether the game supports color codes or not
 
@@ -119,7 +110,7 @@ class Parser(object):
     delay2 = 0.02  # time between each game log line processing: max number of lines processed in one second
     encoding = 'latin-1'
     game = None
-    gameName = None # console name
+    gameName = None  # console name
     log = None  # logger instance
     logTime = 0  # time in seconds of epoch of game log
     name = 'b3'  # bot name
@@ -186,7 +177,7 @@ class Parser(object):
     #
     #   Exits occurring in the main thread do not need to be synchronised.
 
-    exiting = thread.allocate_lock()
+    exiting = threading.Lock()
     exitcode = None
 
     def __new__(cls, *args, **kwargs):
@@ -214,7 +205,7 @@ class Parser(object):
         # set up logging
         logfile = self.config.getpath('b3', 'logfile')
         log2console = self.config.has_option('devmode', 'log2console') and \
-            self.config.getboolean('devmode', 'log2console')
+                      self.config.getboolean('devmode', 'log2console')
 
         # make sure the logfile is writable
         logfile = b3.getWritableFilePath(logfile, True)
@@ -229,7 +220,8 @@ class Parser(object):
 
         # save screen output to self.screen
         self.screen = sys.stdout
-        self.screen.write('Activating log   : %s\n' % b3.getShortPath(os.path.abspath(b3.getAbsolutePath(logfile, True))))
+        self.screen.write(
+            'Activating log   : %s\n' % b3.getShortPath(os.path.abspath(b3.getAbsolutePath(logfile, True))))
         self.screen.flush()
 
         sys.stdout = b3.output.STDOutLogger(self.log)
@@ -247,7 +239,7 @@ class Parser(object):
             self._publicIp = self.config.get('server', 'public_ip')
             self._port = self.config.getint('server', 'port')
 
-        self._rconPort = self._port    # if rcon port is the same as the game port, rcon_port can be ommited
+        self._rconPort = self._port  # if rcon port is the same as the game port, rcon_port can be ommited
         self._rconIp = self._publicIp  # if rcon ip is the same as the game port, rcon_ip can be ommited
 
         if self.config.has_option('server', 'rcon_ip'):
@@ -259,15 +251,13 @@ class Parser(object):
 
         if self._publicIp and self._publicIp[0:1] in ('~', '/'):
             # load ip from a file
-            f = file(b3.getAbsolutePath(self._publicIp, decode=True))
-            self._publicIp = f.read().strip()
-            f.close()
+            with open(b3.getAbsolutePath(self._publicIp, decode=True)) as f:
+                self._publicIp = f.read().strip()
 
         if self._rconIp[0:1] in ('~', '/'):
             # load ip from a file
-            f = file(b3.getAbsolutePath(self._rconIp, decode=True))
-            self._rconIp = f.read().strip()
-            f.close()
+            with open(b3.getAbsolutePath(self._rconIp, decode=True)) as f:
+                self._rconIp = f.read().strip()
 
         try:
             # resolve domain names
@@ -279,8 +269,8 @@ class Parser(object):
         self.bot('Python: %s', sys.version.replace('\n', ''))
         self.bot('Default encoding: %s', sys.getdefaultencoding())
         self.bot('Starting %s v%s for server %s:%s', self.__class__.__name__,
-                                                     getattr(getModule(self.__module__), '__version__', ' Unknown'),
-                                                     self._rconIp, self._port)
+                 getattr(getModule(self.__module__), '__version__', ' Unknown'),
+                 self._rconIp, self._port)
 
         # get events
         self.Events = b3.events.eventManager
@@ -311,7 +301,7 @@ class Parser(object):
         if self.config.has_option('server', 'lines_per_second'):
             delay2 = self.config.getfloat('server', 'lines_per_second')
             if delay2 > 0:
-                self.delay2 = 1/delay2
+                self.delay2 = 1 / delay2
 
         try:
             # setup storage module
@@ -331,7 +321,7 @@ class Parser(object):
             if game_log[0:6] == 'ftp://' or game_log[0:7] == 'sftp://' or game_log[0:7] == 'http://':
                 self.remoteLog = True
                 self.bot('Working in remote-log mode: %s', game_log)
-                
+
                 if self.config.has_option('server', 'local_game_log'):
                     f = self.config.getpath('server', 'local_game_log')
                 else:
@@ -353,7 +343,7 @@ class Parser(object):
                     self.screen.write('Creating gamelog : %s\n' % b3.getShortPath(os.path.abspath(f)))
                     ftptempfile = open(f, "w")
                     ftptempfile.close()
-                    
+
             else:
                 self.bot('Game log is: %s', game_log)
                 f = self.config.getpath('server', 'game_log')
@@ -381,7 +371,7 @@ class Parser(object):
             self.screen.write(">>> Cannot setup RCON: %s\n" % err)
             self.screen.flush()
             self.critical("Cannot setup RCON: %s" % err, exc_info=err)
-        
+
         if self.config.has_option('server', 'rcon_timeout'):
             custom_socket_timeout = self.config.getfloat('server', 'rcon_timeout')
             self.output.socket_timeout = custom_socket_timeout
@@ -447,7 +437,7 @@ class Parser(object):
             self.warning(err)
 
         self.debug("Creating the event queue with size %s", queuesize)
-        self.queue = Queue.Queue(queuesize)
+        self.queue = queue.Queue(queuesize)
 
         atexit.register(self.shutdown)
 
@@ -479,7 +469,7 @@ class Parser(object):
         self.bot("All plugins started")
         self.pluginsStarted()
         self.bot("Starting event dispatching thread")
-        thread.start_new_thread(self.handleEvents, ())
+        start_daemon_thread(self.handleEvents)
         self.bot("Start reading game events")
         self.run()
 
@@ -629,6 +619,7 @@ class Parser(object):
             :param p_clazz: The class implementing the plugin
             :param p_config_path: The plugin configuration file path
             """
+
             def _search_config_file(match):
                 """
                 Helper that returns a list of configuration files.
@@ -641,7 +632,8 @@ class Parser(object):
                 if len(collection) > 0:
                     return collection
                 # if none is found, then search in the extplugins directory
-                search = '%s%s*%s*' % (os.path.join(b3.getAbsolutePath(extplugins_dir, decode=True), match, 'conf'), os.path.sep, match)
+                search = '%s%s*%s*' % (
+                    os.path.join(b3.getAbsolutePath(extplugins_dir, decode=True), match, 'conf'), os.path.sep, match)
                 self.debug('Searching for configuration file(s) matching: %s' % search)
                 collection = glob.glob(search)
                 return collection
@@ -654,7 +646,8 @@ class Parser(object):
                     return None
 
                 # lookup a configuration file for this plugin
-                self.warning('No configuration file specified for plugin %s: searching a valid configuration file...' % p_name)
+                self.warning(
+                    'No configuration file specified for plugin %s: searching a valid configuration file...' % p_name)
 
                 search_path = _search_config_file(p_name)
                 if len(search_path) == 0:
@@ -678,20 +671,26 @@ class Parser(object):
                     return b3.config.load(p_config_absolute_path)
 
                 # notice missing configuration file
-                self.warning('Could not find specified configuration file %s for plugin %s', p_config_absolute_path, p_name)
+                self.warning('Could not find specified configuration file %s for plugin %s', p_config_absolute_path,
+                             p_name)
 
                 if p_clazz.requiresConfigFile:
                     # stop loading the plugin
-                    raise b3.config.ConfigFileNotFound('plugin %s cannot be loaded without a configuration file' % p_name)
+                    raise b3.config.ConfigFileNotFound(
+                        'plugin %s cannot be loaded without a configuration file' % p_name)
 
-                self.warning('Not loading a configuration file for plugin %s: plugin %s can work also without a configuration file', p_name, p_name)
-                self.info('NOTE: plugin %s may behave differently from what expected since no user configuration file has been loaded', p_name)
+                self.warning(
+                    'Not loading a configuration file for plugin %s: plugin %s can work also without a configuration file',
+                    p_name, p_name)
+                self.info(
+                    'NOTE: plugin %s may behave differently from what expected since no user configuration file has been loaded',
+                    p_name)
                 return None
 
-        plugin_list = []            # hold an unsorted plugins list used to filter plugins that needs to be excluded
-        plugin_required = []        # hold a list of required plugin names which have not been specified in b3.ini
-        sorted_plugin_list = []     # hold the list of plugins sorted according requirements
-        plugins = OrderedDict()     # no need for OrderedDict anymore but keep for backwards compatibility!
+        plugin_list = []  # hold an unsorted plugins list used to filter plugins that needs to be excluded
+        plugin_required = []  # hold a list of required plugin names which have not been specified in b3.ini
+        sorted_plugin_list = []  # hold the list of plugins sorted according requirements
+        plugins = OrderedDict()  # no need for OrderedDict anymore but keep for backwards compatibility!
 
         # here below we will parse the plugins section of b3.ini, looking for plugins to be loaded.
         # we will import needed python classes and generate configuration file instances for plugins.
@@ -731,14 +730,16 @@ class Parser(object):
 
                 # check for correct B3 version
                 if p_data.clazz.requiresVersion and B3version(p_data.clazz.requiresVersion) > B3version(currentVersion):
-                    raise MissingRequirement('plugin %s requires B3 version %s (you have version %s) : please update your '
-                                             'B3 if you want to run this plugin' % (p_data.name, p_data.clazz.requiresVersion, currentVersion))
+                    raise MissingRequirement(
+                        'plugin %s requires B3 version %s (you have version %s) : please update your '
+                        'B3 if you want to run this plugin' % (
+                            p_data.name, p_data.clazz.requiresVersion, currentVersion))
 
                 # check if the current game support this plugin (this may actually exclude more than one plugin
                 # in case a plugin is built on top of an incompatible one, due to plugin dependencies)
                 if p_data.clazz.requiresParsers and self.gameName not in p_data.clazz.requiresParsers:
                     raise MissingRequirement('plugin %s is not compatible with %s parser : supported games are : %s' % (
-                                             p_data.name, self.gameName, ', '.join(p_data.clazz.requiresParsers)))
+                        p_data.name, self.gameName, ', '.join(p_data.clazz.requiresParsers)))
 
                 # check if the plugin needs a particular storage protocol to work
                 if p_data.clazz.requiresStorage and self.storage.protocol not in p_data.clazz.requiresStorage:
@@ -754,11 +755,13 @@ class Parser(object):
                         if r not in plugins and r not in plugin_required:
                             try:
                                 # missing requirement, try to load it
-                                self.debug('Plugin %s has unmet dependency : %s : trying to load plugin %s...' % (p_data.name, r, r))
+                                self.debug('Plugin %s has unmet dependency : %s : trying to load plugin %s...' % (
+                                    p_data.name, r, r))
                                 collection += _get_plugin_data(PluginData(name=r))
                                 self.debug('Plugin %s dependency satisfied: %s' % (p_data.name, r))
                             except Exception as ex:
-                                raise MissingRequirement('missing required plugin: %s : %s' % (r, extract_tb(sys.exc_info()[2])), ex)
+                                raise MissingRequirement(
+                                    'missing required plugin: %s : %s' % (r, extract_tb(sys.exc_info()[2])), ex)
 
                     return collection
 
@@ -771,7 +774,7 @@ class Parser(object):
                 p_data.module = self.pluginImport(p_data.name)
                 p_data.clazz = getattr(p_data.module, '%sPlugin' % p_data.name.title())
                 p_data.conf = _get_plugin_config(p_data.name, p_data.clazz)
-                plugin_required.append(p_data.name) # load just once
+                plugin_required.append(p_data.name)  # load just once
 
             return [p_data]
 
@@ -783,16 +786,18 @@ class Parser(object):
             except MissingRequirement as err:
                 self.error('Could not load plugin %s' % plugin_name, exc_info=err)
 
-        plugin_dict = {x.name: x for x in plugin_list}      # dict(str, PluginData)
-        plugin_data = plugin_dict.pop('admin')              # remove admin plugin from dict
-        plugin_list.remove(plugin_data)                     # remove admin plugin from unsorted list
-        sorted_plugin_list.append(plugin_data)              # put admin plugin as first and discard from the sorting
+        plugin_dict = {x.name: x for x in plugin_list}  # dict(str, PluginData)
+        plugin_data = plugin_dict.pop('admin')  # remove admin plugin from dict
+        plugin_list.remove(plugin_data)  # remove admin plugin from unsorted list
+        sorted_plugin_list.append(plugin_data)  # put admin plugin as first and discard from the sorting
 
         # sort remaining plugins according to their inclusion requirements
         self.bot('Sorting plugins according to their dependency tree...')
         sorted_list = [y for y in \
-                        topological_sort([(x.name, set(x.clazz.requiresPlugins + [z for z in \
-                            x.clazz.loadAfterPlugins if z in plugin_dict])) for x in plugin_list])]
+                       topological_sort([(x.name, set(x.clazz.requiresPlugins + [z for z in \
+                                                                                 x.clazz.loadAfterPlugins if
+                                                                                 z in plugin_dict])) for x in
+                                         plugin_list])]
 
         for plugin_name in sorted_list:
             sorted_plugin_list.append(plugin_dict[plugin_name])
@@ -1021,14 +1026,14 @@ class Parser(object):
                     variables[cleanattr] = getattr(obj, attr)
 
         for key, obj in six.iteritems(kwargs):
-            #self.debug('Type of kwarg %s: %s' % (key, type(obj).__name__))
+            # self.debug('Type of kwarg %s: %s' % (key, type(obj).__name__))
             if obj is None:
                 continue
             if type(obj).__name__ in ('str', 'unicode'):
                 if key not in variables:
                     variables[key] = obj
-            #elif type(obj).__name__ == 'instance':
-                #self.debug('Classname of object %s: %s' % (key, obj.__class__.__name__))
+            # elif type(obj).__name__ == 'instance':
+            # self.debug('Classname of object %s: %s' % (key, obj.__class__.__name__))
             else:
                 for attr in vars(obj):
                     pattern = re.compile('[\W_]+')
@@ -1079,8 +1084,9 @@ class Parser(object):
         """
         if tz_name:
             if not tz_name in b3.timezones.timezones:
-                self.warning("Unknown timezone name [%s]: falling back to auto-detection mode. Valid timezone codes can "
-                             "be found on http://wiki.bigbrotherbot.net/doku.php/usage:available_timezones" % tz_name)
+                self.warning(
+                    "Unknown timezone name [%s]: falling back to auto-detection mode. Valid timezone codes can "
+                    "be found on http://wiki.bigbrotherbot.net/doku.php/usage:available_timezones" % tz_name)
             else:
                 self.info("Using timezone: %s : %s" % (tz_name, b3.timezones.timezones[tz_name]))
                 return b3.timezones.timezones[tz_name], tz_name
@@ -1173,7 +1179,7 @@ class Parser(object):
                                 raise
                             except Exception as msg:
                                 self.error('Could not parse line %s: %s', msg, extract_tb(sys.exc_info()[2]))
-                            
+
                             time.sleep(self.delay2)
 
             time.sleep(self.delay)
@@ -1226,7 +1232,7 @@ class Parser(object):
                 time.sleep(0.001)  # wait a bit so event doesnt get jumbled
                 self.queue.put((self.time(), self.time() + expire, event), True, 2)
                 return True
-            except Queue.Full:
+            except queue.Full:
                 self.error('**** Event queue was full (%s)', self.queue.qsize())
                 return False
 
@@ -1242,7 +1248,7 @@ class Parser(object):
                 self.working = False
 
             event_name = self.getEventName(event.type)
-            self._eventsStats.add_event_wait((self.time() - added)*1000)
+            self._eventsStats.add_event_wait((self.time() - added) * 1000)
             if self.time() >= expire:  # events can only sit in the queue until expire time
                 self.error('**** Event sat in queue too long: %s %s', event_name, self.time() - expire)
             else:
@@ -1270,7 +1276,7 @@ class Parser(object):
                     finally:
                         elapsed = time.clock() - timer_plugin_begin
                         self._eventsStats.add_event_handled(hfunc.__class__.__name__, event_name, elapsed * 1000)
-                    
+
         self.bot('Shutting down event handler')
 
         # releasing lock if it was set by self.shutdown() for instance
@@ -1323,7 +1329,7 @@ class Parser(object):
         # Compare the current cursor position against the current file size,
         # if the cursor is at a number higher than the game log size, then
         # there's a problem
-        if self.input.tell() > filestats.st_size:   
+        if self.input.tell() > filestats.st_size:
             self.debug('Parser: game log is suddenly smaller than it was before (%s bytes, now %s), '
                        'the log was probably either rotated or emptied. B3 will now re-adjust to the new '
                        'size of the log' % (str(self.input.tell()), str(filestats.st_size)))
@@ -1394,7 +1400,7 @@ class Parser(object):
             wrapped_text = []
             for line in text.split(r'\n'):
                 if line.strip() != '':
-                    wrapped_text.extend( self.wrapper.wrap(line) )
+                    wrapped_text.extend(self.wrapper.wrap(line))
         # Apply only wrap
         else:
             wrapped_text = self.wrapper.wrap(text)
@@ -1559,7 +1565,7 @@ class Parser(object):
         Client.auth() method 
         """
         raise NotImplementedError
-    
+
     def sync(self):
         """
         For all connected players returned by self.getPlayerList(), get the matching Client
@@ -1571,7 +1577,7 @@ class Parser(object):
         connects on slot 1.
         """
         raise NotImplementedError
-    
+
     def say(self, msg, *args):
         """
         Broadcast a message to all players
@@ -1641,7 +1647,7 @@ class Parser(object):
         Load the next map/level
         """
         raise NotImplementedError
-        
+
     def changeMap(self, map_name):
         """
         Load a given map/level
@@ -1661,7 +1667,7 @@ class Parser(object):
         Returns a dict having players' id for keys and players' scores for values
         """
         raise NotImplementedError
-        
+
     def inflictCustomPenalty(self, penalty_type, client, reason=None, duration=None, admin=None, data=None):
         """
         Called if b3.admin.penalizeClient() does not know a given penalty type. 
@@ -1680,7 +1686,6 @@ class StubParser(object):
     screen = sys.stdout
 
     def __init__(self):
-
         class StubSTDOut(object):
             def write(self, *args, **kwargs):
                 pass

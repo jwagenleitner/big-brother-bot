@@ -57,6 +57,7 @@ class B3ConfigParserMixin(object):
     """
     Mixin implementing ConfigParser methods more useful for B3 business.
     """
+
     def get(self, *args, **kwargs):
         """
         Return a configuration value as a string.
@@ -436,6 +437,7 @@ class MainConfig(B3ConfigParserMixin):
     Class to use to parse the B3 main config file.
     Responsible for reading the file either in xml or ini format.
     """
+
     def __init__(self, config_parser):
         self._config_parser = config_parser
         self._plugins = []
@@ -454,7 +456,7 @@ class MainConfig(B3ConfigParserMixin):
                 'name': p.get('name'),
                 'conf': p.get('config'),
                 'path': p.get('path'),
-                'disabled':  x is not None and x not in MUST_HAVE_PLUGINS and x.lower() in ('yes', '1', 'on', 'true')
+                'disabled': x is not None and x not in MUST_HAVE_PLUGINS and x.lower() in ('yes', '1', 'on', 'true')
             })
 
     def _init_plugins_from_cfg(self):
@@ -540,7 +542,8 @@ class MainConfig(B3ConfigParserMixin):
         if self.has_option('b3', 'database'):
             dsndict = b3.functions.splitDSN(self.get('b3', 'database'))
             if not dsndict:
-                analysis.append('invalid database source name specified in b3::database (%s)' % self.get('b3', 'database'))
+                analysis.append(
+                    'invalid database source name specified in b3::database (%s)' % self.get('b3', 'database'))
             elif dsndict['protocol'] not in b3.storage.PROTOCOLS:
                 analysis.append('invalid storage protocol specified in b3::database (%s) : '
                                 'valid protocols are : %s' % (dsndict['protocol'], ', '.join(b3.storage.PROTOCOLS)))
@@ -574,6 +577,7 @@ class MainConfig(B3ConfigParserMixin):
             if hasattr(attr, '__call__'):
                 def newfunc(*args, **kwargs):
                     return attr(*args, **kwargs)
+
                 return newfunc
             else:
                 return attr

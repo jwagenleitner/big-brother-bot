@@ -35,7 +35,6 @@ from b3.storage.cursor import Cursor as DBCursor
 
 
 class PostgresqlStorage(DatabaseStorage):
-
     _reconnectDelay = 60
     _reInsert = re.compile(r'''^INSERT''', re.IGNORECASE)
 
@@ -63,9 +62,11 @@ class PostgresqlStorage(DatabaseStorage):
         """
         super(PostgresqlStorage, self).__init__(dsn, dsnDict, console)
         if not self.dsnDict['host']:
-            raise AttributeError("invalid PostgreSQL host in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
+            raise AttributeError(
+                "invalid PostgreSQL host in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
         if not self.dsnDict['path'] or not self.dsnDict['path'][1:]:
-            raise AttributeError("missing PostgreSQL database name in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
+            raise AttributeError(
+                "missing PostgreSQL database name in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
 
         patch_query_builder(self.console)
 
@@ -84,7 +85,9 @@ class PostgresqlStorage(DatabaseStorage):
                              'failed less than %s seconds ago: exiting...' % self._reconnectDelay)
         else:
             self.shutdown()
-            self.console.bot('Connecting to PostgreSQL database: %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s...', self.dsnDict)
+            self.console.bot(
+                'Connecting to PostgreSQL database: %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s...',
+                self.dsnDict)
 
             try:
                 import psycopg2
@@ -110,17 +113,21 @@ class PostgresqlStorage(DatabaseStorage):
                 if not self.getTables():
 
                     try:
-                        self.console.info("Missing PostgreSQL database tables: importing SQL file: %s..." % b3.getAbsolutePath("@b3/sql/postgresql/b3.sql"))
+                        self.console.info(
+                            "Missing PostgreSQL database tables: importing SQL file: %s..." % b3.getAbsolutePath(
+                                "@b3/sql/postgresql/b3.sql"))
                         self.queryFromFile("@b3/sql/postgresql/b3.sql")
                     except Exception as e:
                         self.shutdown()
-                        self.console.critical("Missing PostgreSQL database tables. You need to create the necessary tables for "
-                                              "B3 to work. You can do so by importing the following SQL script into your "
-                                              "database: %s. An attempt of creating tables automatically just failed: %s" %
-                                              (b3.getAbsolutePath("@b3/sql/postgresql/b3.sql"), e))
+                        self.console.critical(
+                            "Missing PostgreSQL database tables. You need to create the necessary tables for "
+                            "B3 to work. You can do so by importing the following SQL script into your "
+                            "database: %s. An attempt of creating tables automatically just failed: %s" %
+                            (b3.getAbsolutePath("@b3/sql/postgresql/b3.sql"), e))
 
             except Exception as e:
-                self.console.error('Database connection failed: working in remote mode: %s - %s', e, extract_tb(sys.exc_info()[2]))
+                self.console.error('Database connection failed: working in remote mode: %s - %s', e,
+                                   extract_tb(sys.exc_info()[2]))
                 self.db = None
                 self._lastConnectAttempt = time()
                 if self._consoleNotice:
@@ -176,7 +183,7 @@ class PostgresqlStorage(DatabaseStorage):
             self.query("TRUNCATE %s RESTART IDENTITY CASCADE;" % ', '.join(table))
         else:
             if not table in current_tables:
-                 raise KeyError("could not find table '%s' in the database" % table)
+                raise KeyError("could not find table '%s' in the database" % table)
             self.query("TRUNCATE %s RESTART IDENTITY CASCADE;" % table)
 
     def _query(self, query, bindata=None):
@@ -191,7 +198,7 @@ class PostgresqlStorage(DatabaseStorage):
         try:
             # postgresql doesn't support backticks: the query will be logged with backticks since
             # logging is handled in 'query()' but we will strip them out before executing the query.
-            newquery = query.replace('`','').strip()
+            newquery = query.replace('`', '').strip()
 
             cursor = self.db.cursor()
             if bindata is None:
@@ -233,7 +240,6 @@ from b3.querybuilder import QueryBuilder
 
 
 def patch_query_builder(console):
-
     def new_escape(self, word):
         """
         Escape quotes from a given string.

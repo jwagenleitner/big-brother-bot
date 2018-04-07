@@ -27,9 +27,10 @@ from __future__ import print_function, absolute_import
 import os
 import re
 import string
-import six
 from distutils import version
 from time import sleep
+
+import six
 
 import b3
 import b3.config
@@ -68,7 +69,7 @@ class B3version(version.StrictVersion):
 $''', re.VERBOSE)
     prerelease_order = {'dev': 0, 'a': 1, 'b': 2}
 
-    def parse (self, vstring):
+    def parse(self, vstring):
         """
         Parse the version number from a string.
         :param vstring: The version string
@@ -99,7 +100,7 @@ $''', re.VERBOSE)
         else:
             self.build_num = None
 
-    def __cmp__ (self, other):
+    def __cmp__(self, other):
         """
         Compare current object with another one.
         :param other: The other object
@@ -153,6 +154,7 @@ class DBUpdate(object):
     """
     Console database update procedure.
     """
+
     def __init__(self, config=None):
         """
         Object constructor.

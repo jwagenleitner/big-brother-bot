@@ -24,14 +24,13 @@
 
 from __future__ import print_function, absolute_import
 
-import re
-
 __author__ = 'ThorN'
 __version__ = '1.3'
 
+import re
+
 
 class PunkBuster(object):
-
     console = None
 
     # : Player List: [Slot #] [GUID] [Address] [Status] [Power] [Auth Rate] [Recent SS] [O/S] [Name]
@@ -50,8 +49,7 @@ class PunkBuster(object):
         (?:\)\s*"|\)\s*|\s+")                       # detect start of name
           (?P<name>.*?)"?                           # name
         \s*$                                        # end of line
-        """, re.IGNORECASE|re.VERBOSE)
-
+        """, re.IGNORECASE | re.VERBOSE)
 
     def __init__(self, console):
         """
@@ -175,7 +173,7 @@ class PunkBuster(object):
                     d['guid'] = d['pbid']
                     lastslot = int(m.group('slot'))
                     players[str(lastslot - 1)] = d
-                    
+
                 else:
                     self.console.debug('Duplicate or incorrect PB slot number - client ignored %s '
                                        'lastslot %s' % (m.group('slot'), lastslot))
@@ -189,7 +187,7 @@ class PunkBuster(object):
             self.send('PB_SV_%s %s' % (key.title(), value))
 
     def __getattr__(self, key):
-        try:        
+        try:
             return self.__dict__[key]
         except:
             return self.send('PB_SV_%s' % key.title())

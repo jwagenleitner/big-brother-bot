@@ -24,6 +24,9 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'xlr8or, Courgette, Fenix'
+__version__ = '4.33'
+
 import re
 import time
 
@@ -40,9 +43,6 @@ from b3.functions import prefixText
 from b3.functions import start_daemon_thread
 from b3.functions import time2minutes
 from b3.parsers.q3a.abstractParser import AbstractParser
-
-__author__ = 'xlr8or, Courgette, Fenix'
-__version__ = '4.33'
 
 
 class Iourt43Client(Client):
@@ -789,7 +789,7 @@ class Iourt43Parser(AbstractParser):
                     if hasattr(client, 'gear') and k == 'gear' and client.gear != v:
                         self.queueEvent(b3.events.Event(self.getEventID('EVT_CLIENT_GEAR_CHANGE'), v, client))
                     if not k.startswith('_') and k not in (
-                    'login', 'password', 'groupBits', 'maskLevel', 'autoLogin', 'greeting'):
+                            'login', 'password', 'groupBits', 'maskLevel', 'autoLogin', 'greeting'):
                         setattr(client, k, v)
             else:
                 # make a new client

@@ -25,18 +25,17 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'ThorN, Courgette'
+__version__ = '1.5'
+
 import re
 import sys
 import threading
 import time
 import traceback
 
-__author__ = 'ThorN, Courgette'
-__version__ = '1.5'
-
 
 class ReMatcher(object):
-
     _re = None
 
     def match(self, regexp, value):
@@ -55,8 +54,8 @@ class ReMatcher(object):
 
     results = property(_get_match)
 
-class CronTab(object):
 
+class CronTab(object):
     _second = None
     _minute = None
     _hour = None
@@ -180,13 +179,13 @@ class CronTab(object):
             return -1
         elif r.match(r'^([0-9]+)$', rate):
             if int(rate) >= maxrate:
-                raise ValueError('%s cannot be over %s' % (rate, maxrate-1))
+                raise ValueError('%s cannot be over %s' % (rate, maxrate - 1))
             return int(rate)
         elif r.match(r'^\*/([0-9]+)$', rate):
             # */10 = [0, 10, 20, 30, 40, 50]
             step = int(r.results.group(1))
             if step > maxrate:
-                raise ValueError('%s cannot be over every %s' % (rate, maxrate-1))
+                raise ValueError('%s cannot be over every %s' % (rate, maxrate - 1))
             return range(0, maxrate, step)
         elif r.match(r'^(?P<lmin>[0-9]+)-(?P<lmax>[0-9]+)(/(?P<step>[0-9]+))?$', rate):
             # 10-20 = [0, 10, 20, 30, 40, 50]
@@ -200,7 +199,7 @@ class CronTab(object):
             if step > maxrate:
                 raise ValueError('%s is out of accepted range 0-%s' % (step, maxrate))
             if lmin < 0 or lmax > maxrate:
-                raise ValueError('%s is out of accepted range 0-%s' % (rate, maxrate-1))
+                raise ValueError('%s is out of accepted range 0-%s' % (rate, maxrate - 1))
             if lmin > lmax:
                 raise ValueError('%s cannot be greater than %s in %s' % (lmin, lmax, rate))
             return range(lmin, lmax + 1, step)
@@ -231,6 +230,7 @@ class CronTab(object):
         timematch = timematch and self._match(self.dow, timetuple[6])
         return timematch
 
+
 class OneTimeCronTab(CronTab):
 
     def __init__(self, command, second=0, minute='*', hour='*', day='*', month='*', dow='*'):
@@ -242,7 +242,6 @@ class OneTimeCronTab(CronTab):
 
 
 class PluginCronTab(CronTab):
-
     plugin = None
 
     def __init__(self, plugin, command, second=0, minute='*', hour='*', day='*', month='*', dow='*'):
@@ -268,6 +267,7 @@ class PluginCronTab(CronTab):
         """
         if self.plugin.isEnabled():
             CronTab.run(self)
+
 
 class Cron(object):
 

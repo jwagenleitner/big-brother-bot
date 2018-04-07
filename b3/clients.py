@@ -38,7 +38,6 @@ from b3 import functions
 
 
 class ClientVar(object):
-
     value = None
 
     def __init__(self, value):
@@ -80,8 +79,8 @@ class ClientVar(object):
             return 0
         return len(self.value)
 
-class Client(object):
 
+class Client(object):
     ## PVT
     _autoLogin = 1
     _data = None
@@ -124,20 +123,14 @@ class Client(object):
         """
         self._pluginData = {}
         self.state = b3.STATE_UNKNOWN
-        self._data = {}        
+        self._data = {}
 
         # make sure to set console before anything else
         if 'console' in kwargs:
             self.console = kwargs['console']
-            
+
         for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   PLUGIN VARIABLES                                                                                               #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def isvar(self, plugin, key):
         """
@@ -205,12 +198,6 @@ class Client(object):
             del self._pluginData[id(plugin)][key]
         except Exception:
             pass
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   FIELDS IN OBJECT                                                                                               #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def getAliases(self):
         return self.console.storage.getClientAliases(self)
@@ -373,12 +360,6 @@ class Client(object):
     def getattr(self, name, default=None):
         return getattr(self, name, default)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   FIELDS IN STORAGE                                                                                              #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def _set_auto_login(self, autoLogin):
         self._autoLogin = autoLogin
 
@@ -390,6 +371,7 @@ class Client(object):
     # -----------------------
 
     _connections = 0
+
     def _set_connections(self, v):
         self._connections = int(v)
 
@@ -550,7 +532,7 @@ class Client(object):
             if self.console:
                 self.console.verbose2('Aborted making alias for cid %s: name is the same' % self.cid)
             return
-        if self.cid == '-1' or self.cid == 'Server': # bfbc2 addition
+        if self.cid == '-1' or self.cid == 'Server':  # bfbc2 addition
             if self.console:
                 self.console.verbose2('Aborted making alias for cid %s: must be B3' % self.cid)
             return
@@ -568,8 +550,8 @@ class Client(object):
     def _get_exactName(self):
         return self._exactName
 
-    name = property(_get_name, _set_name)               # cleaned
-    exactName = property(_get_exactName, _set_name)     # with color codes
+    name = property(_get_name, _set_name)  # cleaned
+    exactName = property(_get_exactName, _set_name)  # with color codes
 
     # -----------------------
 
@@ -803,7 +785,7 @@ class Client(object):
                     'admin': admin,
                     'timeAdd': notice_object.timeAdd
                 }, client=self))
-            
+
             return notice_object
 
     def makeAlias(self, name):
@@ -815,7 +797,7 @@ class Client(object):
             return
 
         try:
-            alias = self.console.storage.getClientAlias(Alias(clientId=self.id,alias=name))
+            alias = self.console.storage.getClientAlias(Alias(clientId=self.id, alias=name))
         except KeyError:
             alias = None
 
@@ -1039,6 +1021,7 @@ class ClientWarning(Penalty):
 
     warning = property(_get_reason, _set_reason)
 
+
 class ClientNotice(Penalty):
     """
     Represent a Notice.
@@ -1053,17 +1036,20 @@ class ClientNotice(Penalty):
 
     notice = property(_get_reason, _set_reason)
 
+
 class ClientBan(Penalty):
     """
     Represent a Ban.
     """
     type = 'Ban'
 
+
 class ClientTempBan(Penalty):
     """
     Represent a TempBan.
     """
     type = 'TempBan'
+
 
 class ClientKick(Penalty):
     """
@@ -1133,7 +1119,8 @@ class Alias(Struct):
         return console.storage.setClientAlias(self)
 
     def __str__(self):
-        return "Alias(id=%s, alias=\"%s\", clientId=%s, numUsed=%s)" % (self.id, self.alias, self.clientId, self.numUsed)
+        return "Alias(id=%s, alias=\"%s\", clientId=%s, numUsed=%s)" % (
+        self.id, self.alias, self.clientId, self.numUsed)
 
 
 class IpAlias(Struct):
@@ -1195,7 +1182,7 @@ class IpAlias(Struct):
         if not self.id:
             self.timeAdd = console.time()
         return console.storage.setClientIpAddress(self)
-    
+
     def __str__(self):
         return "IpAlias(id=%s, ip=\"%s\", clientId=%s, numUsed=%s)" % (self.id, self.ip, self.clientId, self.numUsed)
 
@@ -1265,7 +1252,6 @@ class Group(Struct):
 
 
 class Clients(dict):
-
     _authorizing = False
     _exactNameIndex = None
     _guidIndex = None
@@ -1336,7 +1322,7 @@ class Clients(dict):
         except Exception:
             for cid, c in self.items():
                 if c.exactName and c.exactName.lower() == name:
-                    #self.console.debug('Found client by exact name %s = %s', name, c.exactName)
+                    # self.console.debug('Found client by exact name %s = %s', name, c.exactName)
                     self._exactNameIndex[name] = c.cid
                     return c
         return None
@@ -1462,7 +1448,7 @@ class Clients(dict):
         try:
             return self[self._guidIndex[guid]]
         except Exception:
-            for cid,c in self.items():
+            for cid, c in self.items():
                 if c.guid and c.guid == guid:
                     self._guidIndex[guid] = c.cid
                     return c
@@ -1486,10 +1472,9 @@ class Clients(dict):
             # self.console.debug('found client by CID %s = %s', cid, c.name)
             if c.cid == cid:
                 return c
-            else: 
+            else:
                 return None
         return None
-
 
     def escape_string(self, value, mapping=None):
         """
@@ -1568,7 +1553,7 @@ class Clients(dict):
                 c.console = self.console
                 c.exactName = c.name
                 clients.append(c)
- 
+
             return clients
 
     def disconnect(self, client):
@@ -1579,7 +1564,7 @@ class Clients(dict):
         client.connected = False
         if client.cid is None:
             return
-        
+
         cid = client.cid
         if cid in self:
             self[cid] = None
@@ -1592,8 +1577,8 @@ class Clients(dict):
         """
         Reset the indexes.
         """
-        self._nameIndex    = {}
-        self._guidIndex    = {}
+        self._nameIndex = {}
+        self._guidIndex = {}
         self._exactNameIndex = {}
 
     def newClient(self, cid, **kwargs):
@@ -1608,7 +1593,7 @@ class Clients(dict):
         self.console.debug('Client connected: [%s] %s - %s (%s)', self[client.cid].cid,
                            self[client.cid].name, self[client.cid].guid, self[client.cid].data)
         self.console.queueEvent(self.console.getEvent('EVT_CLIENT_CONNECT', data=client, client=client))
-    
+
         if client.guid and not client.bot:
             client.auth()
         elif not client.authed:

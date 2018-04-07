@@ -24,10 +24,10 @@
 
 from __future__ import print_function, absolute_import
 
-import six
-
-__author__  = 'ThorN'
+__author__ = 'ThorN'
 __version__ = '1.3.0'
+
+import six
 
 
 class QueryBuilder(object):
@@ -44,7 +44,8 @@ class QueryBuilder(object):
         Escape quotes from a given string.
         :param word: The string on which to perform the escape
         """
-        if isinstance(word, int) or isinstance(word, six.integer_types) or isinstance(word, complex) or isinstance(word, float):
+        if isinstance(word, int) or isinstance(word, six.integer_types) or isinstance(word, complex) or isinstance(word,
+                                                                                                                   float):
             return str(word)
         elif word is None:
             return '"None"'
@@ -213,7 +214,7 @@ class QueryBuilder(object):
 
         return " ".join(sql)
 
-    def UpdateQuery(self, data, table, where, delayed=None): 
+    def UpdateQuery(self, data, table, where, delayed=None):
         """
         Construct a SQL update query.
         :param data: A dictionary of key-value pairs for the update.
@@ -237,7 +238,7 @@ class QueryBuilder(object):
 
         return sql
 
-    def InsertQuery(self, data, table, delayed=None): 
+    def InsertQuery(self, data, table, delayed=None):
         """
         Construct a SQL insert query.
         :param data: A dictionary of key-value pairs for the update.
@@ -261,7 +262,7 @@ class QueryBuilder(object):
 
         return sql
 
-    def ReplaceQuery(self, data, table, delayed=None): 
+    def ReplaceQuery(self, data, table, delayed=None):
         """
         Construct a SQL replace query.
         :param data: A dictionary of key-value pairs for the update.

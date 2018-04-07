@@ -24,13 +24,13 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'ThorN'
+__version__ = '1.7.2'
+
 import logging
 import sys
 from logging import CRITICAL, ERROR, INFO, WARNING, DEBUG
 from logging import handlers
-
-__author__ = 'ThorN'
-__version__ = '1.7.2'
 
 CONSOLE = 22
 BOT = 21
@@ -38,13 +38,13 @@ VERBOSE = 9
 VERBOSE2 = 8
 
 logging.addLevelName(CRITICAL, 'CRITICAL')
-logging.addLevelName(ERROR,    'ERROR   ')
-logging.addLevelName(INFO,     'INFO    ')
-logging.addLevelName(WARNING,  'WARNING ')
-logging.addLevelName(DEBUG,    'DEBUG   ')
-logging.addLevelName(CONSOLE,  'CONSOLE ')
-logging.addLevelName(BOT,      'BOT     ')
-logging.addLevelName(VERBOSE,  'VERBOSE ')
+logging.addLevelName(ERROR, 'ERROR   ')
+logging.addLevelName(INFO, 'INFO    ')
+logging.addLevelName(WARNING, 'WARNING ')
+logging.addLevelName(DEBUG, 'DEBUG   ')
+logging.addLevelName(CONSOLE, 'CONSOLE ')
+logging.addLevelName(BOT, 'BOT     ')
+logging.addLevelName(VERBOSE, 'VERBOSE ')
 logging.addLevelName(VERBOSE2, 'VERBOS2 ')
 
 # this has to be done to prevent callstack checking in the logging
@@ -77,32 +77,32 @@ class OutputHandler(logging.Logger):
         """
         Log 'msg % args' with severity 'CONSOLE'.
         """
-        self.log(CONSOLE, msg, *args, **kwargs) 
+        self.log(CONSOLE, msg, *args, **kwargs)
 
     def bot(self, msg, *args, **kwargs):
         """
         Log 'msg % args' with severity 'BOT'.
         """
-        self.log(BOT, msg, *args, **kwargs) 
+        self.log(BOT, msg, *args, **kwargs)
 
     def verbose(self, msg, *args, **kwargs):
         """
         Log 'msg % args' with severity 'VERBOSE'.
         """
-        self.log(VERBOSE, msg, *args, **kwargs) 
+        self.log(VERBOSE, msg, *args, **kwargs)
 
     def verbose2(self, msg, *args, **kwargs):
         """
         Log 'msg % args' with severity 'VERBOSE2'.
         """
-        self.log(VERBOSE2, msg, *args, **kwargs) 
+        self.log(VERBOSE2, msg, *args, **kwargs)
 
     def raiseError(self, raiseError, msg, *args, **kwargs):
         """
         Log 'msg % args' with severity 'ERROR'.
         And raises the exception.
         """
-        self.log(logging.ERROR, msg, *args, **kwargs) 
+        self.log(logging.ERROR, msg, *args, **kwargs)
         raise raiseError(msg % args)
 
 
@@ -110,6 +110,7 @@ class STDOutLogger:
     """
     A class to redirect STDOut messages to the logger.
     """
+
     def __init__(self, logger):
         """
         Object constructor.
@@ -132,6 +133,7 @@ class STDErrLogger:
     """
     A class to redirect STDErr messages to the logger.
     """
+
     def __init__(self, logger):
         """
         Object constructor.

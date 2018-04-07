@@ -36,6 +36,7 @@ class PymysqlStorage(DatabaseStorage):
     """
     Base inheritance class for MysqlStorage when using pymysql driver.
     """
+
     def __init__(self, dsn, dsnDict, console):
         """
         Object constructor.
@@ -77,6 +78,7 @@ class MysqlConnectorStorage(DatabaseStorage):
     """
     Base inheritance class for MysqlStorage when using mysql.connector driver.
     """
+
     def __init__(self, dsn, dsnDict, console):
         """
         Object constructor.
@@ -118,6 +120,7 @@ class MySQLdbStorage(DatabaseStorage):
     """
     Base inheritance class for MysqlStorage when using MySQLdb driver.
     """
+
     def __init__(self, dsn, dsnDict, console):
         """
         Object constructor.
@@ -156,7 +159,6 @@ class MySQLdbStorage(DatabaseStorage):
 
 
 class MysqlStorage(DatabaseStorage):
-
     _reconnectDelay = 60
     protocol = 'mysql'
 
@@ -205,9 +207,11 @@ class MysqlStorage(DatabaseStorage):
         """
         super(MysqlStorage, self).__init__(dsn, dsnDict, console)
         if not self.dsnDict['host']:
-            raise AttributeError("invalid MySQL host in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
+            raise AttributeError(
+                "invalid MySQL host in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
         if not self.dsnDict['path'] or not self.dsnDict['path'][1:]:
-            raise AttributeError("missing MySQL database name in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
+            raise AttributeError(
+                "missing MySQL database name in %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s" % self.dsnDict)
 
     def connect(self):
         """
@@ -224,7 +228,9 @@ class MysqlStorage(DatabaseStorage):
         else:
             # close the active connection (if any)
             self.shutdown()
-            self.console.bot('Connecting to MySQL database: %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s...', self.dsnDict)
+            self.console.bot(
+                'Connecting to MySQL database: %(protocol)s://%(user)s:******@%(host)s:%(port)s%(path)s...',
+                self.dsnDict)
 
             try:
                 # create the connection instance using the specified connector
@@ -248,16 +254,20 @@ class MysqlStorage(DatabaseStorage):
                 if not self.getTables():
 
                     try:
-                        self.console.info("Missing MySQL database tables: importing SQL file: %s..." % b3.getAbsolutePath("@b3/sql/mysql/b3.sql"))
+                        self.console.info(
+                            "Missing MySQL database tables: importing SQL file: %s..." % b3.getAbsolutePath(
+                                "@b3/sql/mysql/b3.sql"))
                         self.queryFromFile("@b3/sql/mysql/b3.sql")
                     except Exception as e:
                         self.shutdown()
-                        self.console.critical("Missing MySQL database tables. You need to create the necessary tables for "
-                                              "B3 to work. You can do so by importing the following SQL script into your "
-                                              "database: %s. An attempt of creating tables automatically just failed: %s" %
-                                              (b3.getAbsolutePath("@b3/sql/mysql/b3.sql"), e))
+                        self.console.critical(
+                            "Missing MySQL database tables. You need to create the necessary tables for "
+                            "B3 to work. You can do so by importing the following SQL script into your "
+                            "database: %s. An attempt of creating tables automatically just failed: %s" %
+                            (b3.getAbsolutePath("@b3/sql/mysql/b3.sql"), e))
             except Exception as e:
-                self.console.error('Database connection failed: working in remote mode: %s - %s', e, extract_tb(sys.exc_info()[2]))
+                self.console.error('Database connection failed: working in remote mode: %s - %s', e,
+                                   extract_tb(sys.exc_info()[2]))
                 self.db = None
                 self._lastConnectAttempt = time()
                 if self._consoleNotice:
@@ -297,7 +307,7 @@ class MysqlStorage(DatabaseStorage):
                     self.query("TRUNCATE TABLE %s;" % v)
             else:
                 if not table in current_tables:
-                     raise KeyError("could not find table '%s' in the database" % table)
+                    raise KeyError("could not find table '%s' in the database" % table)
                 self.query("TRUNCATE TABLE %s;" % table)
         finally:
             self.query("""SET FOREIGN_KEY_CHECKS=1;""")

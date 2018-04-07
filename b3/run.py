@@ -24,6 +24,9 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'ThorN'
+__version__ = '1.8'
+
 import argparse
 import os
 import sys
@@ -36,9 +39,6 @@ import b3.pkg_handler
 from b3 import HOMEDIR, B3_CONFIG_GENERATOR
 from b3.functions import console_exit
 from b3.update import DBUpdate
-
-__author__ = 'ThorN'
-__version__ = '1.8'
 
 modulePath = b3.pkg_handler.resource_directory(__name__)
 
@@ -57,7 +57,7 @@ def run(options):
     Run B3 in console.
     :param options: command line options
     """
-    analysis = None     # main config analysis result
+    analysis = None  # main config analysis result
 
     try:
 
@@ -110,9 +110,12 @@ def run(options):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('-c', '--config', dest='config', default=None, metavar='b3.ini', help='B3 config file. Example: -c b3.ini')
-    p.add_argument('-u', '--update', action='store_true', dest='update', default=False, help='Update B3 database to latest version')
-    p.add_argument('-v', '--version', action='version', default=False, version=b3.getB3versionString(), help='Show B3 version and exit')
+    p.add_argument('-c', '--config', dest='config', default=None, metavar='b3.ini',
+                   help='B3 config file. Example: -c b3.ini')
+    p.add_argument('-u', '--update', action='store_true', dest='update', default=False,
+                   help='Update B3 database to latest version')
+    p.add_argument('-v', '--version', action='version', default=False, version=b3.getB3versionString(),
+                   help='Show B3 version and exit')
 
     (options, args) = p.parse_known_args()
 

@@ -24,6 +24,9 @@
 
 from __future__ import print_function, absolute_import
 
+__author__ = 'ThorN, Courgette'
+__version__ = '1.30.1'
+
 import re
 
 from six.moves.configparser import NoOptionError
@@ -33,9 +36,6 @@ import b3.config
 import b3.events
 import b3.functions
 from b3 import __version__ as b3_version
-
-__author__ = 'ThorN, Courgette'
-__version__ = '1.30.1'
 
 
 class Plugin(object):
@@ -238,6 +238,7 @@ class Plugin(object):
                          should return the valid itself (or modified if it can be done) or raise ValueError if the value
                           is not acceptable.
         """
+
         def _get_string(value):
             """convert the given value to str"""
             self.verbose('trying to convert value to string : %s', value)
@@ -300,7 +301,8 @@ class Plugin(object):
         }
 
         if not self.config:
-            self.warning('could not find %s::%s : no configuration file loaded, using default : %s', section, option, default)
+            self.warning('could not find %s::%s : no configuration file loaded, using default : %s', section, option,
+                         default)
             return default
 
         try:
@@ -314,19 +316,22 @@ class Plugin(object):
             except KeyError:
                 val = default
                 self.warning('could not convert %s::%s : invalid value type specified (%s) : expecting one of (%s), '
-                             'using default : %s', section, option , value_type, ', '.join(map(str, handlers.keys())), default)
+                             'using default : %s', section, option, value_type, ', '.join(map(str, handlers.keys())),
+                             default)
             else:
                 try:
                     val = func(val)
                 except (ValueError, KeyError) as e:
-                    self.warning('could not convert %s::%s (%s) : %s, using default : %s', section, option , val, e, default)
+                    self.warning('could not convert %s::%s (%s) : %s, using default : %s', section, option, val, e,
+                                 default)
                     val = default
 
         if validate:
             try:
                 val = validate(val)
             except ValueError as e:
-                self.warning('invalid value specified for %s::%s (%s) : %s,  using default : %s', section, option, val, e, default)
+                self.warning('invalid value specified for %s::%s (%s) : %s,  using default : %s', section, option, val,
+                             e, default)
                 val = default
 
         self.debug('loaded value from configuration file : %s::%s = %s', section, option, val)
@@ -380,8 +385,8 @@ class Plugin(object):
         """
         event_name = self.console.getEventName(event_id)
         if event_id not in self.events:
-             # make sure the event we are going to map has been registered already
-             raise AssertionError('%s is not an event registered for plugin %s' % (event_name, self.__class__.__name__))
+            # make sure the event we are going to map has been registered already
+            raise AssertionError('%s is not an event registered for plugin %s' % (event_name, self.__class__.__name__))
 
         hook = getattr(self, hook.__name__, None)
         if not callable(hook):
@@ -477,19 +482,19 @@ class Plugin(object):
     def warning(self, msg, *args, **kwargs):
         """
         Log a WARNING message to the main log.
-        """        
+        """
         self.console.warning('%s: %s' % (self.__class__.__name__, msg), *args, **kwargs)
 
     def info(self, msg, *args, **kwargs):
         """
         Log an INFO message to the main log.
-        """        
+        """
         self.console.info('%s: %s' % (self.__class__.__name__, msg), *args, **kwargs)
 
     def exception(self, msg, *args, **kwargs):
         """
         Log an EXCEPTION message to the main log.
-        """        
+        """
         self.console.exception('%s: %s' % (self.__class__.__name__, msg), *args, **kwargs)
 
     def critical(self, msg, *args, **kwargs):
@@ -581,6 +586,7 @@ class PluginData(object):
     """
     Class used to hold plugin data needed for plugin instance initialization.
     """
+
     def __init__(self, name, module=None, clazz=None, conf=None, disabled=False):
         """
         Inizialize a new PluginData object instance
