@@ -1185,7 +1185,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         clients = self.console.clients.getList()
         scores = self._getScores(clients)
         decorated = [(scores.get(c.id, 0), c) for c in clients if c.team in (b3.TEAM_BLUE, b3.TEAM_RED)]
-        decorated.sort()
+        decorated.sort(key=lambda x: x[0])
         players = [c for score, c in decorated]
         n = len(players) // 2
         blue = players[:n]
