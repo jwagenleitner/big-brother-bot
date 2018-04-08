@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __version__ = '1.35'
 __author__ = 'ThorN, xlr8or, Courgette, Ozon, Fenix'
 
@@ -47,12 +49,11 @@ from b3.functions import minutesStr
 
 # pylint: disable-msg=E1103
 class AdminPlugin(b3.plugin.Plugin):
-
     _commands = {}
 
     _tkPlugin = None
     _parseUserCmdRE = re.compile(r"^(?P<cid>'[^']{2,}'|[0-9]+|[^\s]{2,}|@[0-9]+)(\s+(?P<parms>.*))?$")
-    _long_tempban_max_duration = 1440   # 60m/h x 24h = 1440m = 1d
+    _long_tempban_max_duration = 1440  # 60m/h x 24h = 1440m = 1d
     _warn_command_abusers = False
     _announce_registration = True
     _past_bans_check_rate = 10
@@ -72,7 +73,7 @@ class AdminPlugin(b3.plugin.Plugin):
     warn_delay = 15
     warn_instant_kick_num = 5
     warn_alert_kick_num = 3
-    warn_reasons = {}                   # dict<warning keyword, tuple(warning duration in minute, warning reason)>
+    warn_reasons = {}  # dict<warning keyword, tuple(warning duration in minute, warning reason)>
 
     _noreason_level = 80
     _long_tempban_level = 80
@@ -96,7 +97,7 @@ class AdminPlugin(b3.plugin.Plugin):
         "groups_in": "^7%s^7 is in groups %s",
         "say": "^7%s^7: %s",
         "player_id": "^7%s [^2%s^7]",
-        "player_id_reverse":  "[^2%s^7] ^7%s^7",
+        "player_id_reverse": "[^2%s^7] ^7%s^7",
         "seen": "^7%s ^7was last seen on %s",
         "help_no_command": "^7Command not found %s",
         "lookup_found": "^7[^2@%s^7] %s^7 [^3%s^7]",
@@ -133,12 +134,6 @@ class AdminPlugin(b3.plugin.Plugin):
         "no_aliases": "^7%s^7 has no aliases",
         "cmd_plugin_disabled": "^7cannot execute command. Plugin disabled"
     }
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onLoadConfig(self):
         """
@@ -239,7 +234,8 @@ class AdminPlugin(b3.plugin.Plugin):
                          'using default: %s' % self._messages['regme_confirmation'])
         except ValueError as e:
             self.error('could not load messages/regme_confirmation config value: %s' % e)
-            self.debug('using default value (%s) for messages/regme_confirmation' % self._messages['regme_confirmation'])
+            self.debug(
+                'using default value (%s) for messages/regme_confirmation' % self._messages['regme_confirmation'])
 
     def load_config_warn(self):
         """
@@ -451,10 +447,12 @@ class AdminPlugin(b3.plugin.Plugin):
                 # no proper groups available, cannot continue
                 self.critical('seems your groups table in the database is empty: please recreate your database using '
                               'the proper sql syntax. To do so you can import in your database the following SQL '
-                              'script: %s - (%s)' % (b3.getAbsolutePath("@b3/sql/%s/b3.sql" % self.console.storage.dsnDict['protocol']), msg))
+                              'script: %s - (%s)' % (
+                                  b3.getAbsolutePath("@b3/sql/%s/b3.sql" % self.console.storage.dsnDict['protocol']),
+                                  msg))
 
             if 'iamgod' in self._commands and \
-                self._commands['iamgod'].level is not None and \
+                    self._commands['iamgod'].level is not None and \
                     self._commands['iamgod'].level[0] >= 0:
                 ## here the config file for the admin plugin explicitly enables the iamgod command
                 if len(superadmins) == 0:
@@ -471,9 +469,11 @@ class AdminPlugin(b3.plugin.Plugin):
 
         # install past bans check crontab
         if self._past_bans_check_rate > 0:
-            self.debug('installing past bans check crontab: B3 will check for banned players every %s seconds' % self._past_bans_check_rate)
+            self.debug(
+                'installing past bans check crontab: B3 will check for banned players every %s seconds' % self._past_bans_check_rate)
             self.console.cron.cancel(id(self._past_bans_crontab))
-            self._past_bans_crontab = b3.cron.PluginCronTab(self, self.doPastBansCheck, minute='*', second= '*/%s' % self._past_bans_check_rate)
+            self._past_bans_crontab = b3.cron.PluginCronTab(self, self.doPastBansCheck, minute='*',
+                                                            second='*/%s' % self._past_bans_check_rate)
             self.console.cron.add(self._past_bans_crontab)
 
     def registerCommand(self, plugin, command, level, handler, alias=None, secretLevel=None):
@@ -543,12 +543,6 @@ class AdminPlugin(b3.plugin.Plugin):
         except KeyError:
             self.debug('command not found: %s' % name)
             return False
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENTS                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def OnPrivateSay(self, event):
         """
@@ -739,12 +733,6 @@ class AdminPlugin(b3.plugin.Plugin):
                         # in the configuration file thus we fail in retrieving the group from the storage)
                         self.warning("could not format 'cmd_not_enough_access' message (using default): %s" % e)
                         event.client.message('^7You do not have sufficient access to use %s%s' % (self.cmdPrefix, cmd))
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    UTILITIES                                                                                                     #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def aquireCmdLock(self, cmd, client, delay, all=True):
         """
@@ -1165,12 +1153,6 @@ class AdminPlugin(b3.plugin.Plugin):
         except Exception as err:
             self.error(err)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    COMMANDS                                                                                                      #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def cmd_die(self, data, client, cmd=None):
         """
         - shutdown b3
@@ -1584,7 +1566,7 @@ class AdminPlugin(b3.plugin.Plugin):
         if not m:
             client.message(self.getMessage('invalid_parameters'))
         else:
-        
+
             cid, keyword = m.groups()
 
             try:
@@ -1702,7 +1684,8 @@ class AdminPlugin(b3.plugin.Plugin):
         else:
             sclient = self.findClientPrompt(m[0], client)
             if sclient:
-                cmd.sayLoudOrPM(client, '^7Found player matching %s [^2%s^7] %s' % (m[0], sclient.cid, sclient.exactName))
+                cmd.sayLoudOrPM(client,
+                                '^7Found player matching %s [^2%s^7] %s' % (m[0], sclient.cid, sclient.exactName))
 
     def cmd_clientinfo(self, data, client=None, cmd=None):
         """
@@ -1745,7 +1728,8 @@ class AdminPlugin(b3.plugin.Plugin):
                 if sclient.maskGroup:
                     client.message(self.getMessage('action_denied_masked', {'name': sclient.exactName}))
                 else:
-                    self.console.say(self.getMessage('kick_denied', sclient.exactName, client.exactName, sclient.exactName))
+                    self.console.say(
+                        self.getMessage('kick_denied', sclient.exactName, client.exactName, sclient.exactName))
             else:
                 sclient.kick(reason, keyword, client)
         elif re.match('^[0-9]+$', cid):
@@ -1798,7 +1782,8 @@ class AdminPlugin(b3.plugin.Plugin):
                 if sclient.maskGroup:
                     client.message(self.getMessage('action_denied_masked', {'name': sclient.exactName}))
                 else:
-                    self.console.say(self.getMessage('kick_denied', sclient.exactName, client.exactName, sclient.exactName))
+                    self.console.say(
+                        self.getMessage('kick_denied', sclient.exactName, client.exactName, sclient.exactName))
             else:
                 if reason:
                     self.console.say(self.getMessage('spanked_reason', sclient.exactName, client.exactName, reason))
@@ -1938,6 +1923,7 @@ class AdminPlugin(b3.plugin.Plugin):
         """
         - list the 5 last bans
         """
+
         def format_ban(penalty):
             c = self.console.storage.getClient(Client(_id=penalty.clientId))
             txt = "^2@%s^7 %s^7" % (penalty.clientId, c.exactName)
@@ -2162,7 +2148,7 @@ class AdminPlugin(b3.plugin.Plugin):
 
             if failed and cleared:
                 cmd.sayLoudOrPM(client, '^7Cleared ^3%s ^7warnings and left ^3%s ^7warnings for %s' % (
-                                        failed, cleared, sclient.exactName))
+                    failed, cleared, sclient.exactName))
             elif failed:
                 client.message('^7Could not clear ^3%s ^7warnings for %s' % (failed, sclient.exactName))
             else:
@@ -2229,7 +2215,7 @@ class AdminPlugin(b3.plugin.Plugin):
             duration = functions.time2minutes(data)
             self.console.say('^7Sleeping for %s' % functions.minutesStr(duration))
             unpause_task = threading.Timer(duration * 60, self.console.unpause)
-            unpause_task.daemon = True # won't block the bot in case of shutdown
+            unpause_task.daemon = True  # won't block the bot in case of shutdown
             self.console.pause()
             unpause_task.start()
 
@@ -2356,7 +2342,6 @@ class AdminPlugin(b3.plugin.Plugin):
 
 
 class Command(object):
-
     command = ''
     alias = ''
     help = ''
@@ -2527,7 +2512,7 @@ class Command(object):
 
             for a in args:
                 if len(a) == 3:
-                    #optional
+                    # optional
                     parm = '[%s]' % a[0]
                 else:
                     parm = '<%s>' % a[0]

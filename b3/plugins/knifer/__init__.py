@@ -1,3 +1,5 @@
+from __future__ import print_function, absolute_import
+
 __author__ = 'SvaRoX'
 __version__ = '0.3'
 
@@ -5,12 +7,10 @@ import b3
 import b3.events
 import b3.plugin
 import string
-try:
-    import thread
-except ImportError:
-    import _thread as thread
 import threading
 import six
+
+from b3.functions import start_daemon_thread
 
 
 class KniferPlugin(b3.plugin.Plugin):
@@ -104,7 +104,7 @@ class KniferPlugin(b3.plugin.Plugin):
         # elif (event.type == b3.events.EVT_GAME_EXIT) or (event.type == b3.events.EVT_GAME_ROUND_START):
         elif (event.type == b3.events.EVT_GAME_EXIT):
             self.displayScores(0)
-            thread.start_new_thread(self.updateHallOfFame, (self._cutKillers, self.console.game.mapName))
+            start_daemon_thread(self.updateHallOfFame, (self._cutKillers, self.console.game.mapName))
             self.resetScores()
             try:
                 self._challengeThread.cancel()
@@ -360,13 +360,13 @@ class KniferPlugin(b3.plugin.Plugin):
         skillGained = kill_bonus * KfactorKiller * (1 - killer_prob)
         skillLost = KfactorVictim * (0 - victim_prob)
         self.debug('kill bonus=%s, kfactorKiller=%s, kfactorVictim=%s, weapfact =%s, killer_prb=%s' % (
-        kill_bonus, KfactorKiller, KfactorVictim, weapon_factor, killer_prob))
+            kill_bonus, KfactorKiller, KfactorVictim, weapon_factor, killer_prob))
         # client.message('%s*%s=^1%s ^7skill points gained for slicing ^3%s^7, opponent will loose %s*%s=^1%s' % (str(weapon_factor), str(round(skillGained, 2)), str(round(weapon_factor*skillGained, 2)), sclient.exactName, str(weapon_factor), str(round(-1*skillLost, 2)), str(round(-1*weapon_factor*skillLost, 2))))
         # client.message('%s*%s=^1%s ^7skill points gained for slicing ^3%s^7, opponent will loose %s*%s=^1%s' % (str(weapon_factor), str(skillGained), str(weapon_factor*skillGained), sclient.exactName, str(weapon_factor), str(-1*skillLost), str(-1*weapon_factor*skillLost)))
         client.message(
             '%s*%1.02f=^1%1.02f ^7skill points gained for slicing ^3%s^7, opponent will loose %s*%1.02f=^1%1.02f' % (
-            str(weapon_factor), skillGained, weapon_factor * skillGained, sclient.exactName, str(weapon_factor),
-            -1 * skillLost, -1 * weapon_factor * skillLost))
+                str(weapon_factor), skillGained, weapon_factor * skillGained, sclient.exactName, str(weapon_factor),
+                -1 * skillLost, -1 * weapon_factor * skillLost))
 
     def updateHallOfFame(self, cutKillers, mapName):
         self.debug('Updating Hall of Fame')
@@ -414,7 +414,7 @@ class KniferPlugin(b3.plugin.Plugin):
                     self.error('Can\'t execute query : %s' % q)
             else:
                 self.debug('No new record, previous record for %s = %s knife kills' % (
-                currentRecordHolder, currentRecordValue))
+                    currentRecordHolder, currentRecordValue))
         else:
             # New record
             newRecord = 1
@@ -430,7 +430,7 @@ class KniferPlugin(b3.plugin.Plugin):
                 self.error('Can\'t execute query : %s' % q)
         if newRecord:
             message = '^2%s ^7knife kills: congratulations ^3%s^7, new record on this map!!' % (
-            currentRecordValue, currentRecordHolder)
+                currentRecordValue, currentRecordHolder)
         else:
             message = '^7Knife kills record on this map: ^1%s ^2%s ^7kills' % (currentRecordHolder, currentRecordValue)
         self.console.say(message)

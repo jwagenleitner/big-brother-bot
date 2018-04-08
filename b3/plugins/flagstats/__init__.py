@@ -17,6 +17,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
+from __future__ import print_function, absolute_import
+
 __version__ = '0.6.9'
 __author__ = 'Beber888, GrosBedo'
 
@@ -45,7 +47,6 @@ class BlueTeamData(TeamData):
     name = 'Blue'
 
 
-# --------------------------------------------------------------------------------------------------
 class FlagstatsPlugin(b3.plugin.Plugin):
     _adminPlugin = None
     _reset_flagstats_stats = None
@@ -246,10 +247,10 @@ class FlagstatsPlugin(b3.plugin.Plugin):
             if client is not None:
                 client.message(
                     '^7You took ^5%s ^7flags, returned ^5%s^7, captured ^5%s^7, def ^5%s^7, best capture time ^5%s ^7' % (
-                    client.var(self, 'flagtaken', 0).value, client.var(self, 'flagreturned', 0).value,
-                    client.var(self, 'flagcaptured', 0).value,
-                    (client.var(self, 'flagreturned', 0).value + client.var(self, 'flagcarrierkill', 0).value),
-                    self.show_time(client.var(self, 'flagbesttime', -1).value)))
+                        client.var(self, 'flagtaken', 0).value, client.var(self, 'flagreturned', 0).value,
+                        client.var(self, 'flagcaptured', 0).value,
+                        (client.var(self, 'flagreturned', 0).value + client.var(self, 'flagcarrierkill', 0).value),
+                        self.show_time(client.var(self, 'flagbesttime', -1).value)))
         else:
             input = self._adminPlugin.parseUserCmd(data)
             if input:
@@ -266,10 +267,10 @@ class FlagstatsPlugin(b3.plugin.Plugin):
 
             client.message(
                 '^7%s took ^5%s ^7flags returned ^5%s^7 captured ^5%s^7, def ^5%s^7, best capture time ^5%s ^7' % (
-                sclient.name, sclient.var(self, 'flagtaken', 0).value, sclient.var(self, 'flagreturned', 0).value,
-                sclient.var(self, 'flagcaptured', 0).value,
-                (sclient.var(self, 'flagreturned', 0).value + sclient.var(self, 'flagcarrierkill', 0).value),
-                self.show_time(sclient.var(self, 'flagbesttime', -1).value)))
+                    sclient.name, sclient.var(self, 'flagtaken', 0).value, sclient.var(self, 'flagreturned', 0).value,
+                    sclient.var(self, 'flagcaptured', 0).value,
+                    (sclient.var(self, 'flagreturned', 0).value + sclient.var(self, 'flagcarrierkill', 0).value),
+                    self.show_time(sclient.var(self, 'flagbesttime', -1).value)))
 
     def game_reinit(self, event):
 
@@ -318,15 +319,16 @@ class FlagstatsPlugin(b3.plugin.Plugin):
                 if self.BlueTeamData.maxFlag > 1:
                     plurial = 's'
                 msg = ''.join([msg, 'Most Flags: %s [^4Blue^3] (^5%s^3 flag%s) - ' % (
-                self.BlueTeamData.maxFlagClients.name, self.BlueTeamData.maxFlag, plurial)])
+                    self.BlueTeamData.maxFlagClients.name, self.BlueTeamData.maxFlag, plurial)])
             elif self.BlueTeamData.maxFlag < self.RedTeamData.maxFlag:
                 if self.RedTeamData.maxFlag > 1:
                     plurial = 's'
                 msg = ''.join([msg, 'Most Flags: %s [^1Red^3] (^5%s^3 flag%s) - ' % (
-                self.RedTeamData.maxFlagClients.name, self.RedTeamData.maxFlag, plurial)])
+                    self.RedTeamData.maxFlagClients.name, self.RedTeamData.maxFlag, plurial)])
             elif self.BlueTeamData.maxFlag == self.RedTeamData.maxFlag and self.BlueTeamData.maxFlagClients is not None:
                 msg = ''.join([msg, 'Most Flags: %s [^4Blue^3] and %s [^1Red^3] (^5%s^3 flags) - ' % (
-                self.BlueTeamData.maxFlagClients.name, self.RedTeamData.maxFlagClients.name, self.RedTeamData.maxFlag)])
+                    self.BlueTeamData.maxFlagClients.name, self.RedTeamData.maxFlagClients.name,
+                    self.RedTeamData.maxFlag)])
             else:  # both are None
                 msg = ''
 
@@ -357,15 +359,15 @@ class FlagstatsPlugin(b3.plugin.Plugin):
             if (self.BlueTeamData.minTime < self.RedTeamData.minTime and self.BlueTeamData.minTime != -1) or (
                     self.BlueTeamData.minTime > 0 and self.RedTeamData.minTime == -1):  # If blue team's fastest cap time is smaller than red team's, we take blue's score. Another case : blue team captured, red did not, so red time is -1 by default, but in this case blue team's fastest cap time is taken.
                 msg = ''.join([msg, 'Fastest Cap: %s [^4Blue^3] (^5%s^3)' % (
-                self.BlueTeamData.minTimeClient.name, self.show_time(self.BlueTeamData.minTime))])
+                    self.BlueTeamData.minTimeClient.name, self.show_time(self.BlueTeamData.minTime))])
             elif (self.BlueTeamData.minTime > self.RedTeamData.minTime and self.RedTeamData.minTime != -1) or (
                     self.RedTeamData.minTime > 0 and self.BlueTeamData.minTime == -1):  # opposite of the previous conditionnal test (in favor of red team)
                 msg = ''.join([msg, 'Fastest Cap: %s [^1Red^3] (^5%s^3)' % (
-                self.RedTeamData.minTimeClient.name, self.show_time(self.RedTeamData.minTime))])
+                    self.RedTeamData.minTimeClient.name, self.show_time(self.RedTeamData.minTime))])
             elif self.BlueTeamData.minTime == self.RedTeamData.minTime and self.BlueTeamData.minTimeClient is not None:  # if both teams equal and are not null
                 msg = ''.join([msg, 'Fastest Cap: %s [^4Blue^3] and %s [^1Red^3] (^5%s^3)' % (
-                self.BlueTeamData.minTimeClient.name, self.RedTeamData.minTimeClient.name,
-                self.show_time(self.BlueTeamData.minTime))])
+                    self.BlueTeamData.minTimeClient.name, self.RedTeamData.minTimeClient.name,
+                    self.show_time(self.BlueTeamData.minTime))])
 
             # PRINT AWARDS
             if client:
@@ -385,7 +387,7 @@ class FlagstatsPlugin(b3.plugin.Plugin):
                 if self.BlueTeamData.maxFlag > 1:
                     plurial = 's'
                 msgblue = ''.join([msgblue, 'Most Flags: %s (^5%s^3 flag%s) - ' % (
-                self.BlueTeamData.maxFlagClients.name, self.BlueTeamData.maxFlag, plurial)])
+                    self.BlueTeamData.maxFlagClients.name, self.BlueTeamData.maxFlag, plurial)])
             # - best defender
             clientmaxdef = None
             for c in self.console.clients.getList():
@@ -406,7 +408,7 @@ class FlagstatsPlugin(b3.plugin.Plugin):
             # - fastest capture
             if self.BlueTeamData.minTimeClient is not None:
                 msgblue = ''.join([msgblue, 'Fastest Cap: %s (^5%s^3)' % (
-                self.BlueTeamData.minTimeClient.name, self.show_time(self.BlueTeamData.minTime))])
+                    self.BlueTeamData.minTimeClient.name, self.show_time(self.BlueTeamData.minTime))])
 
             # RED TEAM AWARDS
             # - most flags
@@ -415,7 +417,7 @@ class FlagstatsPlugin(b3.plugin.Plugin):
                 if self.RedTeamData.maxFlag > 1:
                     plurial = 's'
                 msgred = ''.join([msgred, 'Most Flags: %s (^5%s^3 flag%s) - ' % (
-                self.RedTeamData.maxFlagClients.name, self.RedTeamData.maxFlag, plurial)])
+                    self.RedTeamData.maxFlagClients.name, self.RedTeamData.maxFlag, plurial)])
             # - best defender
             clientmaxdef = None
             for c in self.console.clients.getList():
@@ -436,7 +438,7 @@ class FlagstatsPlugin(b3.plugin.Plugin):
             # - fastest capture
             if self.RedTeamData.minTimeClient is not None:
                 msgred = ''.join([msgred, 'Fastest Cap: %s (^5%s^3)' % (
-                self.RedTeamData.minTimeClient.name, self.show_time(self.RedTeamData.minTime))])
+                    self.RedTeamData.minTimeClient.name, self.show_time(self.RedTeamData.minTime))])
 
             # PRINT AWARDS
             if client:

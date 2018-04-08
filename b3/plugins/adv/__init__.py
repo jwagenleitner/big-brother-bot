@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__ = 'ThorN'
 __version__ = '1.6.1'
 
@@ -38,7 +40,6 @@ from b3 import B3_RSS
 
 
 class MessageLoop(object):
-
     items = None
 
     def __init__(self):
@@ -100,7 +101,6 @@ class MessageLoop(object):
 
 
 class AdvPlugin(b3.plugin.Plugin):
-
     _adminPlugin = None
     _xlrstatsPlugin = None
     _cronTab = None
@@ -112,12 +112,6 @@ class AdvPlugin(b3.plugin.Plugin):
     _feedmaxitems = 5
     _feeditemnr = 0
     _replay = 0
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onStartup(self):
         """
@@ -195,12 +189,6 @@ class AdvPlugin(b3.plugin.Plugin):
         (m, s) = self._get_rate_minsec(self._rate)
         self._cronTab = b3.cron.PluginCronTab(self, self.adv, second=s, minute=m)
         self.console.cron + self._cronTab
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    OTHER METHODS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def save(self):
         """
@@ -366,12 +354,6 @@ class AdvPlugin(b3.plugin.Plugin):
             minutes = '*/%s' % rate
         self.debug('%s -> (%s,%s)' % (rate, minutes, seconds))
         return minutes, seconds
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   COMMANDS                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def cmd_advadd(self, data, client=None, cmd=None):
         """

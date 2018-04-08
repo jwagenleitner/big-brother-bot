@@ -22,7 +22,9 @@
 #                                                                     #
 # ################################################################### #
 
-__author__  = 'PtitBigorneau - www.ptitbigorneau.fr'
+from __future__ import print_function, absolute_import
+
+__author__ = 'PtitBigorneau - www.ptitbigorneau.fr'
 __version__ = '1.5.2'
 
 import b3
@@ -33,7 +35,6 @@ from b3.functions import getCmd
 
 
 class FirstkillPlugin(b3.plugin.Plugin):
-
     _adminPlugin = None
 
     _firstkill = True
@@ -49,12 +50,6 @@ class FirstkillPlugin(b3.plugin.Plugin):
         'first_kill_by_headshot': '^2First Kill ^5by Headshot^3: $client killed $target',
         'first_teamkill': '^1First TeamKill^3: $client teamkilled $target',
     }
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   STARTUP                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onLoadConfig(self):
         """
@@ -95,12 +90,6 @@ class FirstkillPlugin(b3.plugin.Plugin):
         self.registerEvent('EVT_CLIENT_KILL_TEAM', self.onClientKillTeam)
         self.registerEvent('EVT_GAME_MAP_CHANGE', self.onMapChange)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   EVENTS                                                                                                         #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onMapChange(self, _):
         """
         Handle EVT_ROUND_START
@@ -118,9 +107,9 @@ class FirstkillPlugin(b3.plugin.Plugin):
             client = event.client
             target = event.target
             if self._firsths and \
-                self.console.gameName in ('iourt41', 'iourt42', 'iourt43') and \
+                    self.console.gameName in ('iourt41', 'iourt42', 'iourt43') and \
                     event.data[2] in (self.console.HL_HEAD, self.console.HL_HELMET) and \
-                        event.data[1] not in (self.console.UT_MOD_BLED, self.console.UT_MOD_HEGRENADE):
+                    event.data[1] not in (self.console.UT_MOD_BLED, self.console.UT_MOD_HEGRENADE):
                 self._hs += 1
                 if self._hs == 1:
                     self.announce_first_kill_by_headshot(client, target)
@@ -136,12 +125,6 @@ class FirstkillPlugin(b3.plugin.Plugin):
         self._tk += 1
         if self._firsttk and self._tk == 1:
             self.announce_first_teamkill(event.client, event.target)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   OTHER METHODS                                                                                                  #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def announce_something(self, message):
         """
@@ -169,7 +152,8 @@ class FirstkillPlugin(b3.plugin.Plugin):
         :param client: the client who made the kill
         :param target: the target who suffered the kill
         """
-        self.announce_something(self.getMessage('first_kill_by_headshot', {'client': client.exactName, 'target': target.exactName}))
+        self.announce_something(
+            self.getMessage('first_kill_by_headshot', {'client': client.exactName, 'target': target.exactName}))
 
     def announce_first_teamkill(self, client, target):
         """
@@ -177,13 +161,8 @@ class FirstkillPlugin(b3.plugin.Plugin):
         :param client: the client who made the kill
         :param target: the target who suffered the kill
         """
-        self.announce_something(self.getMessage('first_teamkill', {'client': client.exactName, 'target': target.exactName}))
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   COMMANDS                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
+        self.announce_something(
+            self.getMessage('first_teamkill', {'client': client.exactName, 'target': target.exactName}))
 
     def cmd_firstkill(self, data, client, cmd=None):
         """

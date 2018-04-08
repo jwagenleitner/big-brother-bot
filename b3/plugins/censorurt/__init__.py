@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__ = 'xlr8or & courgette'
 __version__ = '0.2'
 
@@ -30,7 +32,6 @@ from b3.plugins.censor import CensorPlugin
 
 
 class CensorurtPlugin(CensorPlugin):
-
     _mute = False
     _slap = False
     _muteduration1 = 0
@@ -46,12 +47,6 @@ class CensorurtPlugin(CensorPlugin):
         'pm_unmuted': '^7unmuted. watch your mouth'
     }
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
-  
     def onLoadConfig(self):
         CensorPlugin.onLoadConfig(self)
         try:
@@ -79,12 +74,6 @@ class CensorurtPlugin(CensorPlugin):
         except:
             pass
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    OTHER METHODS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
-      
     def penalizeClient(self, penalty, client, data=''):
         # addition to mute players in Urban Terror
         if self._slap:
@@ -127,11 +116,12 @@ class CensorurtPlugin(CensorPlugin):
                     t.start()
 
                 if client.langWarnings > self._warnafter:
-                    self._adminPlugin.penalizeClient(penalty.type, client, penalty.reason, penalty.keyword, penalty.duration, None, data)
+                    self._adminPlugin.penalizeClient(penalty.type, client, penalty.reason, penalty.keyword,
+                                                     penalty.duration, None, data)
 
     def unmutePlayer(self, client):
         if client.langMuted:
-          client.langMuted = False
-          # note: "/rcon mute <player> 0" ensures unmuting
-          self.console.write('mute %s 0' % client.cid)
-          client.message(self.getMessage('pm_unmuted'))
+            client.langMuted = False
+            # note: "/rcon mute <player> 0" ensures unmuting
+            self.console.write('mute %s 0' % client.cid)
+            client.message(self.getMessage('pm_unmuted'))

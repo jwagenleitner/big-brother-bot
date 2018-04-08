@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__ = 'ThorN, xlr8or, Bravo17, Courgette'
 __version__ = '3.3'
 
@@ -40,7 +42,6 @@ from six.moves.configparser import NoOptionError
 
 
 class PenaltyData:
-
     type = None
     reason = None
     keyword = None
@@ -60,7 +61,6 @@ class PenaltyData:
 
 
 class CensorData:
-
     name = None
     penalty = None
     regexp = None
@@ -74,7 +74,6 @@ class CensorData:
 
 
 class CensorPlugin(b3.plugin.Plugin):
-
     _adminPlugin = None
     _reClean = re.compile(r'[^0-9a-z ]+', re.I)
     _defaultBadWordPenalty = PenaltyData(type="warning", keyword="cuss")
@@ -85,12 +84,6 @@ class CensorPlugin(b3.plugin.Plugin):
     _badNames = None
 
     loadAfterPlugins = ['chatlogger']
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onStartup(self):
         """
@@ -234,12 +227,6 @@ class CensorPlugin(b3.plugin.Plugin):
 
         return CensorData(name=name, penalty=pd, regexp=regexp)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    OTHER METHODS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onEvent(self, event):
         """
         Handle intercepted events
@@ -258,12 +245,12 @@ class CensorPlugin(b3.plugin.Plugin):
                 return
 
             if event.type == self.console.getEventID('EVT_CLIENT_AUTH') or \
-               event.type == self.console.getEventID('EVT_CLIENT_NAME_CHANGE'):
+                    event.type == self.console.getEventID('EVT_CLIENT_NAME_CHANGE'):
                 self.checkBadName(event.client)
 
             elif len(event.data) > self._ignoreLength:
                 if event.type == self.console.getEventID('EVT_CLIENT_SAY') or \
-                   event.type == self.console.getEventID('EVT_CLIENT_TEAM_SAY'):
+                        event.type == self.console.getEventID('EVT_CLIENT_TEAM_SAY'):
                     self.checkBadWord(event.data, event.client)
 
         except b3.events.VetoEvent:
@@ -309,7 +296,8 @@ class CensorPlugin(b3.plugin.Plugin):
                 was_penalized = True
                 break
             if w.regexp.search(cleaned_name):
-                self.debug("badname rule [%s] matches cleaned name '%s' for player '%s'" % (w.name, cleaned_name, client.exactName))
+                self.debug("badname rule [%s] matches cleaned name '%s' for player '%s'" % (
+                w.name, cleaned_name, client.exactName))
                 self.penalizeClientBadname(w.penalty, client, '%s (rule %s)' % (client.exactName, w.name))
                 was_penalized = True
                 break

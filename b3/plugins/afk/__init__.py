@@ -22,9 +22,10 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__ = "Thomas LEVEIL"
 __version__ = "1.10"
-
 
 from threading import Timer
 from time import time
@@ -35,7 +36,6 @@ from weakref import WeakKeyDictionary
 
 
 class AfkPlugin(Plugin):
-
     loadAfterPlugins = ['urtposition']
 
     def __init__(self, console, config=None):
@@ -55,7 +55,7 @@ class AfkPlugin(Plugin):
 
         self.last_chance_delay = None
         """:type : int"""
-        
+
         self.kick_reason = None
         """:type : str"""
 
@@ -149,12 +149,6 @@ class AfkPlugin(Plugin):
         self.info("stopping timers")
         self.stop_kick_timers()
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CONFIG                                                                                                         #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onLoadConfig(self):
         """
         Load plugin configuration.
@@ -173,7 +167,7 @@ class AfkPlugin(Plugin):
     def load_conf_min_ingame_humans(self):
         try:
             self.min_ingame_humans = self.config.getint('settings', 'min_ingame_humans')
-        except (NoOptionError, ValueError), err:
+        except (NoOptionError, ValueError) as err:
             self.warning("no value or bad value for settings/min_ingame_humans. %s", err)
         else:
             if self.min_ingame_humans < 0:
@@ -184,7 +178,7 @@ class AfkPlugin(Plugin):
     def load_conf_consecutive_deaths_threshold(self):
         try:
             self.consecutive_deaths_threshold = self.config.getint('settings', 'consecutive_deaths_threshold')
-        except (NoOptionError, ValueError), err:
+        except (NoOptionError, ValueError) as err:
             self.warning("no value or bad value for settings/consecutive_deaths_threshold. %s", err)
         else:
             if self.consecutive_deaths_threshold < 0:
@@ -195,7 +189,7 @@ class AfkPlugin(Plugin):
     def load_conf_inactivity_threshold(self):
         try:
             self.inactivity_threshold_second = int(60 * self.config.getDuration('settings', 'inactivity_threshold'))
-        except (NoOptionError, ValueError), err:
+        except (NoOptionError, ValueError) as err:
             self.warning("no value or bad value for settings/inactivity_threshold. %s", err)
         else:
             if self.inactivity_threshold_second < 30:
@@ -206,7 +200,7 @@ class AfkPlugin(Plugin):
     def load_conf_last_chance_delay(self, default, min_value, max_value):
         try:
             self.last_chance_delay = self.config.getint('settings', 'last_chance_delay')
-        except (NoOptionError, ValueError), err:
+        except (NoOptionError, ValueError) as err:
             self.warning("no value or bad value for settings/last_chance_delay. %s", err)
             self.last_chance_delay = default
         else:
@@ -224,7 +218,7 @@ class AfkPlugin(Plugin):
             if len(self.kick_reason.strip()) == 0:
                 raise ValueError()
             self.info('settings/kick_reason: %s sec' % self.kick_reason)
-        except (NoOptionError, ValueError), err:
+        except (NoOptionError, ValueError) as err:
             self.warning("no value or bad value for settings/kick_reason. %s", err)
             self.kick_reason = "AFK for too long on this server"
 
@@ -234,7 +228,7 @@ class AfkPlugin(Plugin):
             if len(self.are_you_afk.strip()) == 0:
                 raise ValueError()
             self.info('settings/are_you_afk: %s sec' % self.are_you_afk)
-        except (NoOptionError, ValueError), err:
+        except (NoOptionError, ValueError) as err:
             self.warning("no value or bad value for settings/are_you_afk. %s", err)
             self.are_you_afk = "Are you AFK?"
 
@@ -247,7 +241,7 @@ class AfkPlugin(Plugin):
                 raise ValueError("missing placeholder {name}")
             if "{last_chance_delay}" not in self.suspicion_announcement:
                 raise ValueError("missing placeholder {last_chance_delay}")
-        except (NoOptionError, ValueError), err:
+        except (NoOptionError, ValueError) as err:
             self.warning("no value or bad value for settings/suspicion_announcement. %s", err)
             self.suspicion_announcement = default
         self.info('settings/suspicion_announcement: %s' % self.suspicion_announcement)
@@ -257,18 +251,12 @@ class AfkPlugin(Plugin):
             self.immunity_level = self.config.getint('settings', 'immunity_level')
         except NoOptionError:
             self.info('no value for settings/immunity_level. Using default value : %s' % self.immunity_level)
-        except ValueError, err:
+        except ValueError as err:
             self.debug(err)
             self.warning('bad value for settings/immunity_level. Using default value : %s' % self.immunity_level)
-        except Exception, err:
+        except Exception as err:
             self.error(err)
         self.info('immunity_level is %s' % self.immunity_level)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   EVENTS                                                                                                         #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def on_client_disconnect(self, event):
         """
@@ -305,7 +293,7 @@ class AfkPlugin(Plugin):
             ingame_humans
         ))
         if event.target.afk_death_count >= self.consecutive_deaths_threshold and \
-           ingame_humans > self.min_ingame_humans:
+                ingame_humans > self.min_ingame_humans:
             self.check_client(event.target)
 
     def on_client_activity(self, event, now=None):
@@ -348,12 +336,6 @@ class AfkPlugin(Plugin):
     def on_say(self, event):
         if "afk" in event.data.lower():
             self.check_all_clients()
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   OTHERS                                                                                                         #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def check_all_clients(self, now=None):
         """
@@ -414,7 +396,7 @@ class AfkPlugin(Plugin):
         self.info("%r suspected of being AFK" % client)
         client.message(self.are_you_afk)
         self.console.say(self.suspicion_announcement.format(name=client.name, last_chance_delay=self.last_chance_delay))
-        t = Timer(self.last_chance_delay, self.kick_client, (client, ))
+        t = Timer(self.last_chance_delay, self.kick_client, (client,))
         t.start()
         self.kick_timers[client] = t
 
