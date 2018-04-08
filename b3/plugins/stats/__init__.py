@@ -22,27 +22,21 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-import b3.events
-import b3.plugin
-import string
-
-from b3.functions import getCmd
-from six.moves.configparser import NoOptionError, NoSectionError
+from __future__ import print_function, absolute_import
 
 __author__ = 'ThorN, GrosBedo'
 __version__ = '1.5.1'
 
+import b3
+import b3.events
+import b3.plugin
+
+from b3.functions import getCmd
+from six.moves.configparser import NoOptionError
+
 
 class StatsPlugin(b3.plugin.Plugin):
-
     _adminPlugin = None
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def __init__(self, console, config=None):
         """
@@ -199,12 +193,6 @@ class StatsPlugin(b3.plugin.Plugin):
         if self.console.gameName == "iourt43":
             self.registerEvent('EVT_ASSIST', self.onAssist)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENTS                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onShowAwards(self, event):
         """
         Handle EVT_GAME_EXIT and EVT_GAME_MAP_CHANGE
@@ -257,9 +245,9 @@ class StatsPlugin(b3.plugin.Plugin):
         if points > 100:
             points = 100
 
-        killer.var(self, 'shotsHit', 0).value  += 1
+        killer.var(self, 'shotsHit', 0).value += 1
         killer.var(self, 'damageHit', 0).value += points
-        victim.var(self, 'shotsGot', 0).value  += 1
+        victim.var(self, 'shotsGot', 0).value += 1
         victim.var(self, 'damageGot', 0).value += points
 
     def onDamageTeam(self, event):
@@ -272,7 +260,7 @@ class StatsPlugin(b3.plugin.Plugin):
         if points > 100:
             points = 100
 
-        killer.var(self, 'shotsTeamHit', 0).value  += 1
+        killer.var(self, 'shotsTeamHit', 0).value += 1
         killer.var(self, 'damageTeamHit', 0).value += points
 
     def onKill(self, event):
@@ -286,13 +274,13 @@ class StatsPlugin(b3.plugin.Plugin):
         if points > 100:
             points = 100
 
-        killer.var(self, 'shotsHit', 0).value  += 1
+        killer.var(self, 'shotsHit', 0).value += 1
         killer.var(self, 'damageHit', 0).value += points
 
-        victim.var(self, 'shotsGot', 0).value  += 1
+        victim.var(self, 'shotsGot', 0).value += 1
         victim.var(self, 'damageGot', 0).value += points
 
-        killer.var(self, 'kills', 0).value  += 1
+        killer.var(self, 'kills', 0).value += 1
         victim.var(self, 'deaths', 0).value += 1
 
         val = self.score(killer, victim)
@@ -316,7 +304,7 @@ class StatsPlugin(b3.plugin.Plugin):
         if points > 100:
             points = 100
 
-        killer.var(self, 'shotsTeamHit', 0).value  += 1
+        killer.var(self, 'shotsTeamHit', 0).value += 1
         killer.var(self, 'damageTeamHit', 0).value += points
 
         killer.var(self, 'teamKills', 0).value += 1
@@ -327,13 +315,13 @@ class StatsPlugin(b3.plugin.Plugin):
 
         self.updateXP(killer)
         self.updateXP(victim)
-		
+
     def onAssist(self, event):
 
         client = event.client
         victim = event.target
         attacker = event.data
-        
+
         client.var(self, 'assists', 0).value += 1
 
     def updateXP(self, sclient):
@@ -369,12 +357,6 @@ class StatsPlugin(b3.plugin.Plugin):
 
         return round(points, 2)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   COMMANDS                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def cmd_mapstats(self, data, client, cmd=None):
         """
         [<name>] - list a players stats for the map
@@ -385,15 +367,16 @@ class StatsPlugin(b3.plugin.Plugin):
                 return
         else:
             sclient = client
-			
+
         if self.console.gameName == "iourt43":
 
             message = '^3Stats ^7[ %s ^7] K ^2%s ^7D ^3%s ^7A ^5%s ^7TK ^1%s ^7Dmg ^5%s ^7Skill ^3%1.02f ^7XP ^6%s' % \
                       (sclient.exactName, sclient.var(self, 'kills', 0).value, sclient.var(self, 'deaths', 0).value,
-                       sclient.var(self, 'assists', 0).value ,sclient.var(self, 'teamKills', 0).value, sclient.var(self, 'damageHit', 0).value,
+                       sclient.var(self, 'assists', 0).value, sclient.var(self, 'teamKills', 0).value,
+                       sclient.var(self, 'damageHit', 0).value,
                        round(sclient.var(self, 'points', self.startPoints).value, 2),
                        round(sclient.var(self, 'oldexperience', 0).value + sclient.var(self, 'experience', 0).value, 2))
-					   
+
         else:
 
             message = '^3Stats ^7[ %s ^7] K ^2%s ^7D ^3%s ^7TK ^1%s ^7Dmg ^5%s ^7Skill ^3%1.02f ^7XP ^6%s' % \
@@ -421,7 +404,7 @@ class StatsPlugin(b3.plugin.Plugin):
             client.message('^7You don\'t get points for killing a team mate')
         else:
             cmd.sayLoudOrPM(client, '^3Stats: ^7%s^7 will get ^3%s ^7skill points for killing %s^7' %
-                                    (client.exactName, self.score(client, sclient), sclient.exactName))
+                            (client.exactName, self.score(client, sclient), sclient.exactName))
 
     def cmd_topstats(self, data, client=None, cmd=None):
         """
@@ -432,7 +415,7 @@ class StatsPlugin(b3.plugin.Plugin):
         for c in self.console.clients.getList():
             if c.isvar(self, 'points'):
                 scores.append((c.exactName, round(c.var(self, 'points', self.startPoints).value, 2)))
-        
+
         if len(scores):
             tmplist = [(x[1], x) for x in scores]
             tmplist.sort()
@@ -447,11 +430,11 @@ class StatsPlugin(b3.plugin.Plugin):
                     break
 
                 results.append('^3#%s^7 %s ^7[^3%s^7]' % (i, name, score))
-                
-            if client:        
-                client.message('^3Top Stats:^7 %s' % string.join(results,', '))
+
+            if client:
+                client.message('^3Top Stats:^7 %s' % ', '.join(results))
             else:
-                self.console.say('^3Top Stats:^7 %s' % string.join(results,', '))
+                self.console.say('^3Top Stats:^7 %s' % ', '.join(results))
         else:
             client.message('^3Stats: ^7No top players')
 
@@ -480,8 +463,8 @@ class StatsPlugin(b3.plugin.Plugin):
                 results.append('^3#%s^7 %s ^7[^3%s^7]' % (i, name, score))
 
             if client:
-                client.message('^3Top Experienced Players:^7 %s' % string.join(results, ', '))
+                client.message('^3Top Experienced Players:^7 %s' % ', '.join(results))
             else:
-                self.console.say('^3Top Experienced Players:^7 %s' % string.join(results, ', '))
+                self.console.say('^3Top Experienced Players:^7 %s' % ', '.join(results))
         else:
             client.message('^3Stats: ^7No top experienced players')
