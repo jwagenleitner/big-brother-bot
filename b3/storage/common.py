@@ -393,7 +393,9 @@ class DatabaseStorage(Storage):
 
         if penalty.reason:
             # decode the reason data, as the name may need it
-            if hasattr(self.console, "encoding") and self.console.encoding:
+            if six.PY2 \
+                    and hasattr(self.console, "encoding") \
+                    and self.console.encoding:
                 try:
                     penalty.reason = penalty.reason.decode(self.console.encoding)
                 except Exception as msg:

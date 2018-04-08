@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__ = 'ThorN'
 __version__ = '1.6.5'
 
@@ -43,7 +45,6 @@ from xml.dom.minidom import Document
 
 
 class StatusPlugin(b3.plugin.Plugin):
-
     _tkPlugin = None
     _cronTab = None
     _ftpstatus = False
@@ -156,7 +157,8 @@ class StatusPlugin(b3.plugin.Plugin):
             if self.config.get('settings', 'output_file')[0:6] == 'ftp://':
                 self._ftpstatus = True
                 self._ftpinfo = functions.splitDSN(self.config.get('settings', 'output_file'))
-                self.debug('using custom remote path for settings/output_file: %s/%s' % (self._ftpinfo['host'], self._ftpinfo['path']))
+                self.debug('using custom remote path for settings/output_file: %s/%s' % (
+                self._ftpinfo['host'], self._ftpinfo['path']))
             else:
                 self._outputFile = self.config.getpath('settings', 'output_file')
                 self.debug('using custom local path for settings/output_file: %s' % self._outputFile)
@@ -180,7 +182,8 @@ class StatusPlugin(b3.plugin.Plugin):
             self._enableDBsvarSaving = self.config.getboolean('settings', 'enableDBsvarSaving')
             self.debug('using custom value for settings/enableDBsvarSaving: %s' % self._enableDBsvarSaving)
         except NoOptionError:
-            self.warning('could not find settings/enableDBsvarSaving in config file, using default: %s' % self._enableDBsvarSaving)
+            self.warning(
+                'could not find settings/enableDBsvarSaving in config file, using default: %s' % self._enableDBsvarSaving)
         except ValueError as e:
             self.error('could not load settings/enableDBsvarSaving config value: %s' % e)
             self.debug('using default value (%s) for settings/enableDBsvarSaving' % self._enableDBsvarSaving)
@@ -189,7 +192,8 @@ class StatusPlugin(b3.plugin.Plugin):
             self._enableDBclientSaving = self.config.getboolean('settings', 'enableDBclientSaving')
             self.debug('using custom value for settings/enableDBclientSaving: %s' % self._enableDBclientSaving)
         except NoOptionError:
-            self.warning('could not find settings/enableDBclientSaving in config file, using default: %s' % self._enableDBclientSaving)
+            self.warning(
+                'could not find settings/enableDBclientSaving in config file, using default: %s' % self._enableDBclientSaving)
         except ValueError as e:
             self.error('could not load settings/enableDBclientSaving config value: %s' % e)
             self.debug('using default value (%s) for settings/enableDBclientSaving' % self._enableDBclientSaving)
@@ -273,7 +277,7 @@ class StatusPlugin(b3.plugin.Plugin):
         """
         clients = self.console.clients.getList()
         score_list = self.console.getPlayerScores()
-                 
+
         self.verbose('building XML status')
         xml = Document()
 
@@ -342,7 +346,7 @@ class StatusPlugin(b3.plugin.Plugin):
             self.storeServerinfo("Map", str(mapname))
             self.storeServerinfo("TimeLimit", str(timelimit))
             self.storeServerinfo("FragLimit", str(fraglimit))
-            self.storeServerinfo("CaptureLimit",str(capturelimit) )
+            self.storeServerinfo("CaptureLimit", str(capturelimit))
             self.storeServerinfo("Rounds", str(rounds))
             self.storeServerinfo("RoundTime", str(round_time))
             self.storeServerinfo("MapTime", str(map_time))
@@ -427,7 +431,8 @@ class StatusPlugin(b3.plugin.Plugin):
                     builder_value = builder_value[:-1]
 
                     try:
-                        self.console.storage.query("""INSERT INTO %s (%s) VALUES (%s);""" % (self._tables['cvars'], builder_key, builder_value))
+                        self.console.storage.query("""INSERT INTO %s (%s) VALUES (%s);""" % (
+                        self._tables['cvars'], builder_key, builder_value))
                     except Exception:
                         # exception is already logged, just don't raise it again
                         pass
@@ -447,12 +452,12 @@ class StatusPlugin(b3.plugin.Plugin):
                         data.setAttribute("Value", clean_data)
 
                     client.appendChild(data)
-                        
+
                 if self._tkPlugin:
                     if hasattr(c, 'tkplugin_points'):
                         tkplugin = xml.createElement("TkPlugin")
                         tkplugin.setAttribute("Points", str(c.var(self, 'points')))
-                        client.appendChild(tkplugin)            
+                        client.appendChild(tkplugin)
                         if hasattr(c, 'tkplugin_attackers'):
                             for acid, points in c.var(self, 'attackers').value.items():
                                 try:
@@ -464,7 +469,7 @@ class StatusPlugin(b3.plugin.Plugin):
                                 except Exception as e:
                                     self.warning('could not append child node in XML tree: %s' % e)
                                     pass
-                                
+
             except Exception as err:
                 self.error('XML Failed: %r' % err, exc_info=err)
                 pass
@@ -483,7 +488,8 @@ class StatusPlugin(b3.plugin.Plugin):
             v = re.sub("'", "", str(v))[:255]  # length of the database varchar field
             try:
                 if self.console.storage.dsnDict['protocol'] == 'postgresql':
-                    self.console.storage.query("""UPDATE %s SET value='%s' WHERE name='%s';""" % (self._tables['svars'], v, k))
+                    self.console.storage.query(
+                        """UPDATE %s SET value='%s' WHERE name='%s';""" % (self._tables['svars'], v, k))
                     self.console.storage.query("""INSERT INTO %s (name, value) SELECT '%s', '%s' WHERE NOT EXISTS (
                                                   SELECT 1 FROM %s WHERE name='%s');""" % (self._tables['svars'], k, v,
                                                                                            self._tables['svars'], k))
@@ -498,6 +504,8 @@ class StatusPlugin(b3.plugin.Plugin):
         """
         Store server information in the XML file.
         """
+        if isinstance(xml, bytes):
+            xml = xml.decode(encoding="utf-8")
         if self._ftpstatus:
             self.debug('uploading XML status to FTP server')
             ftp_file = StringIO.StringIO()

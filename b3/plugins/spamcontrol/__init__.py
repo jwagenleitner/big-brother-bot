@@ -22,6 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
+__author__ = 'ThorN, Courgette'
+__version__ = '1.4.4'
+
 import b3
 import b3.events
 import b3.plugin
@@ -30,29 +35,20 @@ import re
 from b3.functions import getCmd
 from b3.functions import clamp
 
-__author__ = 'ThorN, Courgette'
-__version__ = '1.4.4'
-
 
 class SpamcontrolPlugin(b3.plugin.Plugin):
-
     _adminPlugin = None
 
     _maxSpamins = 10
     _modLevel = 20
     _falloffRate = 6.5
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onLoadConfig(self):
         """
         Load plugin configuration
         """
-        self._maxSpamins = self.getSetting('settings', 'max_spamins', b3.INTEGER, self._maxSpamins, lambda x: clamp(x, minv=0))
+        self._maxSpamins = self.getSetting('settings', 'max_spamins', b3.INTEGER, self._maxSpamins,
+                                           lambda x: clamp(x, minv=0))
         self._modLevel = self.getSetting('settings', 'mod_level', b3.LEVEL, self._modLevel)
         self._falloffRate = self.getSetting('settings', 'falloff_rate', b3.FLOAT, self._falloffRate)
 
@@ -79,12 +75,6 @@ class SpamcontrolPlugin(b3.plugin.Plugin):
                 func = getCmd(self, cmd)
                 if func:
                     self._adminPlugin.registerCommand(self, cmd, level, func, alias)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    OTHER METHODS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def getTime(self):
         """
@@ -128,12 +118,6 @@ class SpamcontrolPlugin(b3.plugin.Plugin):
             client.setvar(self, 'spamins', spamins)
             raise b3.events.VetoEvent
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENTS                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onChat(self, event):
         """
         Handle EVT_CLIENT_SAY and EVT_CLIENT_TEAM_SAY and EVT_CLIENT_PRIVATE_SAY
@@ -161,12 +145,6 @@ class SpamcontrolPlugin(b3.plugin.Plugin):
             points += 1
 
         self.add_spam_points(client, points, text)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    COMMANDS                                                                                                      #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def cmd_spamins(self, data, client, cmd=None):
         """
