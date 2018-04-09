@@ -17,11 +17,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
+from __future__ import print_function, absolute_import
+
 import b3
-import b3.functions
-import b3.plugin
 import b3.config
 import b3.cron
+import b3.functions
+import b3.plugin
 
 
 class ExamplePlugin(b3.plugin.Plugin):
@@ -123,12 +125,6 @@ class ExamplePlugin(b3.plugin.Plugin):
         'cookie_message': '$client gives $num cookies to $target',
     }
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def __init__(self, console, config=None):
         """
         This is the plugin constructor.
@@ -176,8 +172,9 @@ class ExamplePlugin(b3.plugin.Plugin):
             self.debug('loaded settings::use_saybig : %s' % self.use_saybig)
         except b3.config.NoOptionError:
             # This exception is raised whenever the configuration option is missing.
-            self.warning('could not find settings::use_saybig in configuration file : using default (%s)' % self.use_saybig)
-        except ValueError, e:
+            self.warning(
+                'could not find settings::use_saybig in configuration file : using default (%s)' % self.use_saybig)
+        except ValueError as e:
             # This exception is raised whenever the configuration entry is not valid.
             self.error('invalid value specified in settings::use_saybig in configuration file : %s' % e)
             self.debug('using default value for settings::use_saybig : %s' % self.use_saybig)
@@ -191,7 +188,7 @@ class ExamplePlugin(b3.plugin.Plugin):
             # This exception is raised whenever the configuration option is missing.
             self.warning('could not find settings::refill_interval in configuration file : '
                          'using default (%s)' % self.refill_interval)
-        except ValueError, e:
+        except ValueError as e:
             # This exception is raised whenever the configuration entry is not valid.
             self.error('invalid value specified in settings::refill_interval in configuration file : %s' % e)
             self.debug('using default value for settings::refill_interval : %s' % self.refill_interval)
@@ -237,12 +234,6 @@ class ExamplePlugin(b3.plugin.Plugin):
         self.crontab = b3.cron.PluginCronTab(self, self.scheduled_refill, '*/%s' % self.refill_interval)
         self.console.cron + self.crontab
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   EVENTS                                                                                                         #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def scheduled_refill(self):
         """
         Scheduled execution.
@@ -252,12 +243,6 @@ class ExamplePlugin(b3.plugin.Plugin):
             client_cookies = client.var(self, 'cookies').value + 1
             client.setvar(self, 'cookies', client_cookies)
             client.message('B3 gifted you 1 cookie: you now have %s cookies' % client_cookies)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CRON                                                                                                           #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onConnect(self, event):
         """
@@ -270,12 +255,6 @@ class ExamplePlugin(b3.plugin.Plugin):
         client = event.client
         self.debug('client connected to the server (%s) : gifting %s cookies to him' % (client.name, self.init_cookies))
         client.setvar(self, 'cookies', self.init_cookies)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   COMMANDS                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def cmd_hello(self, data, client, cmd=None):
         """
@@ -344,7 +323,8 @@ class ExamplePlugin(b3.plugin.Plugin):
                     client_cookies = client.var(self, 'cookies').value
                     if cookies_to_move > client_cookies:
                         # If the user has not enough cookies, inform him
-                        client.message('You do not have %s cookies: you have %s cookies left' % (cookies_to_move, client_cookies))
+                        client.message(
+                            'You do not have %s cookies: you have %s cookies left' % (cookies_to_move, client_cookies))
                     else:
                         # The user has the amount of cookies he wants to give, so transfer them.
                         target_cookies = client.var(self, 'cookies').value
@@ -354,7 +334,8 @@ class ExamplePlugin(b3.plugin.Plugin):
                         client.setvar(self, 'cookies', client_cookies)
 
                         # Display a message which informs of the operation being completed
-                        message = self.getMessage('cookie_message', {'client': client.name, 'target': target.name, 'num': cookies_to_move})
+                        message = self.getMessage('cookie_message', {'client': client.name, 'target': target.name,
+                                                                     'num': cookies_to_move})
                         if self.use_saybig:
                             # If the user enabled the saybig feature, use it
                             self.console.saybig(message)
