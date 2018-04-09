@@ -172,9 +172,9 @@ class JumpRun(object):
             try:
                 os.unlink(path)
                 self.p.debug('removed jumprun demo file : %s' % path)
-            except os.error as (errno, errstr):
+            except os.error as err:
                 # when this happen is mostly a problem related to misconfiguration
-                self.p.error("could not remove jumprun demo file : %s | [%d] %s" % (path, errno, errstr))
+                self.p.error("could not remove jumprun demo file : %s | [%d] %s" % (path, err.errno, err.strerror))
 
     def is_personal_record(self):
         """
