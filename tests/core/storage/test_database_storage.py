@@ -22,24 +22,28 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-import os
-import unittest2 as unittest
+from __future__ import print_function, absolute_import
 
+import os
+
+import unittest2 as unittest
+from mock import Mock
+from mock import patch
+from mock import sentinel
+from mockito import any as ANY
+from mockito import when
+
+import b3
 from b3.clients import Client
 from b3.functions import splitDSN
 from b3.storage.common import DatabaseStorage
 from b3.storage.mysql import MysqlStorage
-from mock import Mock
-from mock import patch
-from mock import sentinel
-from mockito import when
-from mockito import any as ANY
 
 # checks whether we can perform tests on SQL script file parsing
 B3_SQL_FILE_AVAILABLE = os.path.exists(b3.getAbsolutePath("@b3/sql/mysql/b3.sql"))
 B3_DB_SQL_FILE_AVAILABLE = os.path.exists(b3.getAbsolutePath("@b3/sql/mysql/b3-db.sql"))
-B3_DEFAULT_TABLES = ['aliases' ,'clients', 'data', 'groups', 'ipaliases', 'penalties']
+B3_DEFAULT_TABLES = ['aliases', 'clients', 'data', 'groups', 'ipaliases', 'penalties']
+
 
 class Test_DatabaseStorage(unittest.TestCase):
 
@@ -54,7 +58,7 @@ class Test_DatabaseStorage(unittest.TestCase):
         mock_storage.console = Mock()
         mock_storage.console.config = Mock()
         mock_storage.console.config.get = Mock(return_value="123,myname,100")
-        
+
         mock_storage.console.config.has_option = Mock(return_value=True)
         c1 = Client()
         c2 = mock_storage.getClient(mock_storage, c1)
@@ -62,10 +66,9 @@ class Test_DatabaseStorage(unittest.TestCase):
         self.assertEqual(123, c1.id)
         self.assertEqual("myname", c1.name)
         self.assertEqual(100, c1._tempLevel)
-        
+
         mock_storage.console.config.has_option = Mock(return_value=False)
         self.assertRaises(KeyError, mock_storage.getClient, mock_storage, Mock())
-
 
     def test_getConnection_mysql(self):
         # mock the pymysql module so we can test in an environement which does not have this module installed
@@ -73,7 +76,6 @@ class Test_DatabaseStorage(unittest.TestCase):
         mock_pymysql = Mock()
         mock_pymysql.connect = Mock(return_value=sentinel)
         with patch.dict('sys.modules', {'pymysql': mock_pymysql}):
-
             # verify that a correct dsn does work as expected
             mock_pymysql.connect.reset_mock()
             storage = MysqlStorage(dsn, splitDSN(dsn), Mock())
@@ -110,7 +112,8 @@ class Test_DatabaseStorage(unittest.TestCase):
             statements = DatabaseStorage.getQueriesFromFile(sql_file)
             self.assertEqual(15, len(statements))
 
-    @unittest.skipUnless(B3_DB_SQL_FILE_AVAILABLE, "B3 DB SQL script not found @ %s" % b3.getAbsolutePath("@b3/sql/b3-db.sql"))
+    @unittest.skipUnless(B3_DB_SQL_FILE_AVAILABLE,
+                         "B3 DB SQL script not found @ %s" % b3.getAbsolutePath("@b3/sql/b3-db.sql"))
     def test_b3_db_sql_file_parsing(self):
         with open(b3.getAbsolutePath("@b3/sql/mysql/b3-db.sql"), 'r') as sql_file:
             statements = DatabaseStorage.getQueriesFromFile(sql_file)

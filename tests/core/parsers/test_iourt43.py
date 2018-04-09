@@ -1,42 +1,52 @@
-#
-# BigBrotherBot(B3) (www.bigbrotherbot.net)
-# Copyright (C) 2012 Courgette
-# 
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# -*- coding: utf-8 -*-
 
-import b3
+# ################################################################### #
+#                                                                     #
+#  BigBrotherBot(B3) (www.bigbrotherbot.net)                          #
+#  Copyright (C) 2005 Michael "ThorN" Thornton                        #
+#                                                                     #
+#  This program is free software; you can redistribute it and/or      #
+#  modify it under the terms of the GNU General Public License        #
+#  as published by the Free Software Foundation; either version 2     #
+#  of the License, or (at your option) any later version.             #
+#                                                                     #
+#  This program is distributed in the hope that it will be useful,    #
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of     #
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the       #
+#  GNU General Public License for more details.                       #
+#                                                                     #
+#  You should have received a copy of the GNU General Public License  #
+#  along with this program; if not, write to the Free Software        #
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA      #
+#  02110-1301, USA.                                                   #
+#                                                                     #
+# ################################################################### #
+
+from __future__ import print_function, absolute_import
+
 import logging
-import unittest2 as unittest
 
+import unittest2 as unittest
 from mock import Mock, call, patch
 from mockito import mock, when, any as anything
+
+import b3
 from b3.clients import Clients, Client
 from b3.config import XmlConfigParser
 from b3.events import Event
 from b3.fake import FakeClient as original_FakeClient
 from b3.output import VERBOSE2
-from b3.parsers.iourt43 import Iourt43Parser
 from b3.parsers.iourt42 import Iourt42Client
+from b3.parsers.iourt43 import Iourt43Parser
 from tests import logging_disabled
 
 log = logging.getLogger("test")
 log.setLevel(logging.INFO)
 
-
 # make sure to unpatch the Clients.newClient method and FakeClient
 original_newClient = Clients.newClient
+
+
 def tearDownModule():
     Clients.newClient = original_newClient
 
@@ -62,6 +72,7 @@ class Iourt43TestCase(unittest.TestCase):
     """
     Test case that is suitable for testing iourt42 parser specific features
     """
+
     @classmethod
     def setUpClass(cls):
         from b3.parsers.q3a.abstractParser import AbstractParser
@@ -79,9 +90,10 @@ class Iourt43TestCase(unittest.TestCase):
             </configuration>""")
         with logging_disabled():
             self.console = Iourt43Parser(self.parser_conf)
-        self.console.PunkBuster = None # no Punkbuster support in that game
+        self.console.PunkBuster = None  # no Punkbuster support in that game
 
         self.output_mock = mock()
+
         # simulate game server actions
         def write(*args, **kwargs):
             pretty_args = map(repr, args) + ["%s=%s" % (k, v) for k, v in kwargs.iteritems()]
@@ -89,6 +101,7 @@ class Iourt43TestCase(unittest.TestCase):
             if args == ("gamename",):
                 return r'''"gamename" is:"q3urt43^7"'''
             return self.output_mock.write(*args, **kwargs)
+
         self.console.write = Mock(wraps=write)
 
         logging.getLogger('output').setLevel(VERBOSE2)
@@ -132,15 +145,17 @@ class Test_log_lines_parsing(Iourt43TestCase):
     def test_Radio(self):
         self.joe.connects('0')
         self.assertEvent(r'''Radio: 0 - 7 - 2 - "New Alley" - "I'm going for the flag"''',
-            event_type='EVT_CLIENT_RADIO',
-            event_client=self.joe,
-            event_data={'msg_group': '7', 'msg_id': '2', 'location': 'New Alley', 'text': "I'm going for the flag" })
+                         event_type='EVT_CLIENT_RADIO',
+                         event_client=self.joe,
+                         event_data={'msg_group': '7', 'msg_id': '2', 'location': 'New Alley',
+                                     'text': "I'm going for the flag"})
 
     def test_botStatusAfterInitRound(self):
         self.bot.connects('0')
         self.assertEqual(self.bot.team, b3.TEAM_RED)
         self.assertTrue(self.bot.bot)
-        self.console.parseLine('''InitRound: \sv_allowdownload\0\g_matchmode\0\g_gametype\4\sv_maxclients\16\sv_floodprotect\1\g_warmup\5\capturelimit\0''')
+        self.console.parseLine(
+            '''InitRound: \sv_allowdownload\0\g_matchmode\0\g_gametype\4\sv_maxclients\16\sv_floodprotect\1\g_warmup\5\capturelimit\0''')
         self.assertEqual(self.bot.team, b3.TEAM_RED)
         self.assertTrue(self.bot.bot)
 
@@ -150,34 +165,34 @@ class Test_log_lines_parsing(Iourt43TestCase):
     def test_Callvote(self):
         self.joe.connects('1')
         self.assertEvent(r'''Callvote: 1 - "map dressingroom"''',
-            event_type='EVT_CLIENT_CALLVOTE',
-            event_client=self.joe,
-            event_data="map dressingroom")
+                         event_type='EVT_CLIENT_CALLVOTE',
+                         event_client=self.joe,
+                         event_data="map dressingroom")
 
     def test_Vote(self):
         self.joe.connects('0')
         self.assertEvent(r'''Vote: 0 - 2''',
-            event_type='EVT_CLIENT_VOTE',
-            event_client=self.joe,
-            event_data="2")
+                         event_type='EVT_CLIENT_VOTE',
+                         event_client=self.joe,
+                         event_data="2")
 
     def test_Votepassed(self):
         self.assertEvent(r'''VotePassed: 1 - 0 - "reload"''',
-            event_type='EVT_VOTE_PASSED',
-            event_data={"yes": 1, "no": 0, "what": "reload"})
+                         event_type='EVT_VOTE_PASSED',
+                         event_data={"yes": 1, "no": 0, "what": "reload"})
 
     def test_Votefailed(self):
         self.assertEvent(r'''VoteFailed: 1 - 1 - "restart"''',
-            event_type='EVT_VOTE_FAILED',
-            event_data={"yes": 1, "no": 1, "what": "restart"})
+                         event_type='EVT_VOTE_FAILED',
+                         event_data={"yes": 1, "no": 1, "what": "restart"})
 
     def test_Flagcapturetime(self):
         patate = FakeClient(self.console, name="Patate", guid="Patate_guid")
         patate.connects('0')
         self.assertEvent(r'''FlagCaptureTime: 0: 1234567890''',
-            event_type='EVT_FLAG_CAPTURE_TIME',
-            event_client=patate,
-            event_data=1234567890)
+                         event_type='EVT_FLAG_CAPTURE_TIME',
+                         event_client=patate,
+                         event_data=1234567890)
 
     def test_Hit_1(self):
         fatmatic = FakeClient(self.console, name="Fat'Matic", guid="11111111111111")
@@ -185,10 +200,10 @@ class Test_log_lines_parsing(Iourt43TestCase):
         fatmatic.connects('3')
         d4dou.connects('6')
         self.assertEvent(r'''Hit: 6 3 5 8: Fat'Matic hit [FR]d4dou in the Torso''',
-            event_type='EVT_CLIENT_DAMAGE',
-            event_client=fatmatic,
-            event_target=d4dou,
-            event_data=(17, '19', '5'))
+                         event_type='EVT_CLIENT_DAMAGE',
+                         event_client=fatmatic,
+                         event_target=d4dou,
+                         event_data=(17, '19', '5'))
 
     def test_Hit_2(self):
         fatmatic = FakeClient(self.console, name="Fat'Matic", guid="11111111111111")
@@ -196,10 +211,10 @@ class Test_log_lines_parsing(Iourt43TestCase):
         fatmatic.connects('3')
         d4dou.connects('6')
         self.assertEvent(r'''Hit: 3 6 9 17: [FR]d4dou hit Fat'Matic in the Legs''',
-            event_type='EVT_CLIENT_DAMAGE',
-            event_client=d4dou,
-            event_target=fatmatic,
-            event_data=(13, '36', '9'))
+                         event_type='EVT_CLIENT_DAMAGE',
+                         event_client=d4dou,
+                         event_target=fatmatic,
+                         event_data=(13, '36', '9'))
 
     def test_Hit_unkown_location(self):
         fatmatic = FakeClient(self.console, name="Fat'Matic", guid="11111111111111")
@@ -208,10 +223,10 @@ class Test_log_lines_parsing(Iourt43TestCase):
         d4dou.connects('6')
         with patch.object(self.console, 'warning') as warning_mock:
             self.assertEvent(r'''Hit: 6 3 321 8: Fat'Matic hit [FR]d4dou in the Pinky''',
-                event_type='EVT_CLIENT_DAMAGE',
-                event_client=fatmatic,
-                event_target=d4dou,
-                event_data=(15, '19', '321'))
+                             event_type='EVT_CLIENT_DAMAGE',
+                             event_client=fatmatic,
+                             event_target=d4dou,
+                             event_data=(15, '19', '321'))
         self.assertListEqual([call('_getDamagePoints(19, 321) cannot find value : list index out of range')],
                              warning_mock.mock_calls)
 
@@ -221,102 +236,101 @@ class Test_log_lines_parsing(Iourt43TestCase):
         patate.connects('0')
         psyp.connects('1')
         self.assertEvent(r'''Kill: 0 1 38: Patate killed psyp by UT_MOD_GLOCK''',
-            event_type='EVT_CLIENT_KILL',
-            event_client=patate,
-            event_target=psyp,
-            event_data=(100, '38', 'body', 'UT_MOD_GLOCK'))
+                         event_type='EVT_CLIENT_KILL',
+                         event_client=patate,
+                         event_target=psyp,
+                         event_data=(100, '38', 'body', 'UT_MOD_GLOCK'))
 
     def test_say(self):
         marcel = FakeClient(self.console, name="^5Marcel^2[^6CZARMY^2]", guid="11111111111111")
         marcel.connects('6')
         self.assertEvent(r'''say: 6 ^5Marcel^2[^6CZARMY^2]: !help''',
-            event_type='EVT_CLIENT_SAY',
-            event_client=marcel,
-            event_data="!help")
+                         event_type='EVT_CLIENT_SAY',
+                         event_client=marcel,
+                         event_data="!help")
 
     def test_ClientJumpRunStarted(self):
         marcel = FakeClient(self.console, name="^5Marcel^2[^6CZARMY^2]", guid="11111111111111")
         marcel.connects('0')
         self.assertEvent(r'''ClientJumpRunStarted: 0 - way: 1''',
-            event_type='EVT_CLIENT_JUMP_RUN_START',
-            event_client=marcel,
-            event_data={'way_id': '1', 'attempt_num': None, 'attempt_max': None})
+                         event_type='EVT_CLIENT_JUMP_RUN_START',
+                         event_client=marcel,
+                         event_data={'way_id': '1', 'attempt_num': None, 'attempt_max': None})
 
     def test_ClientJumpRunStarted_with_attempt(self):
         marcel = FakeClient(self.console, name="^5Marcel^2[^6CZARMY^2]", guid="11111111111111")
         marcel.connects('0')
         self.assertEvent(r'''ClientJumpRunStarted: 0 - way: 1 - attempt: 1 of 5''',
-            event_type='EVT_CLIENT_JUMP_RUN_START',
-            event_client=marcel,
-            event_data={'way_id': '1', 'attempt_num': '1', 'attempt_max': '5'})
+                         event_type='EVT_CLIENT_JUMP_RUN_START',
+                         event_client=marcel,
+                         event_data={'way_id': '1', 'attempt_num': '1', 'attempt_max': '5'})
 
     def test_ClientJumpRunStopped(self):
         marcel = FakeClient(self.console, name="^5Marcel^2[^6CZARMY^2]", guid="11111111111111")
         marcel.connects('0')
         self.assertEvent(r'''ClientJumpRunStopped: 0 - way: 1 - time: 12345''',
-            event_type='EVT_CLIENT_JUMP_RUN_STOP',
-            event_client=marcel,
-            event_data={'way_id': '1', 'way_time': '12345', 'attempt_max': None, 'attempt_num': None})
+                         event_type='EVT_CLIENT_JUMP_RUN_STOP',
+                         event_client=marcel,
+                         event_data={'way_id': '1', 'way_time': '12345', 'attempt_max': None, 'attempt_num': None})
 
     def test_ClientJumpRunStopped_with_attempt(self):
         marcel = FakeClient(self.console, name="^5Marcel^2[^6CZARMY^2]", guid="11111111111111")
         marcel.connects('0')
         self.assertEvent(r'''ClientJumpRunStopped: 0 - way: 1 - time: 12345 - attempt: 1 of 5''',
-            event_type='EVT_CLIENT_JUMP_RUN_STOP',
-            event_client=marcel,
-            event_data={'way_id': '1', 'way_time': '12345', 'attempt_max': '5', 'attempt_num': '1'})
+                         event_type='EVT_CLIENT_JUMP_RUN_STOP',
+                         event_client=marcel,
+                         event_data={'way_id': '1', 'way_time': '12345', 'attempt_max': '5', 'attempt_num': '1'})
 
     def test_ClientJumpRunCancelled(self):
         marcel = FakeClient(self.console, name="^5Marcel^2[^6CZARMY^2]", guid="11111111111111")
         marcel.connects('0')
         self.assertEvent(r'''ClientJumpRunCanceled: 0 - way: 1''',
-            event_type='EVT_CLIENT_JUMP_RUN_CANCEL',
-            event_client=marcel,
-            event_data={'way_id': '1', 'attempt_max': None, 'attempt_num': None})
+                         event_type='EVT_CLIENT_JUMP_RUN_CANCEL',
+                         event_client=marcel,
+                         event_data={'way_id': '1', 'attempt_max': None, 'attempt_num': None})
 
     def test_ClientJumpRunCancelled_with_attempt(self):
         marcel = FakeClient(self.console, name="^5Marcel^2[^6CZARMY^2]", guid="11111111111111")
         marcel.connects('0')
         self.assertEvent(r'''ClientJumpRunCanceled: 0 - way: 1 - attempt: 1 of 5''',
-            event_type='EVT_CLIENT_JUMP_RUN_CANCEL',
-            event_client=marcel,
-            event_data={'way_id': '1', 'attempt_max': '5', 'attempt_num': '1'})
-
+                         event_type='EVT_CLIENT_JUMP_RUN_CANCEL',
+                         event_client=marcel,
+                         event_data={'way_id': '1', 'attempt_max': '5', 'attempt_num': '1'})
 
     def test_ClientSavePosition(self):
         marcel = FakeClient(self.console, name="^5Marcel^2[^6CZARMY^2]", guid="11111111111111")
         marcel.connects('0')
         self.assertEvent(r'''ClientSavePosition: 0 - 335.384887 - 67.469154 - -23.875000''',
-            event_type='EVT_CLIENT_POS_SAVE',
-            event_client=marcel,
-            event_data={'position': (335.384887, 67.469154, -23.875)})
+                         event_type='EVT_CLIENT_POS_SAVE',
+                         event_client=marcel,
+                         event_data={'position': (335.384887, 67.469154, -23.875)})
 
     def test_ClientLoadPosition(self):
         marcel = FakeClient(self.console, name="^5Marcel^2[^6CZARMY^2]", guid="11111111111111")
         marcel.connects('0')
         self.assertEvent(r'''ClientLoadPosition: 0 - 335.384887 - 67.469154 - -23.875000''',
-            event_type='EVT_CLIENT_POS_LOAD',
-            event_client=marcel,
-            event_data={'position': (335.384887, 67.469154, -23.875)})
-        
+                         event_type='EVT_CLIENT_POS_LOAD',
+                         event_client=marcel,
+                         event_data={'position': (335.384887, 67.469154, -23.875)})
+
     def test_ClientGoto(self):
         patate = FakeClient(self.console, name="Patate", guid="Patate_guid")
         psyp = FakeClient(self.console, name="psyp", guid="psyp_guid")
         patate.connects('0')
         psyp.connects('1')
         self.assertEvent(r'''ClientGoto: 0 - 1 - 335.384887 - 67.469154 - -23.875000''',
-            event_type='EVT_CLIENT_GOTO',
-            event_client=patate,
-            event_target=psyp,
-            event_data={'position': (335.384887, 67.469154, -23.875)})
+                         event_type='EVT_CLIENT_GOTO',
+                         event_client=patate,
+                         event_target=psyp,
+                         event_data={'position': (335.384887, 67.469154, -23.875)})
 
     def test_ClientSpawn(self):
         patate = FakeClient(self.console, name="Patate", guid="Patate_guid")
         patate.connects('0')
         self.assertEvent(r'''ClientSpawn: 0''',
-            event_type='EVT_CLIENT_SPAWN',
-            event_client=patate,
-            event_data=None)
+                         event_type='EVT_CLIENT_SPAWN',
+                         event_client=patate,
+                         event_data=None)
 
     def test_client_freeze(self):
         alice = FakeClient(self.console, name="Alice", guid="aliceguid")
@@ -365,25 +379,32 @@ class Test_log_lines_parsing(Iourt43TestCase):
 
     def test_bomb_related(self):
         self.joe.connects('2')
-        self.assertEvent(r'''Bomb was tossed by 2''', event_type='EVT_CLIENT_ACTION', event_data="bomb_tossed", event_client=self.joe)
-        self.assertEvent(r'''Bomb was planted by 2''', event_type='EVT_CLIENT_ACTION', event_data="bomb_planted", event_client=self.joe)
-        self.assertEvent(r'''Bomb was defused by 2!''', event_type='EVT_CLIENT_ACTION', event_data="bomb_defused", event_client=self.joe)
-        self.assertEvent(r'''Bomb has been collected by 2''', event_type='EVT_CLIENT_ACTION', event_data="bomb_collected", event_client=self.joe)
+        self.assertEvent(r'''Bomb was tossed by 2''', event_type='EVT_CLIENT_ACTION', event_data="bomb_tossed",
+                         event_client=self.joe)
+        self.assertEvent(r'''Bomb was planted by 2''', event_type='EVT_CLIENT_ACTION', event_data="bomb_planted",
+                         event_client=self.joe)
+        self.assertEvent(r'''Bomb was defused by 2!''', event_type='EVT_CLIENT_ACTION', event_data="bomb_defused",
+                         event_client=self.joe)
+        self.assertEvent(r'''Bomb has been collected by 2''', event_type='EVT_CLIENT_ACTION',
+                         event_data="bomb_collected", event_client=self.joe)
         self.assertEvent(r'''Pop!''', event_type='EVT_BOMB_EXPLODED', event_data=None, event_client=None)
 
     def test_say_after_player_changed_name(self):
 
         def assert_new_name_and_text_does_not_break_auth(new_name, text="!help"):
             # WHEN the player renames himself
-            self.console.parseLine(r'''777:16 ClientUserinfoChanged: 2 n\%s\t\3\r\1\tl\0\f0\\f1\\f2\\a0\0\a1\255\a2\0''' % new_name)
+            self.console.parseLine(
+                r'''777:16 ClientUserinfoChanged: 2 n\%s\t\3\r\1\tl\0\f0\\f1\\f2\\a0\0\a1\255\a2\0''' % new_name)
             self.console.parseLine(r'''777:16 AccountValidated: 2 - louk - 6 - "basic"''')
-            self.console.parseLine(r'''777:16 ClientUserinfo: 2 \name\%s\ip\49.111.22.33:27960\password\xxxxxx\racered\0\raceblue\0\rate\16000\ut_timenudge\0\cg_rgb\0 255 0\funred\ninja,caprd,bartsor\funblue\ninja,gasmask,capbl\cg_physics\1\snaps\20\color1\4\color2\5\handicap\100\sex\male\cg_autoPickup\-1\cg_ghost\0\cl_time\n34|0610q5qH=t<a\racefree\1\gear\GZAAVWT\authc\2708\cl_guid\AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\weapmodes\01000110220000020002000''' % new_name)
-            self.console.parseLine(r'''777:16 ClientUserinfoChanged: 2 n\%s\t\3\r\1\tl\0\f0\\f1\\f2\\a0\0\a1\255\a2\0''' % new_name)
+            self.console.parseLine(
+                r'''777:16 ClientUserinfo: 2 \name\%s\ip\49.111.22.33:27960\password\xxxxxx\racered\0\raceblue\0\rate\16000\ut_timenudge\0\cg_rgb\0 255 0\funred\ninja,caprd,bartsor\funblue\ninja,gasmask,capbl\cg_physics\1\snaps\20\color1\4\color2\5\handicap\100\sex\male\cg_autoPickup\-1\cg_ghost\0\cl_time\n34|0610q5qH=t<a\racefree\1\gear\GZAAVWT\authc\2708\cl_guid\AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\weapmodes\01000110220000020002000''' % new_name)
+            self.console.parseLine(
+                r'''777:16 ClientUserinfoChanged: 2 n\%s\t\3\r\1\tl\0\f0\\f1\\f2\\a0\0\a1\255\a2\0''' % new_name)
             # THEN the next chat line should work
             self.assertEvent(r'''777:18 say: 2 %s: %s''' % (new_name, text),
-                event_type='EVT_CLIENT_SAY',
-                event_client=player,
-                event_data=text.lstrip())
+                             event_type='EVT_CLIENT_SAY',
+                             event_client=player,
+                             event_data=text.lstrip())
 
         # GIVEN a known player with FSA louk, cl_guid "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" that will connect on slot 2
         player = FakeClient(console=self.console, name="Chucky", guid="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", pbid="louk")
@@ -395,13 +416,19 @@ class Test_log_lines_parsing(Iourt43TestCase):
         assert_new_name_and_text_does_not_break_auth("jo:e")
         assert_new_name_and_text_does_not_break_auth("j:oe")
         assert_new_name_and_text_does_not_break_auth(":joe")
-        assert_new_name_and_text_does_not_break_auth("joe", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
-        assert_new_name_and_text_does_not_break_auth("joe:", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
-        assert_new_name_and_text_does_not_break_auth("jo:e", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
-        assert_new_name_and_text_does_not_break_auth("j:oe", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
-        assert_new_name_and_text_does_not_break_auth(":joe", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth("joe",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth("joe:",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth("jo:e",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth("j:oe",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth(":joe",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
         assert_new_name_and_text_does_not_break_auth("joe:foo")
-        assert_new_name_and_text_does_not_break_auth("joe:foo", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth("joe:foo",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
         assert_new_name_and_text_does_not_break_auth("j:oe", ":")
         assert_new_name_and_text_does_not_break_auth("j:oe", " :")
         assert_new_name_and_text_does_not_break_auth("j:oe", " : ")
@@ -420,43 +447,44 @@ class Test_kill_mods(Test_log_lines_parsing):
 
     def test_mod_water(self):
         self.assertEvent('0:56 Kill: 1022 0 1: <world> killed Joe by MOD_WATER',
-            event_type='EVT_CLIENT_SUICIDE',
-            event_client=self.joe,
-            event_target=self.joe,
-            event_data=(100, self.console.MOD_WATER, 'body', 'MOD_WATER')
-        )
+                         event_type='EVT_CLIENT_SUICIDE',
+                         event_client=self.joe,
+                         event_target=self.joe,
+                         event_data=(100, self.console.MOD_WATER, 'body', 'MOD_WATER')
+                         )
 
     def test_nuke(self):
         self.assertEvent('5:19 Kill: 0 0 35: Joe killed Joe by UT_MOD_NUKED',
-            event_type='EVT_CLIENT_KILL',
-            event_client=self.world,
-            event_target=self.joe,
-            event_data=(100, self.console.UT_MOD_NUKED, 'body', 'UT_MOD_NUKED'))
+                         event_type='EVT_CLIENT_KILL',
+                         event_client=self.world,
+                         event_target=self.joe,
+                         event_data=(100, self.console.UT_MOD_NUKED, 'body', 'UT_MOD_NUKED'))
 
     def test_lava(self):
         self.assertEvent('5:19 Kill: 1022 0 3: <world> killed Joe by MOD_LAVA',
-            event_type='EVT_CLIENT_SUICIDE',
-            event_client=self.joe,
-            event_target=self.joe,
-            event_data=(100, self.console.MOD_LAVA, 'body', 'MOD_LAVA'))
+                         event_type='EVT_CLIENT_SUICIDE',
+                         event_client=self.joe,
+                         event_target=self.joe,
+                         event_data=(100, self.console.MOD_LAVA, 'body', 'MOD_LAVA'))
 
     def test_falling(self):
         self.assertEvent('0:32 Kill: 1022 0 6: <world> killed Joe by MOD_FALLING',
-            event_type='EVT_CLIENT_SUICIDE',
-            event_client=self.joe,
-            event_target=self.joe,
-            event_data=(100, self.console.MOD_FALLING, 'body', 'MOD_FALLING'))
+                         event_type='EVT_CLIENT_SUICIDE',
+                         event_client=self.joe,
+                         event_target=self.joe,
+                         event_data=(100, self.console.MOD_FALLING, 'body', 'MOD_FALLING'))
 
     def test_unknown_kill_mode(self):
         self.assertEvent('5:19 Kill: 0 0 1234: Joe killed Joe by MOD_F00',
-            event_type='EVT_CLIENT_SUICIDE',
-            event_client=self.joe,
-            event_target=self.joe,
-            event_data=(100, '1234', 'body', 'MOD_F00'))
+                         event_type='EVT_CLIENT_SUICIDE',
+                         event_client=self.joe,
+                         event_target=self.joe,
+                         event_data=(100, '1234', 'body', 'MOD_F00'))
 
     def test_constants(self):
         def assert_mod(kill_mod_number, kill_mod_name):
-            self.assertTrue(hasattr(self.console, kill_mod_name), "expecting parser to have a constant named %s = '%s'" % (kill_mod_name, kill_mod_number))
+            self.assertTrue(hasattr(self.console, kill_mod_name),
+                            "expecting parser to have a constant named %s = '%s'" % (kill_mod_name, kill_mod_number))
             with patch.object(self.console, 'queueEvent') as queueEvent:
                 self.console.parseLine(r'''Kill: 0 1 %s: Joe killed Bob by %s''' % (kill_mod_number, kill_mod_name))
                 assert queueEvent.called, "No event was fired"
@@ -530,7 +558,7 @@ class Test_OnClientuserinfo(Iourt43TestCase):
         self.assertEqual('laCourge^7', client.exactName)
         self.assertEqual('laCourge', client.name)
         self.assertEqual('00000000011111111122222223333333', client.guid)
-        self.assertEqual(self.console.queryClientFrozenSandAccount.call_count, 2) # both on connect and auth
+        self.assertEqual(self.console.queryClientFrozenSandAccount.call_count, 2)  # both on connect and auth
 
     def test_ioclient_with_authl_token(self):
         self.console.queryClientFrozenSandAccount = Mock(return_value={})
@@ -577,7 +605,8 @@ class Test_OnClientuserinfo(Iourt43TestCase):
         This value must not overwrite the 'password' property of the Client object.
         """
         # GIVEN a known client
-        c = FakeClient(console=self.console, name="Zesco", guid="58D4069246865BB5A85F20FB60ED6F65", login="login_in_database", password="password_in_database")
+        c = FakeClient(console=self.console, name="Zesco", guid="58D4069246865BB5A85F20FB60ED6F65",
+                       login="login_in_database", password="password_in_database")
         c.save()
         c.connects('15')
         self.assertEqual('password_in_database', c.password)
@@ -641,11 +670,14 @@ class Test_queryClientFrozenSandAccount(Iourt43TestCase):
 
     def test_authed(self):
         # GIVEN
-        when(self.console).write('auth-whois 0').thenReturn(r'''auth: id: 0 - name: ^7laCourge - login: courgette - notoriety: serious - level: -1''')
+        when(self.console).write('auth-whois 0').thenReturn(
+            r'''auth: id: 0 - name: ^7laCourge - login: courgette - notoriety: serious - level: -1''')
         # WHEN
         data = self.console.queryClientFrozenSandAccount('0')
         # THEN
-        self.assertDictEqual({'cid': '0', 'name': 'laCourge', 'login': 'courgette', 'notoriety': 'serious', 'level': '-1', 'extra': None}, data)
+        self.assertDictEqual(
+            {'cid': '0', 'name': 'laCourge', 'login': 'courgette', 'notoriety': 'serious', 'level': '-1',
+             'extra': None}, data)
 
     def test_authed_with_newline_char(self):
         # GIVEN
@@ -654,7 +686,9 @@ class Test_queryClientFrozenSandAccount(Iourt43TestCase):
         # WHEN
         data = self.console.queryClientFrozenSandAccount('0')
         # THEN
-        self.assertDictEqual({'cid': '0', 'name': 'laCourge', 'login': 'courgette', 'notoriety': 'serious', 'level': '-1', 'extra': None}, data)
+        self.assertDictEqual(
+            {'cid': '0', 'name': 'laCourge', 'login': 'courgette', 'notoriety': 'serious', 'level': '-1',
+             'extra': None}, data)
 
     def test_not_active(self):
         # GIVEN
@@ -666,11 +700,14 @@ class Test_queryClientFrozenSandAccount(Iourt43TestCase):
 
     def test_no_account(self):
         # GIVEN
-        when(self.console).write('auth-whois 3').thenReturn(r'''auth: id: 3 - name: ^7laCourge - login:  - notoriety: 0 - level: 0  - ^7no account''')
+        when(self.console).write('auth-whois 3').thenReturn(
+            r'''auth: id: 3 - name: ^7laCourge - login:  - notoriety: 0 - level: 0  - ^7no account''')
         # WHEN
         data = self.console.queryClientFrozenSandAccount('3')
         # THEN
-        self.assertDictEqual({'cid': '3', 'name': 'laCourge', 'login': '', 'notoriety': '0', 'level': '0', 'extra': '^7no account'}, data)
+        self.assertDictEqual(
+            {'cid': '3', 'name': 'laCourge', 'login': '', 'notoriety': '0', 'level': '0', 'extra': '^7no account'},
+            data)
 
     def test_all(self):
         # GIVEN
@@ -682,10 +719,13 @@ auth: id: 2 - name: ^7Qant - login: qant - notoriety: basic - level: -1
         # WHEN
         data = self.console.queryAllFrozenSandAccount()
         # THEN
-        self.assertDictEqual({'0': {'cid': '0', 'extra': None, 'level': '-1', 'login': 'courgette', 'name': 'laCourge', 'notoriety': 'serious'},
-                              '1': {'cid': '1', 'extra': "^7no account", 'level': '0', 'login': '', 'name': 'f00', 'notoriety': '0'},
-                              '2': {'cid': '2', 'extra': None, 'level': '-1', 'login': 'qant', 'name': 'Qant', 'notoriety': 'basic'}
-                            }, data)
+        self.assertDictEqual({'0': {'cid': '0', 'extra': None, 'level': '-1', 'login': 'courgette', 'name': 'laCourge',
+                                    'notoriety': 'serious'},
+                              '1': {'cid': '1', 'extra': "^7no account", 'level': '0', 'login': '', 'name': 'f00',
+                                    'notoriety': '0'},
+                              '2': {'cid': '2', 'extra': None, 'level': '-1', 'login': 'qant', 'name': 'Qant',
+                                    'notoriety': 'basic'}
+                              }, data)
 
 
 class Test_auth_without_FSA(Iourt43TestCase):
@@ -693,20 +733,23 @@ class Test_auth_without_FSA(Iourt43TestCase):
     def setUp(self):
         Iourt43TestCase.setUp(self)
         # GIVEN a player without FSA joe_fsa that will connect on slot 3
-        when(self.console).write('auth-whois 3').thenReturn(r'''auth: id: 3 - name: ^7Joe - login:  - notoriety: 0 - level: 0  - ^7no account''')
+        when(self.console).write('auth-whois 3').thenReturn(
+            r'''auth: id: 3 - name: ^7Joe - login:  - notoriety: 0 - level: 0  - ^7no account''')
 
     def test_unknown_cl_guid(self):
         # GIVEN a player with a unknown cl_guid
         player = FakeClient(console=self.console, name="Joe", guid="joe_cl_guid")
         self.assertEqual(0, len(self.console.clients))
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 0, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 0, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         # WHEN player connects on slot 3
         player.connects("3")
         # THEN player is authenticated
         self.assertEqual(1, len(self.console.clients))
         self.assertTrue(player.authed)
         # THEN a new player entry is created in database
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         self.assertNotEqual(0, player.id)
         # THEN the new entry in database has the correct cl_guid and no FSA
         player_from_db = self.console.storage.getClient(Client(id=player.id))
@@ -718,7 +761,8 @@ class Test_auth_without_FSA(Iourt43TestCase):
         known_player = FakeClient(console=self.console, name="Joe", guid="joe_cl_guid")
         known_player.save()
         self.assertNotEqual(0, known_player.id)
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         self.assertEqual(0, len(self.console.clients))
         # WHEN a player connects on slot 3 with cl_guid "joe_cl_guid" and no FSA
         player = FakeClient(console=self.console, name="Joe", guid="joe_cl_guid")
@@ -727,7 +771,8 @@ class Test_auth_without_FSA(Iourt43TestCase):
         self.assertEqual(1, len(self.console.clients))
         self.assertTrue(player.authed)
         # THEN no new entry is created in database
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         self.assertEqual(known_player.id, player.id)
 
 
@@ -736,20 +781,23 @@ class Test_auth_with_unknown_FSA(Iourt43TestCase):
     def setUp(self):
         Iourt43TestCase.setUp(self)
         # GIVEN a player with FSA joe_fsa that will connect on slot 3
-        when(self.console).write('auth-whois 3').thenReturn(r'''auth: id: 3 - name: ^7Joe - login: joe_fsa - notoriety: serious - level: -1''')
+        when(self.console).write('auth-whois 3').thenReturn(
+            r'''auth: id: 3 - name: ^7Joe - login: joe_fsa - notoriety: serious - level: -1''')
 
     def test_unknown_cl_guid(self):
         # GIVEN a player with cl_guid "joe_cl_guid" that does not exists in database
         player = FakeClient(console=self.console, name="Joe", guid="joe_cl_guid")
         self.assertEqual(0, len(self.console.clients))
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 0, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 0, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         # WHEN player connects
         player.connects("3")
         # THEN player is authenticated
         self.assertEqual(1, len(self.console.clients))
         self.assertTrue(player.authed)
         # THEN a new player entry is created in database
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         self.assertNotEqual(0, player.id)
         # THEN database entry has the new FSA value
         player_from_db = self.console.storage.getClient(Client(id=player.id))
@@ -760,7 +808,8 @@ class Test_auth_with_unknown_FSA(Iourt43TestCase):
         known_player = FakeClient(console=self.console, name="Joe", guid="joe_cl_guid")
         known_player.save()
         self.assertNotEqual(0, known_player.id)
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         self.assertEqual(0, len(self.console.clients))
         # WHEN a player connects on slot 3 with cl_guid "joe_cl_guid" and no FSA
         player = FakeClient(console=self.console, name="Joe", guid="joe_cl_guid")
@@ -769,7 +818,8 @@ class Test_auth_with_unknown_FSA(Iourt43TestCase):
         self.assertEqual(1, len(self.console.clients))
         self.assertTrue(player.authed)
         # THEN no new entry is created in DB
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         self.assertEqual(known_player.id, player.id)
 
 
@@ -778,12 +828,14 @@ class Test_auth_with_uniquely_known_FSA(Iourt43TestCase):
     def setUp(self):
         Iourt43TestCase.setUp(self)
         # GIVEN a known player with FSA joe_fsa, cl_guid "cl_guid_A" that will connect on slot 3
-        when(self.console).write('auth-whois 3').thenReturn(r'''auth: id: 3 - name: ^7Joe - login: joe_fsa - notoriety: serious - level: -1''')
+        when(self.console).write('auth-whois 3').thenReturn(
+            r'''auth: id: 3 - name: ^7Joe - login: joe_fsa - notoriety: serious - level: -1''')
         player = FakeClient(console=self.console, name="Joe", guid="cl_guid_A", pbid="joe_fsa")
         player.save()
         self.known_player_db_id = player.id
         # THEN we have 0 connected players and 1 player known in database
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         self.assertEqual(0, len(self.console.clients))
 
     def test_unknown_cl_guid(self):
@@ -796,7 +848,8 @@ class Test_auth_with_uniquely_known_FSA(Iourt43TestCase):
         self.assertTrue(player.authed)
         self.assertEqual(self.known_player_db_id, player.id)
         # THEN no new client entry must be created in database
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         # THEN the DB player entry cl_guid is replaced with the new value
         player_from_db = self.console.storage.getClient(Client(id=player.id))
         self.assertEqual("cl_guid_B", player_from_db.guid)
@@ -811,7 +864,8 @@ class Test_auth_with_uniquely_known_FSA(Iourt43TestCase):
         self.assertTrue(player.authed)
         self.assertEqual(self.known_player_db_id, player.id)
         # THEN no new client entry must be created in database
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 1, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         # THEN the DB player entry cl_guid is still "cl_guid_A"
         player_from_db = self.console.storage.getClient(Client(id=player.id))
         self.assertEqual("cl_guid_A", player_from_db.guid)
@@ -822,7 +876,8 @@ class Test_auth_with_uniquely_known_FSA(Iourt43TestCase):
         the_other_player.save()
         the_other_player_db_id = the_other_player.id
         # THEN we have 0 connected players and 2 players known in database
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 2, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 2, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         self.assertEqual(0, len(self.console.clients))
         # GIVEN player with known FSA and known cl_guid for another FSA
         player = FakeClient(console=self.console, name="Joe", guid="cl_guid_X")
@@ -834,7 +889,8 @@ class Test_auth_with_uniquely_known_FSA(Iourt43TestCase):
         self.assertEqual(self.known_player_db_id, player.id)
         self.assertNotEqual(the_other_player_db_id, player.id)
         # THEN no new client entry must be created in database
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 2, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 2, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         # THEN the DB player entry cl_guid remains unchanged
         player_from_db = self.console.storage.getClient(Client(id=player.id))
         self.assertEqual("cl_guid_A", player_from_db.guid)
@@ -845,7 +901,8 @@ class Test_auth_with_non_uniquely_known_FSA(Iourt43TestCase):
     def setUp(self):
         Iourt43TestCase.setUp(self)
         # GIVEN a known player with FSA joe_fsa, cl_guid "cl_guid_A" that will connect on slot 3
-        when(self.console).write('auth-whois 3').thenReturn(r'''auth: id: 3 - name: ^7Joe - login: joe_fsa - notoriety: serious - level: -1''')
+        when(self.console).write('auth-whois 3').thenReturn(
+            r'''auth: id: 3 - name: ^7Joe - login: joe_fsa - notoriety: serious - level: -1''')
         player = FakeClient(console=self.console, name="Joe", guid="cl_guid_A", pbid="joe_fsa")
         player.save()
         self.known_player_db_id = player.id
@@ -853,7 +910,8 @@ class Test_auth_with_non_uniquely_known_FSA(Iourt43TestCase):
         the_other_player = FakeClient(console=self.console, name="Jack", guid="cl_guid_B", pbid="joe_fsa")
         the_other_player.save()
         # THEN we have 0 connected players and 2 players known in database
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 2, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 2, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         self.assertEqual(0, len(self.console.clients))
 
     def test_unknown_cl_guid(self):
@@ -865,7 +923,8 @@ class Test_auth_with_non_uniquely_known_FSA(Iourt43TestCase):
         self.assertEqual(1, len(self.console.clients))
         self.assertTrue(player.authed)
         # THEN a new client entry is be created in database
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 3, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 3, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         # THEN the new database player entry has the current values for cl_guid and FSA
         player_from_db = self.console.storage.getClient(Client(id=player.id))
         self.assertEqual("cl_guid_f00", player_from_db.guid)
@@ -883,11 +942,11 @@ class Test_auth_with_non_uniquely_known_FSA(Iourt43TestCase):
         self.assertTrue(player.authed)
         self.assertEqual(self.known_player_db_id, player.id)
         # THEN no new client entry must be created in database
-        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 2, 'Bans': 0, 'Warnings': 0}, self.console.storage.getCounts())
+        self.assertDictEqual({'Kicks': 0, 'TempBans': 0, 'clients': 2, 'Bans': 0, 'Warnings': 0},
+                             self.console.storage.getCounts())
         # THEN the DB player entry cl_guid is still "cl_guid_A"
         player_from_db = self.console.storage.getClient(Client(id=player.id))
         self.assertEqual("cl_guid_A", player_from_db.guid)
-
 
 
 class Test_parser_API(Iourt43TestCase):
@@ -909,11 +968,11 @@ num score ping name            lastmsg address               qport rate
         rv = self.console.getPlayerList()
         # THEN
         self.assertDictContainsSubset({
-            '5': {'slot': '5', 'last': '0', 'name': 'theName2^7', 'ip': '11.22.33.45', 'ping': '48', 'pbid': None, 'qport': '38410', 'rate': '8000', 'score': '0', 'port': '27961'},
-            '4': {'slot': '4', 'last': '0', 'name': 'theName^7', 'ip': '11.22.33.44', 'ping': '141', 'pbid': None, 'qport': '38410', 'rate': '8000', 'score': '0', 'port': '27961'}
+            '5': {'slot': '5', 'last': '0', 'name': 'theName2^7', 'ip': '11.22.33.45', 'ping': '48', 'pbid': None,
+                  'qport': '38410', 'rate': '8000', 'score': '0', 'port': '27961'},
+            '4': {'slot': '4', 'last': '0', 'name': 'theName^7', 'ip': '11.22.33.44', 'ping': '141', 'pbid': None,
+                  'qport': '38410', 'rate': '8000', 'score': '0', 'port': '27961'}
         }, rv)
-
-
 
     def test_sync(self):
         # GIVEN
@@ -943,45 +1002,38 @@ auth: id: 0 - name: ^7laCourge - login: courgette - notoriety: serious - level: 
         self.assertEqual('courgette', player.pbid)
         self.assertTrue(player.authed)
 
-
     def test_say(self):
         self.console.say("f00")
         self.console.write.assert_has_calls([call('say f00')])
-
 
     def test_saybig(self):
         self.console.saybig("f00")
         self.console.write.assert_has_calls([call('bigtext "f00"')])
 
-
     def test_message(self):
         self.console.message(self.player, "f00")
         self.console.write.assert_has_calls([call('tell 4 ^8[pm]^7 f00')])
-
 
     def test_kick(self):
         self.console.kick(self.player, reason="f00")
         self.console.write.assert_has_calls([call('kick 4 "f00"'), call('say theName^7 was kicked f00')])
 
-
     def test_ban(self):
         self.console.ban(self.player, reason="f00")
         self.console.write.assert_has_calls([call('addip 4'), call('say theName^7 was banned f00')])
 
-
     def test_unban(self):
         self.console.unban(self.player, reason='f00')
         self.console.write.assert_has_calls([call('removeip 11.22.33.44'),
-                                          call('removeip 11.22.33.44'),
-                                          call('removeip 11.22.33.44'),
-                                          call('removeip 11.22.33.44'),
-                                          call('removeip 11.22.33.44')])
-
+                                             call('removeip 11.22.33.44'),
+                                             call('removeip 11.22.33.44'),
+                                             call('removeip 11.22.33.44'),
+                                             call('removeip 11.22.33.44')])
 
     def test_tempban(self):
         self.console.tempban(self.player, reason="f00", duration="1h")
-        self.console.write.assert_has_calls([call('kick 4 "f00"'), call('say theName^7 was temp banned for 1 hour^7 f00')])
-
+        self.console.write.assert_has_calls(
+            [call('kick 4 "f00"'), call('say theName^7 was temp banned for 1 hour^7 f00')])
 
     def test_getMap(self):
         # GIVEN
@@ -994,7 +1046,6 @@ num score ping name            lastmsg address               qport rate
         rv = self.console.getMap()
         # THEN
         self.assertEqual('ut4_casa', rv)
-
 
     def test_getMaps(self):
         # GIVEN
@@ -1010,13 +1061,11 @@ maps/ut4_ambush.bsp
         # THEN
         self.assertListEqual(['ut4_abbey', 'ut4_algiers', 'ut4_ambush'], rv)
 
-
     @patch('time.sleep')
     def test_rotateMap(self, sleep_mock):
         self.console.rotateMap()
         self.console.write.assert_has_calls([call('say ^7Changing to next map'), call('cyclemap')])
         sleep_mock.assert_called_once_with(1)
-
 
     @patch('time.sleep')
     def test_changeMap(self, sleep_mock):
@@ -1033,7 +1082,6 @@ maps/ut4_foo.bsp
         self.console.write.assert_has_calls([call('map ut4_foo')])
         sleep_mock.assert_called_once_with(1)
 
-
     def test_getPlayerPings(self):
         # GIVEN
         when(self.console).write('status').thenReturn('''\
@@ -1047,7 +1095,6 @@ num score ping name            lastmsg address               qport rate
         rv = self.console.getPlayerPings()
         # THEN
         self.assertDictEqual({"4": 141, "5": 48}, rv)
-
 
     def test_getPlayerScores(self):
         # GIVEN
@@ -1064,8 +1111,6 @@ num score ping name            lastmsg address               qport rate
         self.assertDictEqual({"4": 11, "5": 25}, rv)
 
 
-
-
 class Test_inflictCustomPenalty(Iourt43TestCase):
     """
     Called if b3.admin.penalizeClient() does not know a given penalty type.
@@ -1073,6 +1118,7 @@ class Test_inflictCustomPenalty(Iourt43TestCase):
     'mute', 'kill' or anything you want.
     /!\ This method must return True if the penalty was inflicted.
     """
+
     def setUp(self):
         Iourt43TestCase.setUp(self)
         self.player = self.console.clients.newClient(cid="4", guid="theGuid", name="theName", ip="11.22.33.44")
@@ -1098,15 +1144,12 @@ class Test_inflictCustomPenalty(Iourt43TestCase):
         self.assertTrue(result)
 
 
-
-
 class Test_load_conf_frozensand_ban_settings(Iourt43TestCase):
 
     def setUp(self):
         Iourt43TestCase.setUp(self)
         self.console.load_conf_permban_with_frozensand = Mock()
         self.console.load_conf_tempban_with_frozensand = Mock()
-
 
     def test_auth_public(self):
         # GIVEN
@@ -1118,7 +1161,6 @@ class Test_load_conf_frozensand_ban_settings(Iourt43TestCase):
         self.assertEqual(1, self.console.load_conf_permban_with_frozensand.call_count)
         self.assertEqual(1, self.console.load_conf_tempban_with_frozensand.call_count)
 
-
     def test_auth_notoriety(self):
         # GIVEN
         when(self.console).write("auth").thenReturn('"auth" is:"-1^7"')
@@ -1128,7 +1170,6 @@ class Test_load_conf_frozensand_ban_settings(Iourt43TestCase):
         # THEN
         self.assertEqual(1, self.console.load_conf_permban_with_frozensand.call_count)
         self.assertEqual(1, self.console.load_conf_tempban_with_frozensand.call_count)
-
 
     def test_auth_private(self):
         # GIVEN
@@ -1140,7 +1181,6 @@ class Test_load_conf_frozensand_ban_settings(Iourt43TestCase):
         self.assertEqual(1, self.console.load_conf_permban_with_frozensand.call_count)
         self.assertEqual(1, self.console.load_conf_tempban_with_frozensand.call_count)
 
-
     def test_auth_off(self):
         # GIVEN
         when(self.console).write("auth").thenReturn('"auth" is:"0^7"')
@@ -1150,7 +1190,6 @@ class Test_load_conf_frozensand_ban_settings(Iourt43TestCase):
         # THEN
         self.assertEqual(0, self.console.load_conf_permban_with_frozensand.call_count)
         self.assertEqual(0, self.console.load_conf_tempban_with_frozensand.call_count)
-
 
     def test_no_authowners(self):
         # GIVEN
@@ -1163,10 +1202,6 @@ class Test_load_conf_frozensand_ban_settings(Iourt43TestCase):
         self.assertEqual(0, self.console.load_conf_tempban_with_frozensand.call_count)
 
 
-
-
-
-
 @patch("time.sleep")
 class Test_ban_with_FrozenSand_auth(Iourt43TestCase):
 
@@ -1175,7 +1210,7 @@ class Test_ban_with_FrozenSand_auth(Iourt43TestCase):
         self.player = self.console.clients.newClient(cid="4", guid="theGuid", name="theName", ip="11.22.33.44")
         self.player.pbid = "thePlayerAccount"
 
-    #-------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def mock_authban(client, response="auth: sending ban for slot %(cid)s : %(pbid)s", disconnect=True):
         def write(cmd):
@@ -1183,6 +1218,7 @@ class Test_ban_with_FrozenSand_auth(Iourt43TestCase):
                 if disconnect:
                     client.disconnect()
                 return response % {'cid': client.cid, 'pbid': client.pbid}
+
         return write
 
     @staticmethod
@@ -1191,37 +1227,40 @@ class Test_ban_with_FrozenSand_auth(Iourt43TestCase):
 
     @staticmethod
     def mock_authban_no_authowner(client):
-        return Test_ban_with_FrozenSand_auth.mock_authban(client, response="auth: not banlist available. Please set correctly auth_owners.", disconnect=False)
-    #-------------------------------------------------------------------------------------------------------------------
+        return Test_ban_with_FrozenSand_auth.mock_authban(client,
+                                                          response="auth: not banlist available. Please set correctly auth_owners.",
+                                                          disconnect=False)
+
+    # -------------------------------------------------------------------------------------------------------------------
 
     def test_ban_with_frozensand(self, mock_sleep):
         # GIVEN
         self.console._permban_with_frozensand = True
-        with patch.object(self.console, "write", wraps=Test_ban_with_FrozenSand_auth.mock_authban(self.player)) as write_mock:
+        with patch.object(self.console, "write",
+                          wraps=Test_ban_with_FrozenSand_auth.mock_authban(self.player)) as write_mock:
             # WHEN
             self.console.ban(self.player, reason="f00")
         # THEN
         write_mock.assert_has_calls([call('auth-ban 4 0 0 0'),
                                      call('say theName^7 was banned f00')])
-
 
     def test_ban_with_frozensand_no_auth(self, mock_sleep):
         # GIVEN
         self.console._permban_with_frozensand = True
-        with patch.object(self.console, "write", wraps=Test_ban_with_FrozenSand_auth.mock_authban_no_auth(self.player)) as write_mock:
+        with patch.object(self.console, "write",
+                          wraps=Test_ban_with_FrozenSand_auth.mock_authban_no_auth(self.player)) as write_mock:
             # WHEN
             self.console.ban(self.player, reason="f00")
         # THEN
         write_mock.assert_has_calls([call('auth-ban 4 0 0 0'),
                                      call('addip 4'),
                                      call('say theName^7 was banned f00')])
-
-
 
     def test_ban_with_frozensand_no_authowners(self, mock_sleep):
         # GIVEN
         self.console._permban_with_frozensand = True
-        with patch.object(self.console, "write", wraps=Test_ban_with_FrozenSand_auth.mock_authban_no_authowner(self.player)) as write_mock:
+        with patch.object(self.console, "write",
+                          wraps=Test_ban_with_FrozenSand_auth.mock_authban_no_authowner(self.player)) as write_mock:
             # WHEN
             self.console.ban(self.player, reason="f00")
         # THEN
@@ -1229,67 +1268,62 @@ class Test_ban_with_FrozenSand_auth(Iourt43TestCase):
                                      call('addip 4'),
                                      call('say theName^7 was banned f00')])
 
-
     def test_tempban_with_frozensand_1minute(self, mock_sleep):
         # GIVEN
         self.console._tempban_with_frozensand = True
-        with patch.object(self.console, "write", wraps=Test_ban_with_FrozenSand_auth.mock_authban(self.player)) as write_mock:
+        with patch.object(self.console, "write",
+                          wraps=Test_ban_with_FrozenSand_auth.mock_authban(self.player)) as write_mock:
             # WHEN
             self.console.tempban(self.player, duration="1m", reason="f00")
         # THEN
         write_mock.assert_has_calls([call('auth-ban 4 0 0 1'),
                                      call('say theName^7 was temp banned for 1 minute^7 f00')])
 
-
     def test_tempban_with_frozensand_90min(self, mock_sleep):
         # GIVEN
         self.console._tempban_with_frozensand = True
-        with patch.object(self.console, "write", wraps=Test_ban_with_FrozenSand_auth.mock_authban(self.player)) as write_mock:
+        with patch.object(self.console, "write",
+                          wraps=Test_ban_with_FrozenSand_auth.mock_authban(self.player)) as write_mock:
             # WHEN
             self.console.tempban(self.player, duration="90m", reason="f00")
         # THEN
         write_mock.assert_has_calls([call('auth-ban 4 0 1 30'),
                                      call('say theName^7 was temp banned for 1.5 hour^7 f00')])
 
-
     def test_tempban_with_frozensand_40days(self, mock_sleep):
         # GIVEN
         self.console._tempban_with_frozensand = True
-        with patch.object(self.console, "write", wraps=Test_ban_with_FrozenSand_auth.mock_authban(self.player)) as write_mock:
+        with patch.object(self.console, "write",
+                          wraps=Test_ban_with_FrozenSand_auth.mock_authban(self.player)) as write_mock:
             # WHEN
             self.console.tempban(self.player, duration="40d", reason="f00")
         # THEN
         write_mock.assert_has_calls([call('auth-ban 4 40 0 0'),
                                      call('say theName^7 was temp banned for 5.7 weeks^7 f00')])
 
-
-
     def test_tempban_with_frozensand_no_auth(self, mock_sleep):
         # GIVEN
         self.console._tempban_with_frozensand = True
-        with patch.object(self.console, "write", wraps=Test_ban_with_FrozenSand_auth.mock_authban_no_auth(self.player)) as write_mock:
+        with patch.object(self.console, "write",
+                          wraps=Test_ban_with_FrozenSand_auth.mock_authban_no_auth(self.player)) as write_mock:
             # WHEN
             self.console.tempban(self.player, duration="1m", reason="f00")
         # THEN
         write_mock.assert_has_calls([call('auth-ban 4 0 0 1'),
                                      call('kick 4 "f00"'),
                                      call('say theName^7 was temp banned for 1 minute^7 f00')])
-
-
 
     def test_tempban_with_frozensand_no_authowners(self, mock_sleep):
         # GIVEN
         self.console._tempban_with_frozensand = True
-        with patch.object(self.console, "write", wraps=Test_ban_with_FrozenSand_auth.mock_authban_no_authowner(self.player)) as write_mock:
+        with patch.object(self.console, "write",
+                          wraps=Test_ban_with_FrozenSand_auth.mock_authban_no_authowner(self.player)) as write_mock:
             # WHEN
             self.console.tempban(self.player, duration="1m", reason="f00")
         # THEN
         write_mock.assert_has_calls([call('auth-ban 4 0 0 1'),
                                      call('kick 4 "f00"'),
                                      call('say theName^7 was temp banned for 1 minute^7 f00')])
-
-
-
 
 
 class Test_config(unittest.TestCase):
@@ -1303,7 +1337,6 @@ class Test_config(unittest.TestCase):
         # Iourt43TestCase -> AbstractParser -> FakeConsole -> Parser
         logging.getLogger('output').setLevel(logging.ERROR)
 
-
     def setUp(self):
         self.parser_conf = XmlConfigParser()
         self.parser_conf.loadFromString("""<configuration>
@@ -1312,15 +1345,12 @@ class Test_config(unittest.TestCase):
                 </settings>
             </configuration>""")
         self.console = Iourt43Parser(self.parser_conf)
-        self.console.PunkBuster = None # no Punkbuster support in that game
-
+        self.console.PunkBuster = None  # no Punkbuster support in that game
 
     def tearDown(self):
         if hasattr(self, "parser"):
             del self.parser.clients
             self.parser.working = False
-
-
 
 
 class Test_load_conf_permban_with_frozensand(Test_config):
@@ -1340,7 +1370,6 @@ class Test_load_conf_permban_with_frozensand(Test_config):
         # THEN
         self.assertTrue(self.console._permban_with_frozensand)
 
-
     def test_missing(self):
         # GIVEN
         self.parser_conf.loadFromString("""<configuration>
@@ -1354,7 +1383,6 @@ class Test_load_conf_permban_with_frozensand(Test_config):
         self.console.load_conf_permban_with_frozensand()
         # THEN
         self.assertFalse(self.console._permban_with_frozensand)
-
 
     def test_empty(self):
         # GIVEN
@@ -1371,7 +1399,6 @@ class Test_load_conf_permban_with_frozensand(Test_config):
         # THEN
         self.assertFalse(self.console._permban_with_frozensand)
 
-
     def test_no(self):
         # GIVEN
         self.parser_conf.loadFromString("""<configuration>
@@ -1387,7 +1414,6 @@ class Test_load_conf_permban_with_frozensand(Test_config):
         # THEN
         self.assertFalse(self.console._permban_with_frozensand)
 
-
     def test_foo(self):
         # GIVEN
         self.parser_conf.loadFromString("""<configuration>
@@ -1402,9 +1428,6 @@ class Test_load_conf_permban_with_frozensand(Test_config):
         self.console.load_conf_permban_with_frozensand()
         # THEN
         self.assertFalse(self.console._permban_with_frozensand)
-
-
-
 
 
 class Test_load_conf_tempban_with_frozensand(Test_config):
@@ -1424,7 +1447,6 @@ class Test_load_conf_tempban_with_frozensand(Test_config):
         # THEN
         self.assertTrue(self.console._tempban_with_frozensand)
 
-
     def test_missing(self):
         # GIVEN
         self.parser_conf.loadFromString("""<configuration>
@@ -1438,7 +1460,6 @@ class Test_load_conf_tempban_with_frozensand(Test_config):
         self.console.load_conf_tempban_with_frozensand()
         # THEN
         self.assertFalse(self.console._tempban_with_frozensand)
-
 
     def test_empty(self):
         # GIVEN
@@ -1455,7 +1476,6 @@ class Test_load_conf_tempban_with_frozensand(Test_config):
         # THEN
         self.assertFalse(self.console._tempban_with_frozensand)
 
-
     def test_no(self):
         # GIVEN
         self.parser_conf.loadFromString("""<configuration>
@@ -1470,7 +1490,6 @@ class Test_load_conf_tempban_with_frozensand(Test_config):
         self.console.load_conf_tempban_with_frozensand()
         # THEN
         self.assertFalse(self.console._tempban_with_frozensand)
-
 
     def test_foo(self):
         # GIVEN

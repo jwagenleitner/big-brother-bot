@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 import os
 
 import nose
@@ -45,11 +47,11 @@ MYSQL_TEST_USER = os.environ.get('MYSQL_TEST_USER', 'b3test')
 MYSQL_TEST_PASSWORD = os.environ.get('MYSQL_TEST_PASSWORD', 'test')
 MYSQL_TEST_DB = os.environ.get('MYSQL_TEST_DB', 'b3_test')
 
-#===============================================================================
+# ===============================================================================
 # 
 # Test if we can run the MySQL tests
 #
-#===============================================================================
+# ===============================================================================
 
 is_mysql_ready = True
 no_mysql_reason = ''
@@ -66,18 +68,19 @@ except ImportError:
 if is_mysql_ready:
     try:
         driver.connect(host=MYSQL_TEST_HOST, user=MYSQL_TEST_USER, passwd=MYSQL_TEST_PASSWORD)
-    except driver.Error, err:
+    except driver.Error as err:
         is_mysql_ready = False
         no_mysql_reason = "%s" % err[1]
-    except Exception, err:
+    except Exception as err:
         is_mysql_ready = False
         no_mysql_reason = "%s" % err
 
-#===============================================================================
+
+# ===============================================================================
 # 
 # Load the tests
 # 
-#===============================================================================
+# ===============================================================================
 
 @unittest.skipIf(not is_mysql_ready, no_mysql_reason)
 class Test_MySQL(B3TestCase, StorageAPITest):
@@ -89,7 +92,7 @@ class Test_MySQL(B3TestCase, StorageAPITest):
 
         try:
             db = driver.connect(host=MYSQL_TEST_HOST, user=MYSQL_TEST_USER, password=MYSQL_TEST_PASSWORD)
-        except driver.OperationalError, message:
+        except driver.OperationalError as message:
             self.fail("Error %d:\n%s" % (message[0], message[1]))
 
         db.query("DROP DATABASE IF EXISTS `%s`" % MYSQL_TEST_DB)
@@ -113,9 +116,8 @@ class Test_MySQL(B3TestCase, StorageAPITest):
              'groups',
              'penalties',
              'data',
-            ]), set(self.storage.getTables()))
+             ]), set(self.storage.getTables()))
+
 
 if __name__ == '__main__':
     nose.main()
-    
-    

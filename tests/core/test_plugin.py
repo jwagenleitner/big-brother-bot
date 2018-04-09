@@ -22,31 +22,31 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
 
-import b3
 import imp
 import logging
 import os
-from ConfigParser import NoOptionError
+from textwrap import dedent
 
-from mock import patch
-from mock import call
 from mock import ANY
+from mock import call
+from mock import patch
 from mockito import when
+from six.moves.configparser import NoOptionError
 
+import b3
 from b3.config import CfgConfigParser
-from b3.plugin import Plugin
 from b3.events import Event
+from b3.plugin import Plugin
 from tests import B3TestCase
 from tests.plugins.fakeplugins import __file__ as external_plugins__file__
-from textwrap import dedent
 
 external_plugins_dir = os.path.dirname(external_plugins__file__)
 testplugin_config_file = os.path.join(external_plugins_dir, "testplugin/conf/plugin_testplugin.ini")
 
 
 class MyPlugin(Plugin):
-
     stub_not_callable = 0
 
     def __init__(self, console, config=None):
@@ -70,7 +70,7 @@ class MyPlugin(Plugin):
 
 
 class Test_Plugin_getMessage(B3TestCase):
-    
+
     def setUp(self):
         B3TestCase.setUp(self)
         self.conf = CfgConfigParser()
@@ -321,7 +321,7 @@ class Test_Plugin_registerEvent(B3TestCase):
         # GIVEN
         k = self.console.getEventID('EVT_CLIENT_SAY')
         p = MyPlugin(self.console, self.conf)
-        p.registerEvent(k, p.stub_method)   # register the first hook
+        p.registerEvent(k, p.stub_method)  # register the first hook
         p.registerEvent(k, p.stub_method2)  # register the second hook
         # WHEN
         self.console.queueEvent(Event(k, None))
@@ -334,7 +334,7 @@ class Test_Plugin_registerEvent(B3TestCase):
         # GIVEN
         k = self.console.getEventID('EVT_CLIENT_SAY')
         p = MyPlugin(self.console, self.conf)
-        p.registerEvent(k)   # old fashion
+        p.registerEvent(k)  # old fashion
         p.registerEvent(k, p.stub_method)
         # WHEN
         self.console.queueEvent(Event(k, None))
@@ -398,12 +398,14 @@ class Test_Plugin_requiresParser(B3TestCase):
             {'name': 'admin', 'conf': '@b3/conf/plugin_admin.ini', 'path': None, 'disabled': False},
         ]
 
-        fp, pathname, description = imp.find_module('testplugin1', [os.path.join(b3.getB3Path(True), '..', 'tests', 'plugins', 'fakeplugins')])
+        fp, pathname, description = imp.find_module('testplugin1', [
+            os.path.join(b3.getB3Path(True), '..', 'tests', 'plugins', 'fakeplugins')])
         pluginModule1 = imp.load_module('testplugin1', fp, pathname, description)
         if fp:
             fp.close()
 
-        fp, pathname, description = imp.find_module('testplugin2', [os.path.join(b3.getB3Path(True), '..', 'tests', 'plugins', 'fakeplugins')])
+        fp, pathname, description = imp.find_module('testplugin2', [
+            os.path.join(b3.getB3Path(True), '..', 'tests', 'plugins', 'fakeplugins')])
         pluginModule2 = imp.load_module('testplugin2', fp, pathname, description)
         if fp:
             fp.close()
@@ -480,7 +482,8 @@ class Test_Plugin_getSetting(B3TestCase):
         self.assertEqual(self.p.getSetting('section_foo', 'option_level2', b3.LEVEL), 0)
         self.assertEqual(self.p.getSetting('section_foo', 'option_duration1', b3.DURATION), 300)
         self.assertEqual(self.p.getSetting('section_foo', 'option_duration2', b3.DURATION), 180)
-        self.assertEqual(self.p.getSetting('section_foo', 'option_path', b3.PATH), b3.getAbsolutePath('@b3/conf/b3.distribution.ini', decode=True))
+        self.assertEqual(self.p.getSetting('section_foo', 'option_path', b3.PATH),
+                         b3.getAbsolutePath('@b3/conf/b3.distribution.ini', decode=True))
 
     def test_value_retrieval_invalid(self):
         self.assertEqual(self.p.getSetting('section_foo', 'option_path', b3.INTEGER, 40), 40)
@@ -500,13 +503,15 @@ class Test_Plugin_getSetting(B3TestCase):
 
     def test_with_no_config(self):
         self.p.config = None
-        self.assertEqual(self.p.getSetting('section_foo', 'option_str', b3.STRING, 'string value with spaces'), 'string value with spaces')
+        self.assertEqual(self.p.getSetting('section_foo', 'option_str', b3.STRING, 'string value with spaces'),
+                         'string value with spaces')
         self.assertEqual(self.p.getSetting('section_foo', 'option_int', b3.STRING, '7'), '7')
         self.assertEqual(self.p.getSetting('section_foo', 'option_int', b3.INTEGER, 7), 7)
         self.assertEqual(self.p.getSetting('section_foo', 'option_bool1', b3.BOOLEAN, False), False)
         self.assertEqual(self.p.getSetting('section_foo', 'option_bool2', b3.BOOLEAN, True), True)
         self.assertEqual(self.p.getSetting('section_foo', 'option_bool3', b3.BOOLEAN, False), False)
         self.assertEqual(self.p.getSetting('section_foo', 'option_bool4', b3.BOOLEAN, True), True)
+
 
 class Test_Plugin_requiresStorage(B3TestCase):
 
@@ -519,12 +524,14 @@ class Test_Plugin_requiresStorage(B3TestCase):
             {'name': 'admin', 'conf': '@b3/conf/plugin_admin.ini', 'path': None, 'disabled': False},
         ]
 
-        fp, pathname, description = imp.find_module('testplugin1', [os.path.join(b3.getB3Path(True), '..', 'tests', 'plugins', 'fakeplugins')])
+        fp, pathname, description = imp.find_module('testplugin1', [
+            os.path.join(b3.getB3Path(True), '..', 'tests', 'plugins', 'fakeplugins')])
         pluginModule1 = imp.load_module('testplugin1', fp, pathname, description)
         if fp:
             fp.close()
 
-        fp, pathname, description = imp.find_module('testplugin3', [os.path.join(b3.getB3Path(True), '..', 'tests', 'plugins', 'fakeplugins')])
+        fp, pathname, description = imp.find_module('testplugin3', [
+            os.path.join(b3.getB3Path(True), '..', 'tests', 'plugins', 'fakeplugins')])
         pluginModule3 = imp.load_module('testplugin3', fp, pathname, description)
         if fp:
             fp.close()

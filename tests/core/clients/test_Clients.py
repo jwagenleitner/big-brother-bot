@@ -22,17 +22,19 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
+from __future__ import print_function, absolute_import
 
+from mock import Mock, patch
+
+import b3
 from b3.clients import Clients, Client
 from tests import B3TestCase
-from mock import Mock, patch
 
 
 class TestClients(B3TestCase):
     clients = None
     joe = None
-    
+
     def setUp(self):
         B3TestCase.setUp(self)
         Clients.authorizeClients = Mock()
@@ -40,20 +42,19 @@ class TestClients(B3TestCase):
         self.clients.newClient(1, name='joe', guid="joe_guid")
         self.clients.newClient(2, name=' H a    x\t0r', guid="haxor_guid")
 
-
     def test_getClientsByName(self):
         clients = self.clients.getClientsByName('joe')
         self.assertEqual(1, len(clients))
         self.assertEqual(1, clients[0].cid)
-        
+
         clients = self.clients.getClientsByName('oe')
         self.assertEqual(1, len(clients))
         self.assertEqual(1, clients[0].cid)
-        
+
         clients = self.clients.getClientsByName('hax')
         self.assertEqual(1, len(clients))
         self.assertEqual(2, clients[0].cid)
-        
+
         clients = self.clients.getClientsByName('qsdfqsdf fqsd fsqd fsd f')
         self.assertEqual([], clients)
 
@@ -89,7 +90,6 @@ class TestClients(B3TestCase):
         self.assertEqual(self.console, found_client.console)
         self.assertEqual('H a    x\t0r', found_client.name)
         self.assertEqual('H a    x\t0r^7', found_client.exactName)
-
 
     @patch.object(b3.events, 'Event')
     def test_disconnect(self, Event_mock):

@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 import os
 
 import nose
@@ -49,11 +51,11 @@ POSTGRESQL_TEST_USER = os.environ.get('POSTGRESQL_TEST_USER', 'b3test')
 POSTGRESQL_TEST_PASSWORD = os.environ.get('POSTGRESQL_TEST_PASSWORD', 'test')
 POSTGRESQL_TEST_DB = os.environ.get('POSTGRESQL_TEST_DB', 'b3_test')
 
-#===============================================================================
+# ===============================================================================
 #
 # Test if we can run the PostgreSQL tests
 #
-#===============================================================================
+# ===============================================================================
 
 is_postgresql_ready = True
 no_postgresql_reason = ''
@@ -70,18 +72,19 @@ else:
                          user=POSTGRESQL_TEST_USER,
                          password=POSTGRESQL_TEST_PASSWORD,
                          database='postgres')
-    except psycopg2.Error, err:
+    except psycopg2.Error as err:
         is_postgresql_ready = False
         no_postgresql_reason = "%r" % err
-    except Exception, err:
+    except Exception as err:
         is_postgresql_ready = False
         no_postgresql_reason = "%r" % err
 
-#===============================================================================
+
+# ===============================================================================
 #
 # Load the tests
 #
-#===============================================================================
+# ===============================================================================
 
 @unittest.skipIf(not is_postgresql_ready, no_postgresql_reason)
 class Test_PostgreSQL(B3TestCase, StorageAPITest):
@@ -91,7 +94,8 @@ class Test_PostgreSQL(B3TestCase, StorageAPITest):
         B3TestCase.setUp(self)
 
         try:
-            dsn = "postgresql://%s:%s@%s/%s" % (POSTGRESQL_TEST_USER, POSTGRESQL_TEST_PASSWORD, POSTGRESQL_TEST_HOST, POSTGRESQL_TEST_DB)
+            dsn = "postgresql://%s:%s@%s/%s" % (
+            POSTGRESQL_TEST_USER, POSTGRESQL_TEST_PASSWORD, POSTGRESQL_TEST_HOST, POSTGRESQL_TEST_DB)
             self.storage = self.console.storage = PostgresqlStorage(dsn, splitDSN(dsn), self.console)
             self.storage.connect()
 
@@ -100,7 +104,7 @@ class Test_PostgreSQL(B3TestCase, StorageAPITest):
                 # dont remove the groups table since we would need it in next tests
                 tables.remove('groups')
                 self.storage.truncateTable(tables)
-        except Exception, e:
+        except Exception as e:
             self.fail("Error: %s" % e)
 
     def tearDown(self):
@@ -108,6 +112,6 @@ class Test_PostgreSQL(B3TestCase, StorageAPITest):
         B3TestCase.tearDown(self)
         self.storage.shutdown()
 
+
 if __name__ == '__main__':
     nose.main()
-

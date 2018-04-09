@@ -26,7 +26,6 @@ from __future__ import print_function, absolute_import
 
 import os
 import re
-import string
 from distutils import version
 from time import sleep
 
@@ -34,6 +33,7 @@ import six
 
 import b3
 import b3.config
+import b3.functions
 
 
 class B3version(version.StrictVersion):
@@ -85,18 +85,18 @@ $''', re.VERBOSE)
         if patch:
             self.version = tuple(map(int, [major, minor, patch]))
         else:
-            self.version = tuple(map(int, [major, minor]) + [0])
+            self.version = tuple(list(map(int, [major, minor])) + [0])
 
         prerelease = match.group('tag')
         prerelease_num = match.group('tag_num')
         if prerelease:
-            self.prerelease = (prerelease, string.atoi(prerelease_num if prerelease_num else '0'))
+            self.prerelease = (prerelease, int(prerelease_num if prerelease_num else '0'))
         else:
             self.prerelease = None
 
         daily_num = match.group('build_num')
         if daily_num:
-            self.build_num = string.atoi(daily_num if daily_num else '0')
+            self.build_num = int(daily_num if daily_num else '0')
         else:
             self.build_num = None
 
@@ -108,7 +108,7 @@ $''', re.VERBOSE)
         if isinstance(other, six.string_types):
             other = B3version(other)
 
-        compare = cmp(self.version, other.version)
+        compare = b3.functions.cmp(self.version, other.version)
         if compare != 0:
             return compare
 
@@ -132,7 +132,7 @@ $''', re.VERBOSE)
         elif not self.prerelease and other.prerelease:
             return 1
         elif self.prerelease and other.prerelease:
-            return cmp((self.prerelease_order[self.prerelease[0]], self.prerelease[1]),
+            return b3.functions.cmp((self.prerelease_order[self.prerelease[0]], self.prerelease[1]),
                        (self.prerelease_order[other.prerelease[0]], other.prerelease[1]))
 
     def __cmp_build(self, other):
@@ -147,7 +147,7 @@ $''', re.VERBOSE)
         elif not self.build_num and other.build_num:
             return 1
         elif self.build_num and other.build_num:
-            return cmp(self.build_num, other.build_num)
+            return b3.functions.cmp(self.build_num, other.build_num)
 
 
 class DBUpdate(object):
@@ -206,7 +206,7 @@ class DBUpdate(object):
 
         """.format('B3 : %s' % b3.__version__))
 
-        raw_input("press any key to start the update...")
+        input("press any key to start the update...")
 
         def _update_database(storage, update_version):
             """

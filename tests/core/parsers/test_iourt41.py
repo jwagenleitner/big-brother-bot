@@ -22,12 +22,15 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-import logging
-import unittest2 as unittest
+from __future__ import print_function, absolute_import
 
-from mockito import mock, when, any as anything, verify
+import logging
+
+import unittest2 as unittest
 from mock import Mock, patch, ANY
+from mockito import mock, when, any as anything, verify
+
+import b3
 from b3.clients import Client
 from b3.config import XmlConfigParser
 from b3.events import Event
@@ -37,10 +40,12 @@ from b3.parsers.iourt41 import Iourt41Parser
 log = logging.getLogger("test")
 log.setLevel(logging.INFO)
 
+
 class Iourt41TestCase(unittest.TestCase):
     """
     Test case that is suitable for testing iourt41 parser specific features
     """
+
     @classmethod
     def setUpClass(cls):
         from b3.parsers.q3a.abstractParser import AbstractParser
@@ -57,14 +62,16 @@ class Iourt41TestCase(unittest.TestCase):
                 </settings>
             </configuration>""")
         self.console = Iourt41Parser(self.parser_conf)
-        self.console.PunkBuster = None # no Punkbuster support in that game
+        self.console.PunkBuster = None  # no Punkbuster support in that game
 
         self.output_mock = mock()
+
         # simulate game server actions
         def write(*args, **kwargs):
             pretty_args = map(repr, args) + ["%s=%s" % (k, v) for k, v in kwargs.iteritems()]
             log.info("write(%s)" % ', '.join(pretty_args))
             return self.output_mock.write(*args, **kwargs)
+
         self.console.write = write
 
     def tearDown(self):
@@ -133,7 +140,7 @@ num score ping name            lastmsg  address              qport rate
                                      'rate': '15000',
                                      'score': '0',
                                      'slot': '12'}}
-            , result)
+                             , result)
 
     def test_authorizeClients(self):
         """
@@ -153,7 +160,6 @@ num score ping name            lastmsg  address              qport rate
         self.console.authorizeClients()
         verify(self.output_mock).write('status', maxRetries=anything())
         verify(superman).auth()
-
 
     def test_sync(self):
         """
@@ -184,7 +190,6 @@ num score ping name            lastmsg  address              qport rate
         self.console.saybig("something")
         verify(self.output_mock).write('bigtext "B3: something"')
 
-
     def test_message(self):
         """
         display a message to a given player
@@ -200,7 +205,7 @@ num score ping name            lastmsg  address              qport rate
         """
         self.console.getMessage = Mock(return_value="")
         superman = mock()
-        superman.cid="11"
+        superman.cid = "11"
         self.console.kick(superman)
         verify(self.output_mock).write('clientkick 11')
         verify(superman).disconnect()
@@ -213,7 +218,7 @@ num score ping name            lastmsg  address              qport rate
         """
         self.console.getMessage = Mock(return_value="")
         superman = mock()
-        superman.cid="11"
+        superman.cid = "11"
         self.console.ban(superman)
         verify(self.output_mock).write('addip 11')
         verify(superman).disconnect()
@@ -223,7 +228,7 @@ num score ping name            lastmsg  address              qport rate
         unban a given player on the game server
         """
         superman = mock()
-        superman.ip="1.1.3.4"
+        superman.ip = "1.1.3.4"
         self.console.unban(superman)
         verify(self.output_mock, times=5).write('removeip 1.1.3.4')
 
@@ -235,7 +240,7 @@ num score ping name            lastmsg  address              qport rate
         """
         self.console.getMessage = Mock(return_value="")
         superman = mock()
-        superman.cid="11"
+        superman.cid = "11"
         self.console.tempban(superman)
         verify(self.output_mock).write('clientkick 11')
         verify(superman).disconnect()
@@ -300,7 +305,6 @@ maps/ut4_casa.bsp
         suggestions = self.console.changeMap('bey')
         self.assertIsNotNone(suggestions)
         self.assertSetEqual({'ut4_abbey', 'ut4_abbeyctf'}, set(suggestions))
-
 
     @patch("time.sleep")
     def test_changeMap_2(self, sleep_mock):
@@ -426,7 +430,7 @@ num score ping name            lastmsg  address              qport rate
         /!\ This method must return True if the penalty was inflicted.
         """
         superman = mock()
-        superman.cid="11"
+        superman.cid = "11"
         # slap
         result = self.console.inflictCustomPenalty('slap', superman)
         verify(self.output_mock).write('slap 11')
@@ -454,24 +458,31 @@ class Test_log_lines_parsing(Iourt41TestCase):
 
     def test_bomb_related(self):
         self.joe.connects('2')
-        self.assertEvent(r'''Bomb was tossed by 2''', event_type='EVT_CLIENT_ACTION', event_data="bomb_tossed", event_client=self.joe)
-        self.assertEvent(r'''Bomb was planted by 2''', event_type='EVT_CLIENT_ACTION', event_data="bomb_planted", event_client=self.joe)
-        self.assertEvent(r'''Bomb was defused by 2!''', event_type='EVT_CLIENT_ACTION', event_data="bomb_defused", event_client=self.joe)
-        self.assertEvent(r'''Bomb has been collected by 2''', event_type='EVT_CLIENT_ACTION', event_data="bomb_collected", event_client=self.joe)
+        self.assertEvent(r'''Bomb was tossed by 2''', event_type='EVT_CLIENT_ACTION', event_data="bomb_tossed",
+                         event_client=self.joe)
+        self.assertEvent(r'''Bomb was planted by 2''', event_type='EVT_CLIENT_ACTION', event_data="bomb_planted",
+                         event_client=self.joe)
+        self.assertEvent(r'''Bomb was defused by 2!''', event_type='EVT_CLIENT_ACTION', event_data="bomb_defused",
+                         event_client=self.joe)
+        self.assertEvent(r'''Bomb has been collected by 2''', event_type='EVT_CLIENT_ACTION',
+                         event_data="bomb_collected", event_client=self.joe)
         self.assertEvent(r'''Pop!''', event_type='EVT_BOMB_EXPLODED', event_data=None, event_client=None)
 
     def test_say_after_player_changed_name(self):
         def assert_new_name_and_text_does_not_break_auth(new_name, text="!help"):
             # WHEN the player renames himself
-            self.console.parseLine(r'''777:16 ClientUserinfoChanged: 2 n\%s\t\3\r\1\tl\0\f0\\f1\\f2\\a0\0\a1\255\a2\0''' % new_name)
+            self.console.parseLine(
+                r'''777:16 ClientUserinfoChanged: 2 n\%s\t\3\r\1\tl\0\f0\\f1\\f2\\a0\0\a1\255\a2\0''' % new_name)
             self.console.parseLine(r'''777:16 AccountValidated: 2 - louk - 6 - "basic"''')
-            self.console.parseLine(r'''777:16 ClientUserinfo: 2 \name\%s\ip\49.111.22.33:27960\password\xxxxxx\racered\0\raceblue\0\rate\16000\ut_timenudge\0\cg_rgb\0 255 0\funred\ninja,caprd,bartsor\funblue\ninja,gasmask,capbl\cg_physics\1\snaps\20\color1\4\color2\5\handicap\100\sex\male\cg_autoPickup\-1\cg_ghost\0\cl_time\n34|0610q5qH=t<a\racefree\1\gear\GZAAVWT\authc\2708\cl_guid\AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\weapmodes\01000110220000020002000''' % new_name)
-            self.console.parseLine(r'''777:16 ClientUserinfoChanged: 2 n\%s\t\3\r\1\tl\0\f0\\f1\\f2\\a0\0\a1\255\a2\0''' % new_name)
+            self.console.parseLine(
+                r'''777:16 ClientUserinfo: 2 \name\%s\ip\49.111.22.33:27960\password\xxxxxx\racered\0\raceblue\0\rate\16000\ut_timenudge\0\cg_rgb\0 255 0\funred\ninja,caprd,bartsor\funblue\ninja,gasmask,capbl\cg_physics\1\snaps\20\color1\4\color2\5\handicap\100\sex\male\cg_autoPickup\-1\cg_ghost\0\cl_time\n34|0610q5qH=t<a\racefree\1\gear\GZAAVWT\authc\2708\cl_guid\AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\weapmodes\01000110220000020002000''' % new_name)
+            self.console.parseLine(
+                r'''777:16 ClientUserinfoChanged: 2 n\%s\t\3\r\1\tl\0\f0\\f1\\f2\\a0\0\a1\255\a2\0''' % new_name)
             # THEN the next chat line should work
             self.assertEvent(r'''777:18 say: 2 %s: %s''' % (new_name, text),
-                event_type='EVT_CLIENT_SAY',
-                event_client=player,
-                event_data=text.lstrip())
+                             event_type='EVT_CLIENT_SAY',
+                             event_client=player,
+                             event_data=text.lstrip())
 
         # GIVEN a known player with cl_guid "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" that will connect on slot 2
         player = FakeClient(console=self.console, name="Chucky", guid="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
@@ -485,13 +496,20 @@ class Test_log_lines_parsing(Iourt41TestCase):
         assert_new_name_and_text_does_not_break_auth(":joe")
         assert_new_name_and_text_does_not_break_auth("joe:")
         assert_new_name_and_text_does_not_break_auth("joe:foo")
-        assert_new_name_and_text_does_not_break_auth("joe", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
-        assert_new_name_and_text_does_not_break_auth("joe:", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
-        assert_new_name_and_text_does_not_break_auth("jo:e", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
-        assert_new_name_and_text_does_not_break_auth("j:oe", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
-        assert_new_name_and_text_does_not_break_auth(":joe", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
-        assert_new_name_and_text_does_not_break_auth("joe:", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
-        assert_new_name_and_text_does_not_break_auth("joe:foo", "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth("joe",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth("joe:",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth("jo:e",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth("j:oe",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth(":joe",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth("joe:",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
+        assert_new_name_and_text_does_not_break_auth("joe:foo",
+                                                     "what does the fox say: Ring-ding-ding-ding-dingeringeding!")
         assert_new_name_and_text_does_not_break_auth("j:oe", ":")
         assert_new_name_and_text_does_not_break_auth("j:oe", " :")
         assert_new_name_and_text_does_not_break_auth("j:oe", " : ")
@@ -544,7 +562,8 @@ class Test_OnClientuserinfo(Iourt41TestCase):
         This value must not overwrite the 'password' property of the Client object.
         """
         # GIVEN a known client
-        c = FakeClient(console=self.console, name="Zesco", guid="58D4069246865BB5A85F20FB60ED6F65", login="login_in_database", password="password_in_database")
+        c = FakeClient(console=self.console, name="Zesco", guid="58D4069246865BB5A85F20FB60ED6F65",
+                       login="login_in_database", password="password_in_database")
         c.save()
         c.connects('15')
         self.assertEqual('password_in_database', c.password)
@@ -597,7 +616,8 @@ num score ping name            lastmsg address               qport rate
 --- ----- ---- --------------- ------- --------------------- ----- -----
 10    -2   53 [PoliSh TeAm] Haxxer^7      0 80.54.100.100:27960      31734 25000""")
 
-        when(self.console).write('dumpuser 10').thenReturn('userinfo\n--------\ngear                FLAATWA\ncl_packetdup        2\nrate                25000\nname                [PoliSh TeAm] Haxxer\nracered             2\nraceblue            2\nut_timenudge        0\ncg_rgb              255 255 0\nfunred              patch,ninja,phat\nfunblue             Diablo\ncg_predictitems     0\ncg_physics          1\ncl_anonymous        0\nsex                 male\nhandicap            100\ncolor2              5\ncolor1              4\nteam_headmodel      *james\nteam_model          james\nheadmodel           sarge\nmodel               sarge\nsnaps               20\nteamtask            0\ncl_guid             4128583FD6F924B081D7E10F39712FBB\nweapmodes           00000110220000020002')
+        when(self.console).write('dumpuser 10').thenReturn(
+            'userinfo\n--------\ngear                FLAATWA\ncl_packetdup        2\nrate                25000\nname                [PoliSh TeAm] Haxxer\nracered             2\nraceblue            2\nut_timenudge        0\ncg_rgb              255 255 0\nfunred              patch,ninja,phat\nfunblue             Diablo\ncg_predictitems     0\ncg_physics          1\ncl_anonymous        0\nsex                 male\nhandicap            100\ncolor2              5\ncolor1              4\nteam_headmodel      *james\nteam_model          james\nheadmodel           sarge\nmodel               sarge\nsnaps               20\nteamtask            0\ncl_guid             4128583FD6F924B081D7E10F39712FBB\nweapmodes           00000110220000020002')
 
         logging.getLogger('output').setLevel(logging.NOTSET)
         self.console.pluginsStarted()
@@ -625,17 +645,17 @@ class Test_OnKill(Iourt41TestCase):
 
     def test_nuke(self):
         self.assertEvent('5:19 Kill: 0 0 34: Joe killed Joe by UT_MOD_NUKED',
-            event_type='EVT_CLIENT_KILL',
-            event_client=self.world,
-            event_target=self.joe,
-            event_data=(100, self.console.UT_MOD_NUKED, 'body', 'UT_MOD_NUKED'))
+                         event_type='EVT_CLIENT_KILL',
+                         event_client=self.world,
+                         event_target=self.joe,
+                         event_data=(100, self.console.UT_MOD_NUKED, 'body', 'UT_MOD_NUKED'))
 
     def test_lava(self):
         self.assertEvent('5:19 Kill: 1022 0 3: <world> killed Joe by MOD_LAVA',
-            event_type='EVT_CLIENT_SUICIDE',
-            event_client=self.joe,
-            event_target=self.joe,
-            event_data=(100, self.console.MOD_LAVA, 'body', 'MOD_LAVA'))
+                         event_type='EVT_CLIENT_SUICIDE',
+                         event_client=self.joe,
+                         event_target=self.joe,
+                         event_data=(100, self.console.MOD_LAVA, 'body', 'MOD_LAVA'))
 
     def test_mr_sentry(self):
         self.assertEvent('5:19 Kill: 1022 0 14: <world> killed Joe by UT_MOD_BERETTA',
@@ -646,7 +666,8 @@ class Test_OnKill(Iourt41TestCase):
 
     def test_constants(self):
         def assert_mod(kill_mod_number, kill_mod_name):
-            self.assertTrue(hasattr(self.console, kill_mod_name), "expecting parser to have a constant named %s" % kill_mod_name)
+            self.assertTrue(hasattr(self.console, kill_mod_name),
+                            "expecting parser to have a constant named %s" % kill_mod_name)
             with patch.object(self.console, 'queueEvent') as queueEvent:
                 self.console.parseLine(r'''Kill: 0 1 %s: Joe killed Bob by %s''' % (kill_mod_number, kill_mod_name))
                 assert queueEvent.called, "No event was fired"
@@ -716,15 +737,19 @@ class Test_getMapsSoundingLike(Iourt41TestCase):
 
     def test_lots_of_maps(self):
         # GIVEN
-        when(self.console).getMaps().thenReturn(["ut4_abbey", "ut4_abbeyctf", "ut4_algiers", "ut4_ambush", "ut4_area3_b4",
-             "ut4_asylum_b1", "ut4_austria", "ut4_aztek_b2", "ut4_baeza", "ut4_beijing_b3", "ut4_blackhawk", "ut4_blitzkrieg",
+        when(self.console).getMaps().thenReturn(
+            ["ut4_abbey", "ut4_abbeyctf", "ut4_algiers", "ut4_ambush", "ut4_area3_b4",
+             "ut4_asylum_b1", "ut4_austria", "ut4_aztek_b2", "ut4_baeza", "ut4_beijing_b3", "ut4_blackhawk",
+             "ut4_blitzkrieg",
              "ut4_boxtrot_x6", "ut4_cambridge_b1", "ut4_cambridge_fixed", "ut4_casa", "ut4_commune", "ut4_company",
              "ut4_crossing", "ut4_deception_v2", "ut4_desolate_rc1", "ut4_docks", "ut4_dressingroom", "ut4_druglord2",
-             "ut4_dust2_v2", "ut4_dust2_v3b", "ut4_eagle", "ut4_eezabad", "ut4_elgin", "ut4_exhibition_a24", "ut4_facade_b5",
+             "ut4_dust2_v2", "ut4_dust2_v3b", "ut4_eagle", "ut4_eezabad", "ut4_elgin", "ut4_exhibition_a24",
+             "ut4_facade_b5",
              "ut4_ferguson_b12", "ut4_firingrange", "ut4_granja", "ut4_guerrilla", "ut4_harbortown", "ut4_heroic_beta1",
              "ut4_herring", "ut4_horror", "ut4_kingdom", "ut4_kingdom_rc6", "ut4_kingpin", "ut4_mandolin",
              "ut4_maximus_v1", "ut4_maya", "ut4_metropolis_b2", "ut4_oildepot", "ut4_orbital_sl", "ut4_pandora_b7",
-             "ut4_paradise", "ut4_paris_v2", "ut4_poland_b11", "ut4_prague", "ut4_ramelle", "ut4_ricochet", "ut4_riyadh",
+             "ut4_paradise", "ut4_paris_v2", "ut4_poland_b11", "ut4_prague", "ut4_ramelle", "ut4_ricochet",
+             "ut4_riyadh",
              "ut4_roma_beta2b", "ut4_sanc", "ut4_shahideen", "ut4_snoppis", "ut4_subterra", "ut4_suburbs", "ut4_subway",
              "ut4_swim", "ut4_terrorism7", "ut4_thingley", "ut4_tohunga_b8", "ut4_tombs", "ut4_toxic", "ut4_train_dl1",
              "ut4_tunis", "ut4_turnpike", "ut4_uptown", "ut4_venice_b7", "ut4_village"])

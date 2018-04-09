@@ -22,16 +22,19 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 import logging
-import threading
 import sys
+import threading
+from contextlib import contextmanager
+
+import six
 
 from b3.config import CfgConfigParser
 from b3.config import MainConfig
-from contextlib import contextmanager
 
 logging.raiseExceptions = False  # get rid of 'No handlers could be found for logger output' message
-import b3.output # do not remove, needed because the module alters some defaults of the logging module
 log = logging.getLogger('output')
 log.setLevel(logging.WARNING)
 
@@ -40,8 +43,9 @@ import time
 import unittest2 as unittest
 from b3.events import Event
 
-
 testcase_lock = threading.Lock()  # together with flush_console_streams, helps getting logging output related to the
+
+
 # correct test in test runners such as the one in PyCharm IDE.
 
 
@@ -95,6 +99,7 @@ class B3TestCase(unittest.TestCase):
 
         def myError(msg, *args, **kwargs):
             print(("ERROR: %s" % msg) % args)
+
         self.console.error = myError
 
     def tearDown(self):
@@ -117,7 +122,7 @@ class B3TestCase(unittest.TestCase):
                 # WHEN
                 self.client.team = 24
         """
-        if type(event_type) is basestring:
+        if isinstance(event_type, six.string_types):
             event_type_name = event_type
         else:
             event_type_name = self.console.getEventName(event_type)
@@ -133,10 +138,10 @@ class B3TestCase(unittest.TestCase):
         def assertEvent(queueEvent_call_args):
             eventraised = queueEvent_call_args[0][0]
             return type(eventraised) == Event \
-                and self.console.getEventName(eventraised.type) == event_type_name \
-                and eventraised.data == event_data \
-                and eventraised.target == event_target \
-                and eventraised.client == event_client
+                   and self.console.getEventName(eventraised.type) == event_type_name \
+                   and eventraised.data == event_data \
+                   and eventraised.target == event_target \
+                   and eventraised.client == event_client
 
         if not any(map(assertEvent, queueEvent.call_args_list)):
             raise AssertionError("Event %s(%r) not fired" % (self.console.getEventName(event_type), {

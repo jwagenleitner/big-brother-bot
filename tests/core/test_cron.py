@@ -22,11 +22,16 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 import time
+
 import unittest2 as unittest
 from mock import sentinel, Mock
+
 from b3.cron import CronTab, OneTimeCronTab, PluginCronTab, Cron
 from tests import B3TestCase
+
 
 class Test_Crontab(unittest.TestCase):
 
@@ -56,28 +61,28 @@ class Test_Crontab(unittest.TestCase):
     def test_dow(self):
         tab = CronTab(None)
 
-        tab.dow = '*' # any day
+        tab.dow = '*'  # any day
         self.assertEqual(-1, tab.dow)
 
-        tab.dow = 0 # sunday
+        tab.dow = 0  # sunday
         self.assertEqual(0, tab.dow)
 
-        tab.dow = 1 # monday
+        tab.dow = 1  # monday
         self.assertEqual(1, tab.dow)
 
-        tab.dow = 2 # tuesday
+        tab.dow = 2  # tuesday
         self.assertEqual(2, tab.dow)
 
-        tab.dow = 3 # wednesday
+        tab.dow = 3  # wednesday
         self.assertEqual(3, tab.dow)
 
-        tab.dow = 4 # thursday
+        tab.dow = 4  # thursday
         self.assertEqual(4, tab.dow)
 
-        tab.dow = 5 # friday
+        tab.dow = 5  # friday
         self.assertEqual(5, tab.dow)
 
-        tab.dow = 6 # saturday
+        tab.dow = 6  # saturday
         self.assertEqual(6, tab.dow)
 
         try:
@@ -100,7 +105,6 @@ class Test_Crontab(unittest.TestCase):
         assert not command.called
         tab.run()
         assert command.called
-
 
     def test_match(self):
         tab = CronTab(None, second='*', minute='*', hour='*', day='*', month='*', dow='*')
@@ -170,23 +174,23 @@ class Test_Crontab_getRate(unittest.TestCase):
         self.assertEquals(-1, self.t('*'))
 
     def test_str_everySo(self):
-        self.assertEquals(range(0,60,2), self.t('*/2') )
-        self.assertEquals(range(0,60,17), self.t('*/17'))
-        self.assertEquals([0,59], self.t('*/59'))
+        self.assertEquals(range(0, 60, 2), self.t('*/2'))
+        self.assertEquals(range(0, 60, 17), self.t('*/17'))
+        self.assertEquals([0, 59], self.t('*/59'))
         self.assertEquals([0], self.t('*/60'))
         self.assertRaises(ValueError, self.t, ('*/61'))
         self.assertRaises(TypeError, self.t, ('*/-1'))
         self.assertRaises(ValueError, self.t, ('*/80'))
 
     def test_str_range(self):
-        self.assertEquals(range(5,12), self.t('5-11'))
+        self.assertEquals(range(5, 12), self.t('5-11'))
         self.assertRaises(TypeError, self.t, ('-5-11'))
         self.assertRaises(ValueError, self.t, ('35-11'))
         self.assertRaises(TypeError, self.t, ('5--11'))
         self.assertRaises(ValueError, self.t, ('5-80'))
 
     def test_str_range_with_step(self):
-        self.assertEquals(range(5,12,2), self.t('5-11/2'))
+        self.assertEquals(range(5, 12, 2), self.t('5-11/2'))
         self.assertEquals([5], self.t('5-11/60'))
         self.assertRaises(ValueError, self.t, ('5-11/80'))
         self.assertRaises(TypeError, self.t, ('5-11/'))
@@ -197,12 +201,12 @@ class Test_Crontab_getRate(unittest.TestCase):
         self.assertRaises(TypeError, self.t, ('test'))
 
     def test_list(self):
-        self.assertEquals([5,11,32,45], self.t('5,11,45,32'))
-        self.assertEquals([0,1,2,5,6,7,8], self.t('5-8,0-2'))
-        self.assertEquals([5,6,7,20,30], self.t('5-7, 20, 30'))
-        self.assertEquals([5,6,7,30,40], self.t('5-7,40,30'))
-        self.assertEquals([0,5,6,7,40], self.t('5-7,40,0'))
-        self.assertEquals([5,7,9,11,30,40,41,42], self.t('5-12/2, 30, 40-42'))
+        self.assertEquals([5, 11, 32, 45], self.t('5,11,45,32'))
+        self.assertEquals([0, 1, 2, 5, 6, 7, 8], self.t('5-8,0-2'))
+        self.assertEquals([5, 6, 7, 20, 30], self.t('5-7, 20, 30'))
+        self.assertEquals([5, 6, 7, 30, 40], self.t('5-7,40,30'))
+        self.assertEquals([0, 5, 6, 7, 40], self.t('5-7,40,0'))
+        self.assertEquals([5, 7, 9, 11, 30, 40, 41, 42], self.t('5-12/2, 30, 40-42'))
         self.assertRaises(TypeError, self.t, ('5-12/2, -5, 40-42'))
 
 
@@ -211,7 +215,7 @@ class Test_Cron(B3TestCase):
     def setUp(self):
         B3TestCase.setUp(self)
         self.cron = Cron(self.console)
-        #self.console.verbose = lambda *args: sys.stdout.write(str(args) + "\n")
+        # self.console.verbose = lambda *args: sys.stdout.write(str(args) + "\n")
 
     def test_add(self):
         mock_tab = Mock(spec=CronTab)

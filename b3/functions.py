@@ -687,3 +687,7 @@ def start_daemon_thread(target, args=(), kwargs=None):
     t.setDaemon(True)
     t.start()
     return t
+
+
+def cmp(a, b):
+    return (a > b) - (a < b)

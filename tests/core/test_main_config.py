@@ -22,19 +22,21 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-try:
-    import ConfigParser
-except ImportError:
-    import configparser as ConfigParser
+from __future__ import print_function, absolute_import
+
 import logging
+from textwrap import dedent
+
 import unittest2 as unittest
+from six.moves import configparser as ConfigParser
+
+import b3
 from b3 import getAbsolutePath
 from b3.config import CfgConfigParser
 from b3.config import MainConfig
-from b3.config import load
 from b3.config import XmlConfigParser
-from textwrap import dedent
+from b3.config import load
+
 
 class CommonDefaultTestMethodsMixin:
 
@@ -72,9 +74,12 @@ class CommonDefaultTestMethodsMixin:
         self.assertEqual("""$clientname^7 was kicked $reason""", self.conf.get("messages", "kicked"))
         self.assertEqual("""$clientname^7 was banned by $adminname^7 $reason""", self.conf.get("messages", "banned_by"))
         self.assertEqual("""$clientname^7 was banned $reason""", self.conf.get("messages", "banned"))
-        self.assertEqual("""$clientname^7 was temp banned by $adminname^7 for $banduration^7 $reason""", self.conf.get("messages", "temp_banned_by"))
-        self.assertEqual("""$clientname^7 was temp banned for $banduration^7 $reason""", self.conf.get("messages", "temp_banned"))
-        self.assertEqual("""$clientname^7 was un-banned by $adminname^7 $reason""", self.conf.get("messages", "unbanned_by"))
+        self.assertEqual("""$clientname^7 was temp banned by $adminname^7 for $banduration^7 $reason""",
+                         self.conf.get("messages", "temp_banned_by"))
+        self.assertEqual("""$clientname^7 was temp banned for $banduration^7 $reason""",
+                         self.conf.get("messages", "temp_banned"))
+        self.assertEqual("""$clientname^7 was un-banned by $adminname^7 $reason""",
+                         self.conf.get("messages", "unbanned_by"))
         self.assertEqual("""$clientname^7 was un-banned^7 $reason""", self.conf.get("messages", "unbanned"))
 
     def test_get_external_plugins_dir(self):
@@ -108,9 +113,10 @@ class Test_XmlMainConfigParser(CommonDefaultTestMethodsMixin, unittest.TestCase)
         """
         Vefify that the plugins are return in the same order as found in the config file
         """
-        self.assertListEqual(['admin', 'adv', 'censor', 'cmdmanager', 'pingwatch', 'pluginmanager', 'punkbuster', 'spamcontrol', 'stats',
-                              'status', 'tk', 'welcome'],
-                             map(lambda x: x.get('name'), self.conf._config_parser.get('plugins/plugin')))
+        self.assertListEqual(
+            ['admin', 'adv', 'censor', 'cmdmanager', 'pingwatch', 'pluginmanager', 'punkbuster', 'spamcontrol', 'stats',
+             'status', 'tk', 'welcome'],
+            map(lambda x: x.get('name'), self.conf._config_parser.get('plugins/plugin')))
 
 
 class Test_CfgMainConfigParser(CommonDefaultTestMethodsMixin, unittest.TestCase):
@@ -124,8 +130,9 @@ class Test_CfgMainConfigParser(CommonDefaultTestMethodsMixin, unittest.TestCase)
         """
         Vefify that the plugins are return in the same order as found in the config file
         """
-        self.assertListEqual(['admin', 'adv', 'censor', 'cmdmanager', 'pingwatch', 'pluginmanager', 'punkbuster', 'spamcontrol', 'stats',
-                              'status', 'tk', 'welcome'], self.conf._config_parser.options('plugins'))
+        self.assertListEqual(
+            ['admin', 'adv', 'censor', 'cmdmanager', 'pingwatch', 'pluginmanager', 'punkbuster', 'spamcontrol', 'stats',
+             'status', 'tk', 'welcome'], self.conf._config_parser.options('plugins'))
 
 
 class TestConfig(unittest.TestCase):
@@ -138,7 +145,7 @@ class TestConfig(unittest.TestCase):
         conf_cfg = MainConfig(cfg_parser)
 
         return conf_xml, conf_cfg
-    
+
     def test_empty_conf(self):
         self.init(r"""<configuration/>""", "")
 
@@ -229,7 +236,8 @@ class TestConfig(unittest.TestCase):
             {'name': 'admin', 'conf': '@b3/conf/plugin_admin.ini', 'disabled': False, 'path': None},
             {'name': 'adv', 'conf': '@b3/conf/plugin_adv.xml', 'disabled': True, 'path': None},
             {'name': 'censor', 'conf': '@b3/conf/plugin_censor.xml', 'disabled': False, 'path': None},
-            {'name': 'cmdmanager', 'conf': '@b3/conf/plugin_cmdmanager.ini', 'disabled': False, 'path': '/somewhere/else'},
+            {'name': 'cmdmanager', 'conf': '@b3/conf/plugin_cmdmanager.ini', 'disabled': False,
+             'path': '/somewhere/else'},
             {'name': 'tk', 'conf': '@b3/conf/plugin_tk.ini', 'disabled': True, 'path': None},
         ]
         self.assertListEqual(expected_result, conf_xml.get_plugins())

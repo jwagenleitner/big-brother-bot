@@ -22,12 +22,15 @@
 #                                                                     #
 # ################################################################### #
 
-from b3.parsers.q3a.abstractParser import AbstractParser
-from mock import Mock
+from __future__ import print_function, absolute_import
+
 import unittest2 as unittest
+from mock import Mock
+
+from b3.parsers.q3a.abstractParser import AbstractParser
+
 
 class Test(unittest.TestCase):
-
 
     def test_getCvar(self):
         # prepare mocks
@@ -35,7 +38,7 @@ class Test(unittest.TestCase):
         mock_parser._reCvarName = AbstractParser._reCvarName
         mock_parser._reCvar = AbstractParser._reCvar
         mock_parser.getCvar = AbstractParser.getCvar
-        
+
         def assertGetCvar(cvar_name, gameserver_response, expected_response):
             mock_parser.write = Mock(return_value=gameserver_response)
             cvar = mock_parser.getCvar(mock_parser, cvar_name)
@@ -43,7 +46,7 @@ class Test(unittest.TestCase):
                 self.assertEqual(expected_response, None)
             else:
                 self.assertEqual(expected_response, (cvar.name, cvar.value, cvar.default))
-        
+
         assertGetCvar('g_password', '"g_password" is:"^7" default:"scrim^7"', ("g_password", '', "scrim"))
         assertGetCvar('g_password', '"g_password" is:"^7" default:"^7"', ("g_password", '', ""))
         assertGetCvar('g_password', '"g_password" is:"test^7" default:"^7"', ("g_password", 'test', ""))
@@ -55,5 +58,5 @@ class Test(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
+    # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

@@ -22,18 +22,21 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 import logging
+
 import unittest2 as unittest
+
 from b3.clients import Client
 from b3.parser import Parser
 
 
 class DummyParser(Parser):
-
     gameName = "dummy"
 
     def __init__(self):
-        pass # skip parent class constructor
+        pass  # skip parent class constructor
         self.log = logging.getLogger("output")
 
 
@@ -73,7 +76,6 @@ class Test_getMessage(unittest.TestCase):
         self.assertEqual(u"bar joéÄ", self.parser.getMessage('f00', {'p1': u'joéÄ'}))
 
 
-
 class Test_getMessageVariables(unittest.TestCase):
 
     def setUp(self):
@@ -86,11 +88,13 @@ class Test_getMessageVariables(unittest.TestCase):
 
     def test_with_named_parameters(self):
         client = Client(name="Jack")
-        self.assertDictContainsSubset({'clientname': client.name, 'reason': 'this is a good reason'}, self.parser.getMessageVariables(client=client, reason="this is a good reason"))
+        self.assertDictContainsSubset({'clientname': client.name, 'reason': 'this is a good reason'},
+                                      self.parser.getMessageVariables(client=client, reason="this is a good reason"))
 
     def test_with_named_parameters__unicode(self):
         client = Client(name=u"ÄÖé")
-        self.assertDictContainsSubset({'clientname':client.name, 'reason': 'this is a good reason'}, self.parser.getMessageVariables(client=client, reason="this is a good reason"))
+        self.assertDictContainsSubset({'clientname': client.name, 'reason': 'this is a good reason'},
+                                      self.parser.getMessageVariables(client=client, reason="this is a good reason"))
 
 
 class Test_getWrap(unittest.TestCase):
@@ -123,7 +127,8 @@ class Test_getWrap(unittest.TestCase):
         self.parser._use_color_codes = False
         self.parser._line_length = 40
         self.parser._line_color_prefix = ''
-        wrapped_text = self.parser.getWrap("Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.")
+        wrapped_text = self.parser.getWrap(
+            "Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.")
         self.assertIsInstance(wrapped_text, list)
         self.assertListEqual(wrapped_text, ["Lorem ipsum dolor sit amet, consectetur",
                                             ">adipisci elit, sed eiusmod tempor",
@@ -134,7 +139,8 @@ class Test_getWrap(unittest.TestCase):
         self.parser._use_color_codes = False
         self.parser._line_length = 40
         self.parser._line_color_prefix = '^5'
-        wrapped_text = self.parser.getWrap("Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.")
+        wrapped_text = self.parser.getWrap(
+            "Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.")
         self.assertIsInstance(wrapped_text, list)
         self.assertListEqual(wrapped_text, ["Lorem ipsum dolor sit amet, consectetur",
                                             ">adipisci elit, sed eiusmod tempor",
@@ -145,7 +151,8 @@ class Test_getWrap(unittest.TestCase):
         self.parser._use_color_codes = True
         self.parser._line_length = 40
         self.parser._line_color_prefix = '^7'
-        wrapped_text = self.parser.getWrap("Lorem ipsum dolor sit ^2amet, consectetur adipisci elit, ^1sed eiusmod ^7tempor incidunt ut ^8labore et dolore magna ^2aliqua.")
+        wrapped_text = self.parser.getWrap(
+            "Lorem ipsum dolor sit ^2amet, consectetur adipisci elit, ^1sed eiusmod ^7tempor incidunt ut ^8labore et dolore magna ^2aliqua.")
         self.assertIsInstance(wrapped_text, list)
         self.assertListEqual(wrapped_text, ["^7Lorem ipsum dolor sit ^2amet,",
                                             "^3>^2consectetur adipisci elit, ^1sed eiusmod",
@@ -156,7 +163,8 @@ class Test_getWrap(unittest.TestCase):
         self.parser._use_color_codes = True
         self.parser._line_length = 40
         self.parser._line_color_prefix = ''
-        wrapped_text = self.parser.getWrap("Lorem ipsum dolor sit ^2amet, consectetur adipisci elit, ^1sed eiusmod ^7tempor incidunt ut ^8labore et dolore magna ^2aliqua.")
+        wrapped_text = self.parser.getWrap(
+            "Lorem ipsum dolor sit ^2amet, consectetur adipisci elit, ^1sed eiusmod ^7tempor incidunt ut ^8labore et dolore magna ^2aliqua.")
         self.assertIsInstance(wrapped_text, list)
         self.assertListEqual(wrapped_text, ["Lorem ipsum dolor sit ^2amet,",
                                             "^3>^2consectetur adipisci elit, ^1sed eiusmod",

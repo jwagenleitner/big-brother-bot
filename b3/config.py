@@ -360,8 +360,7 @@ class CfgConfigParser(B3ConfigParserMixin, configparser.ConfigParser):
         """
         Read the cfg config from a string.
         """
-        from six import StringIO
-        fp = StringIO.StringIO(cfg_string)
+        fp = six.StringIO(cfg_string)
         self.readfp(fp)
         fp.close()
         self.fileName = None

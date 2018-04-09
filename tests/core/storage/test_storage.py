@@ -22,15 +22,17 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 import unittest2 as unittest
+from mock import Mock
 
 from b3.functions import splitDSN
 from b3.storage import Storage
 from b3.storage import getStorage
-from b3.storage.sqlite import SqliteStorage
 from b3.storage.mysql import MysqlStorage
 from b3.storage.postgresql import PostgresqlStorage
-from mock import Mock
+from b3.storage.sqlite import SqliteStorage
 from tests import B3TestCase
 
 is_mysql_ready = True
@@ -54,8 +56,8 @@ except ImportError:
     is_postgresql_ready = False
     no_postgresql_reason = "no psycopg2 module available"
 
-class Test_Storage(B3TestCase):
 
+class Test_Storage(B3TestCase):
     storage = None
 
     def setUp(self):
@@ -129,10 +131,10 @@ class Test_getStorage(unittest.TestCase):
 
     @unittest.skipIf(not is_postgresql_ready, no_postgresql_reason)
     def test_postgresql(self):
-        storage = getStorage('postgresql://b3:password@localhost/b3', splitDSN('postgresql://b3:password@localhost/b3'), Mock())
+        storage = getStorage('postgresql://b3:password@localhost/b3', splitDSN('postgresql://b3:password@localhost/b3'),
+                             Mock())
         self.assertIsInstance(storage, PostgresqlStorage)
 
     def test_sqlite(self):
         storage = getStorage('sqlite://:memory:', splitDSN('sqlite://:memory:'), Mock())
         self.assertIsInstance(storage, SqliteStorage)
-
