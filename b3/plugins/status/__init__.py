@@ -142,12 +142,6 @@ class StatusPlugin(b3.plugin.Plugin):
 
     }
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onLoadConfig(self):
         """
         Load plugin configuration.
@@ -158,7 +152,7 @@ class StatusPlugin(b3.plugin.Plugin):
                 self._ftpstatus = True
                 self._ftpinfo = functions.splitDSN(self.config.get('settings', 'output_file'))
                 self.debug('using custom remote path for settings/output_file: %s/%s' % (
-                self._ftpinfo['host'], self._ftpinfo['path']))
+                    self._ftpinfo['host'], self._ftpinfo['path']))
             else:
                 self._outputFile = self.config.getpath('settings', 'output_file')
                 self.debug('using custom local path for settings/output_file: %s' % self._outputFile)
@@ -224,12 +218,6 @@ class StatusPlugin(b3.plugin.Plugin):
         self._cronTab = b3.cron.PluginCronTab(self, self.update, '*/%s' % self._interval)
         self.console.cron + self._cronTab
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENTS                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onStop(self, event):
         self.info('B3 stop/exit.. updating status')
         # create an empty status document
@@ -238,12 +226,6 @@ class StatusPlugin(b3.plugin.Plugin):
         b3status.setAttribute("Time", time.asctime())
         xml.appendChild(b3status)
         self.writeXML(xml.toprettyxml(indent="        "))
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    OTHER METHODS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def build_schema(self):
         """
@@ -432,7 +414,7 @@ class StatusPlugin(b3.plugin.Plugin):
 
                     try:
                         self.console.storage.query("""INSERT INTO %s (%s) VALUES (%s);""" % (
-                        self._tables['cvars'], builder_key, builder_value))
+                            self._tables['cvars'], builder_key, builder_value))
                     except Exception:
                         # exception is already logged, just don't raise it again
                         pass

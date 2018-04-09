@@ -37,7 +37,6 @@ from .location import Location
 
 
 class Geolocator(object):
-
     _timeout = 5
 
     def __init__(self, *args, **kwargs):
@@ -62,10 +61,10 @@ class Geolocator(object):
             if not client.ip:
                 raise GeolocalizationError('b3.clients.Client object instance has not ip attribute set')
             elif not re.match(r'''^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}''', client.ip):
-                raise GeolocalizationError('b3.clients.Client object instance has an invalid ip address string: %s' % client.ip)
+                raise GeolocalizationError(
+                    'b3.clients.Client object instance has an invalid ip address string: %s' % client.ip)
         else:
             raise GeolocalizationError('invalid argument supplied: %s' % type(data).__name__)
-
 
         return data if isinstance(data, six.string_types) else data.ip
 
@@ -80,7 +79,6 @@ class Geolocator(object):
 
 
 class IpApiGeolocator(Geolocator):
-
     _url = 'http://ip-api.com/json/%s'
 
     def getLocation(self, data):
@@ -103,7 +101,6 @@ class IpApiGeolocator(Geolocator):
 
 
 class TelizeGeolocator(Geolocator):
-
     _url = 'http://www.telize.com/geoip/%s'
 
     def getLocation(self, data):
@@ -127,7 +124,6 @@ class TelizeGeolocator(Geolocator):
 
 
 class FreeGeoIpGeolocator(Geolocator):
-
     _url = 'https://freegeoip.net/json/%s'
 
     def getLocation(self, data):
@@ -147,14 +143,14 @@ class FreeGeoIpGeolocator(Geolocator):
         if rt['status'] == 'fail':
             raise GeolocalizationError('invalid data returned by the api: %r' % rt)
 
-        return Location(country=rt.get('country_name', None), region=rt.get('region_name', None), city=rt.get('city', None),
+        return Location(country=rt.get('country_name', None), region=rt.get('region_name', None),
+                        city=rt.get('city', None),
                         cc=rt.get('country_code', None), rc=rt.get('region_code', None), lat=rt.get('latitude', None),
                         lon=rt.get('longitude', None), timezone=rt.get('time_zone', None),
                         zipcode=rt.get('zip_code', None))
 
 
 class MaxMindGeolocator(Geolocator):
-
     _path = None
     _geoip = None
 

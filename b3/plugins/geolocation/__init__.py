@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__ = 'Fenix'
 __version__ = '1.5'
 
@@ -39,7 +41,6 @@ from .geolocators import TelizeGeolocator
 
 
 class GeolocationPlugin(b3.plugin.Plugin):
-
     requiresConfigFile = False
 
     def __init__(self, console, config=None):
@@ -53,7 +54,7 @@ class GeolocationPlugin(b3.plugin.Plugin):
         try:
             # append this one separately since db may be missing
             self._geolocators.append(MaxMindGeolocator())
-        except IOError, e:
+        except IOError as e:
             self.debug('MaxMind geolocation not available: %s' % e)
 
     def onStartup(self):
@@ -82,6 +83,7 @@ class GeolocationPlugin(b3.plugin.Plugin):
         """
         Handle EVT_CLIENT_AUTH and EVT_CLIENT_UPDATE.
         """
+
         def _threaded_geolocate(client):
 
             client.location = None
@@ -92,10 +94,10 @@ class GeolocationPlugin(b3.plugin.Plugin):
                     self.debug('retrieving geolocation data for %s <@%s>...', client.name, client.id)
                     client.location = geotool.getLocation(client)
                     self.debug('retrieved geolocation data for %s <@%s>: %r', client.name, client.id, client.location)
-                    break # stop iterating if we collect valid data
-                except GeolocalizationError, e:
+                    break  # stop iterating if we collect valid data
+                except GeolocalizationError as e:
                     self.warning('could not retrieve geolocation data %s <@%s>: %s', client.name, client.id, e)
-                except Exception, e:
+                except Exception as e:
                     self.error('client %s <@%s> geolocation terminated unexpectedtly when using %s service: %s',
                                client.name, client.id, geotool.__class__.__name__, e)
 

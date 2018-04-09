@@ -22,11 +22,15 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 import unicodedata
+
 
 class Location(object):
 
-    def __init__(self, country=None, region=None, city=None, cc=None, rc=None, isp=None, lat=None, lon=None, timezone=None, zipcode=None):
+    def __init__(self, country=None, region=None, city=None, cc=None, rc=None, isp=None, lat=None, lon=None,
+                 timezone=None, zipcode=None):
         """
         :param country: The country name
         :param region: The regione name
@@ -57,7 +61,7 @@ class Location(object):
         :param value: The attribute value
         """
         if value:
-            value = unicodedata.normalize('NFKD', unicode(value)).encode('ascii','ignore').strip()
+            value = unicodedata.normalize('NFKD', unicode(value)).encode('ascii', 'ignore').strip()
         self.__dict__[key] = value
 
     def __repr__(self):
@@ -65,5 +69,6 @@ class Location(object):
         Object representation,
         :return: string
         """
-        v = ['%s=%s' % (x, getattr(self, x)) for x in dir(self) if not x.startswith('__') and not callable(getattr(self, x))]
+        v = ['%s=%s' % (x, getattr(self, x)) for x in dir(self) if
+             not x.startswith('__') and not callable(getattr(self, x))]
         return 'Location<%s>' % ', '.join(v)

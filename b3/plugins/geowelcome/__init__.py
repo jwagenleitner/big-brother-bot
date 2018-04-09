@@ -22,8 +22,10 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __version__ = '1.3.1'
-__author__  = 'SGT'
+__author__ = 'SGT'
 
 import time
 import threading
@@ -39,7 +41,6 @@ from b3.plugins.welcome import F_CUSTOM_GREETING
 
 
 class GeowelcomePlugin(WelcomePlugin):
-
     requiresPlugins = ['geolocation']
     loadAfterPlugins = ['countryfilter', 'welcome']
 
@@ -62,12 +63,6 @@ class GeowelcomePlugin(WelcomePlugin):
                              'played $connections times',
         'announce_first_geo': '^7Everyone welcome $name^7, from ^3$country^7. Player number ^3#$id^7'
     }
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onStartup(self):
         """
@@ -94,14 +89,9 @@ class GeowelcomePlugin(WelcomePlugin):
 
         welcomePlugin = self.console.getPlugin('welcome')
         if welcomePlugin:
-            self.info('NOTE: to run this plugin you don\'t need to load also the Welcome plugin: disabling Welcome plugin')
+            self.info(
+                'NOTE: to run this plugin you don\'t need to load also the Welcome plugin: disabling Welcome plugin')
             welcomePlugin.disable()
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENTS                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onGeolocationSuccess(self, event):
         """
@@ -119,19 +109,13 @@ class GeowelcomePlugin(WelcomePlugin):
             t = threading.Timer(self._welcomeDelay, self.welcome, (event.client,))
             t.start()
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    OTHER METHODS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def must_welcome(self, client):
         """
         Checks whether we have to show a welcome message or not.
         :return: True if we need to welcome the player, False otherwise
         """
         if self._welcomeFlags <= 0 or not client or client.id is None or \
-           client.cid is None or not client.connected or client.pbid == 'WORLD':
+                client.cid is None or not client.connected or client.pbid == 'WORLD':
             return False
         if self.console.upTime() < 300:
             self.debug('not welcoming player because the bot started less than 5 min ago')

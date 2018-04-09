@@ -1,18 +1,39 @@
-# Nader Plugin
+# -*- coding: utf-8 -*-
+
+# ################################################################### #
+#                                                                     #
+#  BigBrotherBot(B3) (www.bigbrotherbot.net)                          #
+#  Copyright (C) 2005 Michael "ThorN" Thornton                        #
+#                                                                     #
+#  This program is free software; you can redistribute it and/or      #
+#  modify it under the terms of the GNU General Public License        #
+#  as published by the Free Software Foundation; either version 2     #
+#  of the License, or (at your option) any later version.             #
+#                                                                     #
+#  This program is distributed in the hope that it will be useful,    #
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of     #
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the       #
+#  GNU General Public License for more details.                       #
+#                                                                     #
+#  You should have received a copy of the GNU General Public License  #
+#  along with this program; if not, write to the Free Software        #
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA      #
+#  02110-1301, USA.                                                   #
+#                                                                     #
+# ################################################################### #
+
+from __future__ import print_function, absolute_import
 
 __author__ = 'SvaRoX'
 __version__ = '0.3'
 
+import six
+import threading
+
 import b3
 import b3.events
 import b3.plugin
-import string
-import six
-try:
-    import thread
-except ImportError:
-    import _thread as thread
-import threading
+from b3.functions import start_daemon_thread
 
 
 class NaderPlugin(b3.plugin.Plugin):
@@ -108,7 +129,7 @@ class NaderPlugin(b3.plugin.Plugin):
         # elif (event.type == b3.events.EVT_GAME_EXIT) or (event.type == b3.events.EVT_GAME_ROUND_START):
         elif (event.type == b3.events.EVT_GAME_EXIT):
             self.displayScores(0)
-            thread.start_new_thread(self.updateHallOfFame, (self._nadeKillers, self.console.game.mapName))
+            start_daemon_thread(self.updateHallOfFame, (self._nadeKillers, self.console.game.mapName))
             self.resetScores()
             try:
                 self._challengeThread.cancel()
@@ -169,7 +190,7 @@ class NaderPlugin(b3.plugin.Plugin):
                 # msg = 'Too many players found, please try an other request'
                 else:
                     msg = '%s : ^2%d ^7HE grenade kills' % (
-                    sclient.exactName, sclient.var(self, 'hegrenadeKills', 0).value)
+                        sclient.exactName, sclient.var(self, 'hegrenadeKills', 0).value)
         # if unnecessary ?
         if msg:
             cmd.sayLoudOrPM(client, msg)
@@ -261,7 +282,7 @@ class NaderPlugin(b3.plugin.Plugin):
         (currentRecordHolder, currentRecordValue) = self.getRecord()
         if (currentRecordHolder != '') and (currentRecordValue != ''):
             message = '^7HE grenade kills record on this map: ^1%s ^2%s ^7kills' % (
-            currentRecordHolder, currentRecordValue)
+                currentRecordHolder, currentRecordValue)
             # message = '^7Nade kills record on this map: ^1%s %s' % (currentRecordHolder, currentRecordValue)
         client.message(message)
 
@@ -289,9 +310,8 @@ class NaderPlugin(b3.plugin.Plugin):
                 results.append('^1#%d. ^4%s ^1(^3%d^1)^7' % (i, c.name, c.var(self, 'hegrenadeKills', 0).value))
                 if i >= limit:
                     break
-            # self.debug('^1Top %d nade killers : %s' % (self._nbTop, string.join(results, ' ,')))
             self.console.say(
-                '^1Top %d HE grenade killers (total %d)  : %s' % (limit, self._nbHEK, string.join(results, ' ,')))
+                '^1Top %d HE grenade killers (total %d)  : %s' % (limit, self._nbHEK, ' ,'.join(results)))
         # else:
         # if fromCmd:
         # self.console.say('No nade kills this round')
@@ -366,13 +386,13 @@ class NaderPlugin(b3.plugin.Plugin):
         skillGained = kill_bonus * KfactorKiller * (1 - killer_prob)
         skillLost = KfactorVictim * (0 - victim_prob)
         self.debug('kill bonus=%s, kfactorKiller=%s, kfactorVictim=%s, weapfact =%s, killer_prb=%s' % (
-        kill_bonus, KfactorKiller, KfactorVictim, weapon_factor, killer_prob))
+            kill_bonus, KfactorKiller, KfactorVictim, weapon_factor, killer_prob))
         # client.message('%s*%s=^1%s ^7skill points gained for nading ^3%s^7, opponent will loose %s*%s=^1%s' % (str(weapon_factor), str(round(skillGained, 2)), str(round(weapon_factor*skillGained, 2)), sclient.exactName, str(weapon_factor), str(round(-1*skillLost, 2)), str(round(-1*weapon_factor*skillLost, 2))))
         # client.message('%s*%s=^1%s ^7skill points gained for nading ^3%s^7, opponent will loose %s*%s=^1%s' % (str(weapon_factor), str(skillGained), str(weapon_factor*skillGained), sclient.exactName, str(weapon_factor), str(-1*skillLost), str(-1*weapon_factor*skillLost)))
         client.message(
             '%s*%1.02f=^1%1.02f ^7skill points gained for nading ^3%s^7, opponent will loose %s*%1.02f=^1%1.02f' % (
-            str(weapon_factor), skillGained, weapon_factor * skillGained, sclient.exactName, str(weapon_factor),
-            -1 * skillLost, -1 * weapon_factor * skillLost))
+                str(weapon_factor), skillGained, weapon_factor * skillGained, sclient.exactName, str(weapon_factor),
+                -1 * skillLost, -1 * weapon_factor * skillLost))
 
     def updateHallOfFame(self, nadeKillers, mapName):
         self.debug('Updating Hall of Fame')
@@ -422,7 +442,7 @@ class NaderPlugin(b3.plugin.Plugin):
                     self.error('Can\'t execute query : %s' % q)
             else:
                 self.debug('No new record, previous record for %s = %s HE grenade kills' % (
-                currentRecordHolder, currentRecordValue))
+                    currentRecordHolder, currentRecordValue))
         else:
             # New record
             newRecord = 1
@@ -438,10 +458,10 @@ class NaderPlugin(b3.plugin.Plugin):
                 self.error('Can\'t execute query : %s' % q)
         if newRecord:
             message = '^2%s ^7HE grenade kills: congratulations ^3%s^7, new record on this map!!' % (
-            currentRecordValue, currentRecordHolder)
+                currentRecordValue, currentRecordHolder)
         else:
             message = '^7HE grenade kills record on this map: ^1%s ^2%s ^7kills' % (
-            currentRecordHolder, currentRecordValue)
+                currentRecordHolder, currentRecordValue)
         self.console.say(message)
 
     def getRecord(self):

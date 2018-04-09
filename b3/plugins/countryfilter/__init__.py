@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __version__ = '1.7'
 __author__ = 'guwashi / xlr8or'
 
@@ -31,7 +33,6 @@ import b3.plugin
 
 
 class CountryfilterPlugin(b3.plugin.Plugin):
-
     requiresPlugins = ['geolocation']
 
     cf_announce_accept = True
@@ -41,7 +42,7 @@ class CountryfilterPlugin(b3.plugin.Plugin):
     cf_deny_from = ''
     cf_allow_from = 'all'
     maxLevel = 1
-    
+
     ignore_names = []
     ignore_ips = []
     block_ips = []
@@ -50,12 +51,6 @@ class CountryfilterPlugin(b3.plugin.Plugin):
         'cf_allow_message': '^7$name ^2(country: $country)^7 is accepted by B3',
         'cf_deny_message': '^7%(name)s ^1(country: %(country)s)^7 was rejected by B3'
     }
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onStartup(self):
         """
@@ -72,7 +67,8 @@ class CountryfilterPlugin(b3.plugin.Plugin):
 
         self.cf_announce_accept = self.getSetting('settings', 'cf_announce_accept', b3.BOOL, self.cf_announce_accept)
         self.cf_announce_reject = self.getSetting('settings', 'cf_announce_reject', b3.BOOL, self.cf_announce_reject)
-        self.cf_message_exclude_from = self.getSetting('settings', 'cf_message_exclude_from', b3.STR, self.cf_message_exclude_from)
+        self.cf_message_exclude_from = self.getSetting('settings', 'cf_message_exclude_from', b3.STR,
+                                                       self.cf_message_exclude_from)
         self.cf_order = self.getSetting('settings', 'cf_order', b3.STR, self.cf_order)
         self.cf_deny_from = self.getSetting('settings', 'cf_deny_from', b3.STR, self.cf_deny_from)
         self.cf_allow_from = self.getSetting('settings', 'cf_allow_from', b3.STR, self.cf_allow_from)
@@ -107,25 +103,23 @@ class CountryfilterPlugin(b3.plugin.Plugin):
 
         self.debug('blocked ip\'s: %s' % self.block_ips)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    HANDLE EVENTS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onGeolocationSuccess(self, event):
         """
         Handle EVT_CLIENT_GEOLOCATION_SUCCESS
         """
         client = event.client
-        self.debug('checking player: %s, name: %s, ip: %s, level: %s' % (client.cid, client.name, client.ip, client.maxLevel))
+        self.debug(
+            'checking player: %s, name: %s, ip: %s, level: %s' % (client.cid, client.name, client.ip, client.maxLevel))
         self.debug('country: %s <%s>' % (client.location.country, client.location.cc))
         if self.isAllowConnect(client.location.cc, client):
-            if self.cf_announce_accept and not self.isMessageExcludeFrom(client.location.cc) and client.guid and self.console.upTime() > 300:
-                self.console.say(self.getMessage('cf_allow_message', {'name': client.name, 'country': client.location.country}))
+            if self.cf_announce_accept and not self.isMessageExcludeFrom(
+                    client.location.cc) and client.guid and self.console.upTime() > 300:
+                self.console.say(
+                    self.getMessage('cf_allow_message', {'name': client.name, 'country': client.location.country}))
         else:
             if self.cf_announce_reject and not self.isMessageExcludeFrom(client.location.cc):
-                self.console.say(self.getMessage('cf_deny_message', {'name': client.name, 'country': client.location.country}))
+                self.console.say(
+                    self.getMessage('cf_deny_message', {'name': client.name, 'country': client.location.country}))
             client.kick(silent=True)
             raise b3.events.VetoEvent
         self.debug('checking done')

@@ -22,11 +22,12 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 from .iourt42 import Poweradminurt42Plugin
 
 
 class Poweradminurt43Plugin(Poweradminurt42Plugin):
-
     requiresParsers = ['iourt43']
 
     _weapons43 = dict(p90='k', frf1='i', mag='l', ben='j')

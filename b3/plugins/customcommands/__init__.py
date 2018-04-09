@@ -22,6 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
+__version__ = '1.2'
+__author__ = 'Courgette'
+
 import re
 
 import six
@@ -29,9 +34,6 @@ import six
 from functools import partial
 from b3.functions import getStuffSoundingLike
 from b3.plugin import Plugin
-
-__version__ = '1.2'
-__author__ = 'Courgette'
 
 
 class CustomcommandsPlugin(Plugin):
@@ -46,12 +48,6 @@ class CustomcommandsPlugin(Plugin):
         self._re_valid_command_name = re.compile(r"^[a-z][\w]+$", re.IGNORECASE)
         self._re_argument_placeholder = re.compile(r"<ARG(?::(?P<type>[A-Z_]+)(?::(?P<property>.*?))?)?>")
         Plugin.__init__(self, console, config)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   PLUGIN INTERFACE IMPLEMENTATION                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onLoadConfig(self):
         """
@@ -91,12 +87,6 @@ class CustomcommandsPlugin(Plugin):
         victim = event.target
         killer.setvar(self, 'LAST_VICTIM', victim)
         victim.setvar(self, 'LAST_KILLER', killer)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   OTHER METHODS                                                                                                  #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def _load_conf_commands_for_group(self, b3_group_name):
         """

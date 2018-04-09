@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 import re
 
 import b3.plugin
@@ -30,7 +32,6 @@ from .iourt41 import Poweradminurt41Plugin
 
 
 class Poweradminurt42Plugin(Poweradminurt41Plugin):
-
     requiresParsers = ['iourt42']
 
     _gears = dict(none='FGHIJKLMNZacefghOQRSTUVWX', all='', reset='')
@@ -89,25 +90,14 @@ class Poweradminurt42Plugin(Poweradminurt41Plugin):
         Poweradminurt41Plugin.onLoadConfig(self)
         self.loadRadioSpamProtection()
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    CONFIG LOADERS                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def loadRadioSpamProtection(self):
         """
         Setup the radio spam protection
         """
         self._rsp_enable = self.getSetting('radio_spam_protection', 'enable', b3.BOOL, self._rsp_enable)
-        self._rsp_mute_duration = self.getSetting('radio_spam_protection', 'mute_duration', b3.INT, self._rsp_mute_duration, lambda x: clamp(x, minv=1))
+        self._rsp_mute_duration = self.getSetting('radio_spam_protection', 'mute_duration', b3.INT,
+                                                  self._rsp_mute_duration, lambda x: clamp(x, minv=1))
         self._rsp_maxlevel = self.getSetting('radio_spam_protection', 'maxlevel', b3.LEVEL, self._rsp_maxlevel)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENT HANDLERS                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onRadio(self, event):
         """
@@ -163,12 +153,6 @@ class Poweradminurt42Plugin(Poweradminurt41Plugin):
             self.console.writelines(["mute %s %s" % (client.cid, self._rsp_mute_duration)])
             client.setvar(self, 'radio_spamins', int(self._rsp_maxSpamins / 2.0))
             client.setvar(self, 'radio_ignore_till', int(self.getTime() + self._rsp_mute_duration - 1))
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    COMMANDS                                                                                                      #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def cmd_pakill(self, data, client, cmd=None):
         """
@@ -473,12 +457,6 @@ class Poweradminurt42Plugin(Poweradminurt41Plugin):
             team = "^1RED" if sclient.team == b3.TEAM_RED else "^4BLUE"
             sclient.message("^7You were set as substitute for the %s ^7team by the Admin" % team)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    OTHER METHODS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def printgear(self, client, cmd, gearstr=None):
         """
         Print the current gear in the game chat
@@ -496,7 +474,7 @@ class Poweradminurt42Plugin(Poweradminurt41Plugin):
     def getTime(self):
         """ just to ease automated tests """
         return self.console.time()
-    
+
     def get_weapon_code(self, name):
         """
         try its best to guess the weapon code given a name.

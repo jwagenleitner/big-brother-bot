@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__ = 'Fenix'
 __version__ = '1.5.1'
 
@@ -33,9 +35,8 @@ from b3.functions import getCmd
 
 
 class SpawnkillPlugin(b3.plugin.Plugin):
-
     adminPlugin = None
-    requiresParsers = ['iourt42','iourt43']
+    requiresParsers = ['iourt42', 'iourt43']
 
     penalties = {}
 
@@ -56,16 +57,11 @@ class SpawnkillPlugin(b3.plugin.Plugin):
         }
     }
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   STARTUP                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onLoadConfig(self):
         """
         Load plugin configuration.
         """
+
         def validate(x):
             """helper used to validate the penalty value"""
             acceptable = ('warn', 'kick', 'tempban', 'slap', 'nuke', 'kill')
@@ -74,11 +70,14 @@ class SpawnkillPlugin(b3.plugin.Plugin):
             return x
 
         for index in ('hit', 'kill'):
-            self.settings[index]['maxlevel'] = self.getSetting(index, 'maxlevel', b3.LEVEL, self.settings[index]['maxlevel'])
+            self.settings[index]['maxlevel'] = self.getSetting(index, 'maxlevel', b3.LEVEL,
+                                                               self.settings[index]['maxlevel'])
             self.settings[index]['delay'] = self.getSetting(index, 'delay', b3.INT, self.settings[index]['delay'])
-            self.settings[index]['duration'] = self.getSetting(index, 'duration', b3.DURATION, self.settings[index]['duration'])
+            self.settings[index]['duration'] = self.getSetting(index, 'duration', b3.DURATION,
+                                                               self.settings[index]['duration'])
             self.settings[index]['reason'] = self.getSetting(index, 'reason', b3.STR, self.settings[index]['reason'])
-            self.settings[index]['penalty'] = self.getSetting(index, 'penalty', b3.STR, self.settings[index]['penalty'], validate)
+            self.settings[index]['penalty'] = self.getSetting(index, 'penalty', b3.STR, self.settings[index]['penalty'],
+                                                              validate)
 
     def onStartup(self):
         """
@@ -121,12 +120,6 @@ class SpawnkillPlugin(b3.plugin.Plugin):
         # notice plugin startup
         self.debug('plugin started')
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   EVENTS                                                                                                         #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onSpawn(self, event):
         """
         Handle EVT_CLIENT_SPAWN.
@@ -139,15 +132,15 @@ class SpawnkillPlugin(b3.plugin.Plugin):
         """
         client = event.client
         target = event.target
-        
+
         if client.maxLevel >= self.settings['hit']['maxlevel']:
             self.verbose('bypassing spawnhit check: %s <@%s> is a high group level player', client.name, client.id)
             return
-        
+
         if not target.isvar(self, 'spawntime'):
             self.verbose('bypassing spawnhit check: %s <@%s> has no spawntime marked', target.name, target.id)
             return
-        
+
         if self.console.time() - target.var(self, 'spawntime').toInt() < self.settings['hit']['delay']:
             func = self.penalties[self.settings['hit']['penalty']]
             func('hit', client)
@@ -158,15 +151,15 @@ class SpawnkillPlugin(b3.plugin.Plugin):
         """
         client = event.client
         target = event.target
-        
+
         if client.maxLevel >= self.settings['kill']['maxlevel']:
             self.verbose('bypassing spawnkill check: %s <@%s> is a high group level player', client.name, client.id)
             return
-        
+
         if not target.isvar(self, 'spawntime'):
             self.verbose('bypassing spawnkill check: %s <@%s> has no spawntime marked', target.name, target.id)
             return
-        
+
         if self.console.time() - target.var(self, 'spawntime').toInt() < self.settings['kill']['delay']:
             func = self.penalties[self.settings['kill']['penalty']]
             func('kill', client)
@@ -183,12 +176,6 @@ class SpawnkillPlugin(b3.plugin.Plugin):
         if client.maxLevel < self.settings['kill']['maxlevel'] and target.isvar(self, 'spawntime'):
             ## EVENT: produce an event so other plugins can perform other actions
             self.console.queueEvent(self.console.getEvent('EVT_CLIENT_SPAWNKILL_TEAM', client=client, target=target))
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   APPLY PENALTIES                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def warn_client(self, index, client):
         """

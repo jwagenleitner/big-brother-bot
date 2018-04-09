@@ -22,31 +22,24 @@
 #                                                                     #
 # ################################################################### #
 
-import string
+from __future__ import print_function, absolute_import
+
+__author__ = 'Tim ter Laak'
+__version__ = '1.4'
+
 import b3.events
 import b3.plugin
 
 from b3.functions import hash_password
 from b3.clients import Client
-from ConfigParser import NoOptionError
-
-__author__ = 'Tim ter Laak'
-__version__ = '1.4'
 
 
 class LoginPlugin(b3.plugin.Plugin):
-
     _adminPlugin = None
 
     _pmcomm = ''
     _threshold = 1000
     _passwdlevel = 100
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onLoadConfig(self):
         """
@@ -72,12 +65,6 @@ class LoginPlugin(b3.plugin.Plugin):
         self._pmcomm = '/m' if self.console.gameName[:5] == 'etpro' else '/tell'
         self.debug('using "%s" as the private messaging command' % self._pmcomm)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENTS                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onAuth(self, event):
         """
         Handle EVT_CLIENT_AUTH
@@ -102,24 +89,12 @@ class LoginPlugin(b3.plugin.Plugin):
                 m = 'Login via console: %s %s !login yourpassword' % (self._pmcomm, client.cid)
                 client.message(m)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    OTHER METHODS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def _get_client_from_db(self, client_id):
         """
         Retrieve a client from the storage layer.
         :param client_id: The client database id
         """
         return self.console.storage.getClient(Client(id=client_id))
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    COMMANDS                                                                                                      #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def cmd_login(self, data, client, cmd=None):
         """
@@ -145,7 +120,7 @@ class LoginPlugin(b3.plugin.Plugin):
         else:
             message = 'Usage (via console): %s %s !login yourpassword' % (self._pmcomm, client.cid)
             client.message(message)
-        
+
     def cmd_setpassword(self, data, client, cmd=None):
         """
         <password> [<client>] - set a password for a client

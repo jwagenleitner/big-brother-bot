@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 import os
 import random
 import re
@@ -45,7 +47,6 @@ from . import __version__
 
 
 class Poweradminurt41Plugin(b3.plugin.Plugin):
-
     # ClientUserInfo and ClientUserInfoChanged lines return different names, unsanitized and sanitized
     # this regexp designed to make sure either one is sanitized before namecomparison in onNameChange()
     _reClean = re.compile(r'(\^.)|[\x00-\x20]|[\x7E-\xff]', re.I)
@@ -142,19 +143,13 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
 
     requiresParsers = ['iourt41']
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onStartup(self):
         """
         Initialize plugin settings
         """
         # get the admin plugin so we can register commands
         self._adminPlugin = self.console.getPlugin('admin')
-        
+
         try:
             self._hitlocations['HL_HEAD'] = self.console.HL_HEAD
         except AttributeError as e:
@@ -275,35 +270,44 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         """
         Setup the name checker
         """
-        self._ninterval = self.getSetting('namechecker', 'ninterval', b3.INT, self._ninterval, lambda x: clamp(x, maxv=59))
+        self._ninterval = self.getSetting('namechecker', 'ninterval', b3.INT, self._ninterval,
+                                          lambda x: clamp(x, maxv=59))
         self._checkdupes = self.getSetting('namechecker', 'checkdupes', b3.BOOL, self._checkdupes)
         self._checkunknown = self.getSetting('namechecker', 'checkunknown', b3.BOOL, self._checkunknown)
         self._checkbadnames = self.getSetting('namechecker', 'checkbadnames', b3.BOOL, self._checkbadnames)
         self._checkchanges = self.getSetting('namechecker', 'checkchanges', b3.BOOL, self._checkchanges)
-        self._checkallowedchanges = self.getSetting('namechecker', 'checkallowedchanges', b3.INT, self._checkallowedchanges, lambda x: clamp(x, minv=1))
+        self._checkallowedchanges = self.getSetting('namechecker', 'checkallowedchanges', b3.INT,
+                                                    self._checkallowedchanges, lambda x: clamp(x, minv=1))
 
     def loadTeamBalancer(self):
         """
         Setup the teambalancer
         """
-        self._tinterval = self.getSetting('teambalancer', 'tinterval', b3.INT, self._tinterval, lambda x: clamp(x, maxv=59))
-        self._teamdiff = self.getSetting('teambalancer', 'teamdifference', b3.INT, self._teamdiff, lambda x: clamp(x, minv=1, maxv=9))
+        self._tinterval = self.getSetting('teambalancer', 'tinterval', b3.INT, self._tinterval,
+                                          lambda x: clamp(x, maxv=59))
+        self._teamdiff = self.getSetting('teambalancer', 'teamdifference', b3.INT, self._teamdiff,
+                                         lambda x: clamp(x, minv=1, maxv=9))
         self._tmaxlevel = self.getSetting('teambalancer', 'maxlevel', b3.LEVEL, self._tmaxlevel)
         self._announce = self.getSetting('teambalancer', 'announce', b3.INT, self._announce)
         # 10/21/2008 - 1.4.0b9 - mindriot
-        self._team_change_force_balance_enable = self.getSetting('teambalancer', 'team_change_force_balance_enable', b3.BOOL, self._team_change_force_balance_enable)
+        self._team_change_force_balance_enable = self.getSetting('teambalancer', 'team_change_force_balance_enable',
+                                                                 b3.BOOL, self._team_change_force_balance_enable)
         # 10/22/2008 - 1.4.0b10 - mindriot
-        self._autobalance_gametypes = self.getSetting('teambalancer', 'autobalance_gametypes', b3.STR, self._autobalance_gametypes, lambda x: x.lower())
+        self._autobalance_gametypes = self.getSetting('teambalancer', 'autobalance_gametypes', b3.STR,
+                                                      self._autobalance_gametypes, lambda x: x.lower())
         self._autobalance_gametypes_array = re.split(r'[\s,]+', self._autobalance_gametypes)
-        self._teamLocksPermanent = self.getSetting('teambalancer', 'teamLocksPermanent', b3.BOOL, self._teamLocksPermanent)
+        self._teamLocksPermanent = self.getSetting('teambalancer', 'teamLocksPermanent', b3.BOOL,
+                                                   self._teamLocksPermanent)
         self._ignorePlus = self.getSetting('teambalancer', 'timedelay', b3.INT, self._ignorePlus)
 
     def loadSkillBalancer(self):
         """
         Setup the skill balancer
         """
-        self._skinterval = self.getSetting('skillbalancer', 'interval', b3.INT, self._skinterval, lambda x: clamp(x, maxv=59))
-        self._skilldiff = self.getSetting('skillbalancer', 'difference', b3.FLOAT, self._skilldiff, lambda x: clamp(x, minv=0.1, maxv=9.0))
+        self._skinterval = self.getSetting('skillbalancer', 'interval', b3.INT, self._skinterval,
+                                           lambda x: clamp(x, maxv=59))
+        self._skilldiff = self.getSetting('skillbalancer', 'difference', b3.FLOAT, self._skilldiff,
+                                          lambda x: clamp(x, minv=0.1, maxv=9.0))
         self._skill_balance_mode = self.getSetting('skillbalancer', 'mode', b3.INT, self._skill_balance_mode)
         self._minbalinterval = self.getSetting('skillbalancer', 'min_bal_interval', b3.INT, self._minbalinterval)
 
@@ -325,7 +329,8 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         """
         Setup the spec checker
         """
-        self._sinterval = self.getSetting('speccheck', 'sinterval', b3.INT, self._sinterval, lambda x: clamp(x, maxv=59))
+        self._sinterval = self.getSetting('speccheck', 'sinterval', b3.INT, self._sinterval,
+                                          lambda x: clamp(x, maxv=59))
         self._smaxspectime = self.getSetting('speccheck', 'maxspectime', b3.INT, self._smaxspectime)
         self._smaxlevel = self.getSetting('speccheck', 'maxlevel', b3.LEVEL, self._smaxlevel)
         maxclients = self.console.getCvar('sv_maxclients').getInt()
@@ -394,8 +399,10 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         Setup the bot support
         """
         self._botenable = self.getSetting('botsupport', 'bot_enable', b3.BOOL, self._botenable)
-        self._botskill = self.getSetting('botsupport', 'bot_skill', b3.INT, self._botskill, lambda x: clamp(x, minv=1, maxv=5))
-        self._botminplayers = self.getSetting('botsupport', 'bot_minplayers', b3.INT, self._botminplayers, lambda x: clamp(x, minv=0, maxv=16))
+        self._botskill = self.getSetting('botsupport', 'bot_skill', b3.INT, self._botskill,
+                                         lambda x: clamp(x, minv=1, maxv=5))
+        self._botminplayers = self.getSetting('botsupport', 'bot_minplayers', b3.INT, self._botminplayers,
+                                              lambda x: clamp(x, minv=0, maxv=16))
         self._botmaps = self.getSetting('botsupport', 'bot_maps', b3.LIST, [])
 
         if self._botenable:
@@ -411,6 +418,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         """
         Setup the headshot counter
         """
+
         def validate_reset_vars(x):
             acceptable = ('no', 'map', 'round')
             if x.lower() not in acceptable:
@@ -418,7 +426,8 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
             return x.lower()
 
         self._hsenable = self.getSetting('headshotcounter', 'hs_enable', b3.BOOL, self._hsenable)
-        self._hsresetvars = self.getSetting('headshotcounter', 'reset_vars', b3.STR, self._hsresetvars, validate_reset_vars)
+        self._hsresetvars = self.getSetting('headshotcounter', 'reset_vars', b3.STR, self._hsresetvars,
+                                            validate_reset_vars)
         self._hsbroadcast = self.getSetting('headshotcounter', 'broadcast', b3.BOOL, self._hsbroadcast)
         self._hsall = self.getSetting('headshotcounter', 'announce_all', b3.BOOL, self._hsall)
         self._hspercent = self.getSetting('headshotcounter', 'announce_percentages', b3.BOOL, self._hspercent)
@@ -484,12 +493,6 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         if self._skinterval > 0:
             self._skcronTab = b3.cron.PluginCronTab(self, self.skillcheck, 0, '*/%s' % self._skinterval)
             self.console.cron + self._skcronTab
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENTS                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onClientDisconnect(self, _):
         """
@@ -580,7 +583,6 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         matchmode = self.console.getCvar('g_matchmode')
         if matchmode:
             self._matchmode = matchmode.getBoolean()
-
 
     def onKill(self, event):
         """
@@ -767,7 +769,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
             # the balance diff on the skill diff for now
             sincelast = self.console.time() - self._lastbal
             damping = min(1.0, sincelast / (1.0 + 60.0 * self._minbalinterval))
-            avgdiff = 1.21*diff*damping
+            avgdiff = 1.21 * diff * damping
             self.debug('advise: CTF/BOMB avgdiff=%.2f skilldiff=%.2f damping=%.2f' % (avgdiff, diff, damping))
 
         return avgdiff, diff
@@ -804,7 +806,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                         k += 1
                     elif s < 0:
                         d += 1
-            recentcontrib[c.id] = k/(1.0+d)
+            recentcontrib[c.id] = k / (1.0 + d)
 
         self.debug('recent: %s' % str(recentcontrib))
 
@@ -815,7 +817,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         red = sorted(red, cmp=contribcmp)
         n = min(len(blue), len(red))
         if n > 3:
-            n = 3 + int((n-3)/2)
+            n = 3 + int((n - 3) / 2)
 
         bs = float(sum(recentcontrib[c.id] for c in blue[:n])) / n / tm
         rs = float(sum(recentcontrib[c.id] for c in red[:n])) / n / tm
@@ -1156,18 +1158,18 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
 
         self.console.say(msg)
 
-########################################################################################################################
-#---COMMANDS IMPLEMENTATION---------------------------------------------------------------------------------------------
-#
-#   /rcon commands:
-#   slap <clientnum>
-#   nuke <clientnum>
-#   forceteam <clientnum> <red/blue/s>
-#   veto (vote cancellen)
-#   mute <clientnum> <seconds>
-#   pause
-#   swapteams
-#   shuffleteams
+    ########################################################################################################################
+    # ---COMMANDS IMPLEMENTATION---------------------------------------------------------------------------------------------
+    #
+    #   /rcon commands:
+    #   slap <clientnum>
+    #   nuke <clientnum>
+    #   forceteam <clientnum> <red/blue/s>
+    #   veto (vote cancellen)
+    #   mute <clientnum> <seconds>
+    #   pause
+    #   swapteams
+    #   shuffleteams
 
     def cmd_paadvise(self, data, client, cmd=None):
         """
@@ -1218,7 +1220,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         olddiff, bestdiff, blue, red, scores = self._randTeams(100, 0.1)
         if client:
             if (client.team == b3.TEAM_BLUE and client.cid not in [c.cid for c in blue]) or \
-               (client.team == b3.TEAM_RED and client.cid not in [c.cid for c in red]):
+                    (client.team == b3.TEAM_RED and client.cid not in [c.cid for c in red]):
                 # don't move player who initiated skuffle
                 blue, red = red, blue
 
@@ -1598,7 +1600,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
 
     def multipunish(self, x, sclient, client, cmd):
         self.debug('Entering multipunish...')
-        #self.debug('x: %s, sclient.cid: %s, client.cid: %s, cmd: %s' %(x, sclient.cid, client.cid, cmd))
+        # self.debug('x: %s, sclient.cid: %s, client.cid: %s, cmd: %s' %(x, sclient.cid, client.cid, cmd))
         c = 0
         while c < x:
             self.console.write('%s %s' % (cmd, sclient.cid))
@@ -1959,12 +1961,12 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                                                                  sclient.id, sclient.exactName, sclient.ip,
                                                                  self.console.formatTime(sclient.timeAdd)))
 
-########################################################################################################################
-#---Teambalance Mechanism-----------------------------------------------------------------------------------------------
-#
-#   /g_redteamlist en /g_blueteamlist
-#   they return which clients are in the red or blue team
-#   not with numbers but characters (clientnum 0 = A, clientnum 1 = B, etc.
+    ########################################################################################################################
+    # ---Teambalance Mechanism-----------------------------------------------------------------------------------------------
+    #
+    #   /g_redteamlist en /g_blueteamlist
+    #   they return which clients are in the red or blue team
+    #   not with numbers but characters (clientnum 0 = A, clientnum 1 = B, etc.
 
     def onGameRoundEnd(self, _):
         """
@@ -2119,7 +2121,8 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         gametype = self._getGameType()
         # run teambalance only if current gametype is in autobalance_gametypes list
         if not gametype in self._autobalance_gametypes_array:
-            self.debug('current gametype (%s) is not specified in autobalance_gametypes - teambalancer disabled', gametype)
+            self.debug('current gametype (%s) is not specified in autobalance_gametypes - teambalancer disabled',
+                       gametype)
             return
 
         if gametype in self._round_based_gametypes:
@@ -2156,7 +2159,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                 self._balancing = False
                 return True
             else:
-                #teams are not balanced
+                # teams are not balanced
                 self._teamsbalanced = False
                 self.verbose('teambalance: teams are NOT balanced, '
                              'red: %s, blue: %s (diff: %s)' % (self._teamred, self._teamblue, self._teamdiff))
@@ -2190,7 +2193,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                             self.verbose('client variable teamtime set to: %s' % c.var(self, 'teamtime').value)
 
                         if self.console.time() - c.var(self, 'teamtime').value < stime and \
-                           c.team == oldteam and c.maxLevel < self._tmaxlevel and not c.isvar(self, 'paforced'):
+                                c.team == oldteam and c.maxLevel < self._tmaxlevel and not c.isvar(self, 'paforced'):
                             forceclient = c.cid
                             stime = self.console.time() - c.var(self, 'teamtime').value
 
@@ -2211,7 +2214,8 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                         return False
 
                     # 10/28/2008 - 1.4.0b13 - mindriot
-                    self.verbose('teambalance: red: %s, blue: %s (diff: %s)' % (self._teamred, self._teamblue, self._teamdiff))
+                    self.verbose(
+                        'teambalance: red: %s, blue: %s (diff: %s)' % (self._teamred, self._teamblue, self._teamdiff))
 
                     if self._teamred > self._teamblue:
                         newteam = 'blue'
@@ -2236,8 +2240,8 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
             self.debug('TeamLocks Released')
         return None
 
-########################################################################################################################
-#---Dupes/Forbidden Names Mechanism-------------------------------------------------------------------------------------
+    ########################################################################################################################
+    # ---Dupes/Forbidden Names Mechanism-------------------------------------------------------------------------------------
 
     def namecheck(self):
         if self._matchmode:
@@ -2250,16 +2254,16 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                 if not player.name in d.keys():
                     d[player.name] = [player.cid]
                 else:
-                    #l = d[player.name]
-                    #l.append(cid)
-                    #d[player.name]=l
+                    # l = d[player.name]
+                    # l.append(cid)
+                    # d[player.name]=l
                     d[player.name].append(player.cid)
 
             for pname, cidlist in d.items():
                 if self._checkdupes and len(cidlist) > 1:
                     self.info("warning players %s for using the same name" %
                               (", ".join(["%s <%s> @%s" %
-                                         (c.exactName, c.cid, c.id) for c in
+                                          (c.exactName, c.cid, c.id) for c in
                                           map(self.console.clients.getByCID, cidlist)])))
 
                     for cid in cidlist:
@@ -2317,17 +2321,16 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                     c.setvar(self, 'namechanges', 0)
             self.debug('Namechanges Reset')
 
-
-########################################################################################################################
-#---Vote delayer at round start-----------------------------------------------------------------------------------------
+    ########################################################################################################################
+    # ---Vote delayer at round start-----------------------------------------------------------------------------------------
 
     def votedelay(self, data=None):
         if not data:
             data = 'on'
         self.cmd_pavote(data)
 
-########################################################################################################################
-#---Spectator Checking--------------------------------------------------------------------------------------------------
+    ########################################################################################################################
+    # ---Spectator Checking--------------------------------------------------------------------------------------------------
 
     def speccheck(self):
         if self.isEnabled() and self._g_maxGameClients == 0 and not self._matchmode:
@@ -2356,8 +2359,8 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
                     self.debug('warning %s for speccing on full server' % c.name)
                     self._adminPlugin.warnClient(c, 'spec')
 
-########################################################################################################################
-#---Bot support---------------------------------------------------------------------------------------------------------
+    ########################################################################################################################
+    # ---Bot support---------------------------------------------------------------------------------------------------------
 
     def botsupport(self, data=None):
         """
@@ -2386,8 +2389,8 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         self.debug('enabling the bots')
         self.console.write('set bot_minplayers %s' % self._botminplayers)
 
-########################################################################################################################
-#---Headshot Counter----------------------------------------------------------------------------------------------------
+    ########################################################################################################################
+    # ---Headshot Counter----------------------------------------------------------------------------------------------------
 
     def setupVars(self, client):
         if not client.isvar(self, 'totalhits'):
@@ -2429,9 +2432,9 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         victim = event.target
         data = event.data
         if self.isEnabled() and \
-            self._hsenable and \
-            attacker.isvar(self, 'hitvars') and \
-            victim.isvar(self, 'hitvars') and not self._matchmode:
+                self._hsenable and \
+                attacker.isvar(self, 'hitvars') and \
+                victim.isvar(self, 'hitvars') and not self._matchmode:
 
             hitloc = data[2]
 
@@ -2478,21 +2481,21 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
 
             # wear a helmet!
             if self._hswarnhelmet and \
-                victim.connections < 20 and \
-                victim.var(self, 'headhitted').value == self._hswarnhelmetnr and \
-                hitloc == self._hitlocations['HL_HEAD']:
+                    victim.connections < 20 and \
+                    victim.var(self, 'headhitted').value == self._hswarnhelmetnr and \
+                    hitloc == self._hitlocations['HL_HEAD']:
                 victim.message('You were hit in the head %s times! Consider wearing a helmet!' % self._hswarnhelmetnr)
 
             # wear kevlar!
             if self._hswarnkevlar and \
-                victim.connections < 20 and \
-                victim.var(self, 'torsohitted').value == self._hswarnkevlarnr and \
-                hitloc == self._hitlocations['HL_TORSO']:
+                    victim.connections < 20 and \
+                    victim.var(self, 'torsohitted').value == self._hswarnkevlarnr and \
+                    hitloc == self._hitlocations['HL_TORSO']:
                 victim.message('You were hit in the torso %s times! Wearing kevlar vest will reduce \
                                 your number of deaths!' % self._hswarnkevlarnr)
 
-########################################################################################################################
-#---Rotation Manager----------------------------------------------------------------------------------------------------
+    ########################################################################################################################
+    # ---Rotation Manager----------------------------------------------------------------------------------------------------
 
     def adjustrotation(self, delta):
         # if the round just started, don't do anything
@@ -2520,10 +2523,10 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
 
     def setrotation(self, newrotation):
         if not self._gamepath or \
-            not self._rotation_small or \
-            not self._rotation_medium or \
-            not self._rotation_large or \
-            not self._mapchanged:
+                not self._rotation_small or \
+                not self._rotation_medium or \
+                not self._rotation_large or \
+                not self._mapchanged:
             return
 
         if newrotation == self._currentrotation:
@@ -2560,8 +2563,8 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         elif self._playercount < self._oldplayercount:
             self.adjustrotation(-1)
 
-########################################################################################################################
-#--Support Functions----------------------------------------------------------------------------------------------------
+    ########################################################################################################################
+    # --Support Functions----------------------------------------------------------------------------------------------------
 
     def clean(self, data):
         return re.sub(self._reClean, '', data)[:20]
@@ -2583,18 +2586,18 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         """
         return self._ignoreTill - self.console.time() > 0
 
-########################################################################################################################
-#---Rcon commands------by:FSK405|Fear-----------------------------------------------------------------------------------
-#   setnextmap <mapname>
-#   respawngod <seconds>
-#   respawndelay <seconds>
-#   caplimit <caps>
-#   fraglimit <frags>
-#   waverespawns <on/off>
-#   bluewave <seconds>
-#   redwave <seconds>
-#   timelimit <minutes>
-#   hotpotato <minutes>
+    ########################################################################################################################
+    # ---Rcon commands------by:FSK405|Fear-----------------------------------------------------------------------------------
+    #   setnextmap <mapname>
+    #   respawngod <seconds>
+    #   respawndelay <seconds>
+    #   caplimit <caps>
+    #   fraglimit <frags>
+    #   waverespawns <on/off>
+    #   bluewave <seconds>
+    #   redwave <seconds>
+    #   timelimit <minutes>
+    #   hotpotato <minutes>
 
     def cmd_pawaverespawns(self, data, client, cmd=None):
         """
@@ -2701,7 +2704,7 @@ class Poweradminurt41Plugin(b3.plugin.Plugin):
         else:
             self.console.setCvar('g_hotpotato', data)
 
-#------------- SGT --------------------------------------------
+    # ------------- SGT --------------------------------------------
 
     def cmd_pasetwave(self, data, client, cmd=None):
         """

@@ -23,17 +23,17 @@
 # ################################################################### #
 #
 
+from __future__ import print_function, absolute_import
+
 __version__ = '1.8'
 __author__ = 'Thomas LÉVEIL'
-
 
 import time
 import threading
 
 from b3.functions import getCmd
-from b3.config import ConfigParser
 from b3.plugin import Plugin
-from ConfigParser import NoOptionError
+from six.moves.configparser import NoOptionError
 
 
 class MakeroomPlugin(Plugin):
@@ -41,12 +41,6 @@ class MakeroomPlugin(Plugin):
     This plugin provides a command to free a slot kicking the last
     connected player from the lowest B3 group
     """
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def __init__(self, console, config=None):
         Plugin.__init__(self, console, config)
@@ -76,7 +70,7 @@ class MakeroomPlugin(Plugin):
         """
         try:
             self._non_member_level = self.console.getGroupLevel(self.config.get('global_settings', 'non_member_level'))
-        except (NoOptionError, KeyError), err:
+        except (NoOptionError, KeyError) as err:
             default_non_member_group = 'reg'
             self._non_member_level = self.console.getGroupLevel(default_non_member_group)
             self.warning("using default value %s for 'non_member_level'. %s" % (default_non_member_group, err))
@@ -86,7 +80,7 @@ class MakeroomPlugin(Plugin):
         try:
             self._retain_free_duration = self.config.getint('global_settings', 'retain_free_duration')
             self.info('global_settings/retain_free_duration: %s' % self._retain_free_duration)
-        except (NoOptionError, ValueError), err:
+        except (NoOptionError, ValueError) as err:
             self.warning("No value or bad value for global_settings/retain_free_duration. %s", err)
         else:
             if self._retain_free_duration < 0:
@@ -112,7 +106,7 @@ class MakeroomPlugin(Plugin):
             self._automation_enabled = self.config.getboolean('automation', 'enabled')
         except NoOptionError:
             self._automation_enabled = None
-        except ValueError, err:
+        except ValueError as err:
             self.warning("bad value for setting automation/enabled. Expected 'yes' or 'no'. %s", err)
             self._automation_enabled = None
 
@@ -121,7 +115,7 @@ class MakeroomPlugin(Plugin):
         try:
             self._total_slots = self.config.getint('automation', 'total_slots')
             self.info('automation/total_slots: %s' % self._total_slots)
-        except (NoOptionError, ValueError), err:
+        except (NoOptionError, ValueError) as err:
             self.warning("No value or bad value for automation/total_slots. %s", err)
             self.uninstall_automation()
         else:
@@ -133,7 +127,7 @@ class MakeroomPlugin(Plugin):
             try:
                 self._min_free_slots = self.config.getint('automation', 'min_free_slots')
                 self.info('automation/min_free_slots: %s' % self._min_free_slots)
-            except (NoOptionError, ValueError), err:
+            except (NoOptionError, ValueError) as err:
                 self.warning("no value or bad value for automation/min_free_slots. %s", err)
                 self.uninstall_automation()
             else:
@@ -170,12 +164,6 @@ class MakeroomPlugin(Plugin):
 
         self.registerEvent('EVT_CLIENT_AUTH', self.onClientAuth)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENTS                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onClientAuth(self, event):
         """
         Handle EVT_CLIENT_AUTH.
@@ -196,12 +184,6 @@ class MakeroomPlugin(Plugin):
 
         elif self._automation_enabled:
             self.check_free_slots(event.client)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    COMMANDS                                                                                                      #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def cmd_makeroomauto(self, data=None, client=None, cmd=None):
         """
@@ -235,16 +217,10 @@ class MakeroomPlugin(Plugin):
             else:
                 try:
                     info_message = self.getMessage('info_message', self.console.getMessageVariables(client=client))
-                except ConfigParser.NoOptionError:
+                except NoOptionError:
                     info_message = "Making room for clan member, please come back again"
                 self.console.say(info_message)
-                threading.Timer(self._delay, self._free_a_slot, (client, )).start()
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    OTHER METHODS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
+                threading.Timer(self._delay, self._free_a_slot, (client,)).start()
 
     def _free_a_slot(self, admin):
         """
@@ -260,12 +236,12 @@ class MakeroomPlugin(Plugin):
             else:
                 # sort players by group and connection time
                 clients_by_group = sorted(clients, key=lambda _: _.maxLevel)
-                #self.debug([(x.name, x.maxLevel) for x in clients_by_group])
+                # self.debug([(x.name, x.maxLevel) for x in clients_by_group])
                 lowest_group = clients_by_group[0].maxLevel
                 lowest_clients = [x for x in clients_by_group if x.maxLevel == lowest_group]
-                #self.debug([(x.name, x.timeAdd) for x in lowestClients])
+                # self.debug([(x.name, x.timeAdd) for x in lowestClients])
                 clients_by_time = sorted(lowest_clients, key=lambda x: x.timeAdd, reverse=True)
-                #self.debug([(x.name, x.timeAdd) for x in clientsByTime])
+                # self.debug([(x.name, x.timeAdd) for x in clientsByTime])
                 client2kick = clients_by_time[0]
                 self._kick(client2kick, admin)
                 if self._retain_free_duration == 0:
@@ -277,7 +253,8 @@ class MakeroomPlugin(Plugin):
                         'admin': admin
                     }
                     admin.message("%s was kicked to free a slot. "
-                                  "A member has %ss to join the server" % (client2kick.name, self._retain_free_duration))
+                                  "A member has %ss to join the server" % (
+                                  client2kick.name, self._retain_free_duration))
         finally:
             self._kick_in_progress.release()
 
@@ -315,11 +292,11 @@ class MakeroomPlugin(Plugin):
         """
         try:
             kick_message = self.getMessage('kick_message', self.console.getMessageVariables(client=non_member))
-        except ConfigParser.NoOptionError:
+        except NoOptionError:
             kick_message = "kicking %s to free a slot" % non_member.name
         self.console.say(kick_message)
         try:
             kick_reason = self.getMessage('kick_reason', self.console.getMessageVariables(client=non_member))
-        except ConfigParser.NoOptionError:
+        except NoOptionError:
             kick_reason = "to free a slot"
         non_member.kick(reason=kick_reason, keyword="makeroom", silent=True, admin=admin)

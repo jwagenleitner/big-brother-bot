@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__ = 'ThorN'
 __version__ = '1.4'
 
@@ -35,7 +37,6 @@ from six.moves.configparser import NoOptionError
 
 
 class PingwatchPlugin(b3.plugin.Plugin):
-
     _adminPlugin = None
     _cronTab = None
 
@@ -45,12 +46,6 @@ class PingwatchPlugin(b3.plugin.Plugin):
 
     _ignoreTill = 0
     _maxCiPing = 500
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onLoadConfig(self):
         """
@@ -115,24 +110,12 @@ class PingwatchPlugin(b3.plugin.Plugin):
         self._cronTab = b3.cron.PluginCronTab(self, self.check, '*/%s' % self._interval)
         self.console.cron + self._cronTab
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENTS                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onGameExit(self, event):
         """
         Handle EVT_GAME_EXIT
         """
         # ignore ping watching for 2 minutes
         self._ignoreTill = self.console.time() + 120
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    CRONJOB                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def check(self):
         """
@@ -163,12 +146,6 @@ class PingwatchPlugin(b3.plugin.Plugin):
                     self.console.say('^7%s ^7ping detected as Connection Interrupted (CI)' % client.name)
                 else:
                     self.console.say('^7%s ^7ping detected as too high %s' % (client.name, ping))
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    COMMANDS                                                                                                      #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def cmd_ci(self, data, client=None, cmd=None):
         """

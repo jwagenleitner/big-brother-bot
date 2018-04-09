@@ -22,6 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
+__version__ = '1.5'
+__author__ = 'ThorN, mindriot, Courgette, xlr8or, SGT, 82ndab-Bravo17, ozon, Fenix'
+
 import b3
 import b3.events
 import b3.plugin
@@ -32,9 +37,6 @@ import threading
 import time
 import six
 from six.moves.configparser import NoOptionError
-
-__version__ = '1.5'
-__author__ = 'ThorN, mindriot, Courgette, xlr8or, SGT, 82ndab-Bravo17, ozon, Fenix'
 
 
 class TkInfo(object):
@@ -140,14 +142,7 @@ class TkInfo(object):
 
 
 class TkPlugin(b3.plugin.Plugin):
-
     loadAfterPlugins = ['spawnkill']
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def __init__(self, console, config=None):
         """
@@ -342,12 +337,6 @@ class TkPlugin(b3.plugin.Plugin):
             self.console.cron + self._cronTab_tkhalflife
             self.debug('TK Crontab started')
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENTS                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onEvent(self, event):
         """
         Handle intercepted events
@@ -418,12 +407,6 @@ class TkPlugin(b3.plugin.Plugin):
                 t = threading.Timer(30, self.checkTKBan, (event.client,))
                 t.start()
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    OTHER METHODS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def checkTKBan(self, client):
         """
         Check if we have to tempban a client for teamkilling.
@@ -462,16 +445,16 @@ class TkPlugin(b3.plugin.Plugin):
                     except KeyError:
                         pass
 
-        if self._tkpointsHalflife > 0: 
+        if self._tkpointsHalflife > 0:
             if self._cronTab_tkhalflife:
                 # remove existing crontab
                 self.console.cron - self._cronTab_tkhalflife
             (m, s) = self.crontab_time()
             self._cronTab_tkhalflife = b3.cron.OneTimeCronTab(self.halveTKPoints, second=s, minute=m)
             self.console.cron + self._cronTab_tkhalflife
-            #self.console.say('TK Crontab re-started')
+            # self.console.say('TK Crontab re-started')
             self.debug('TK crontab re-started')
-            
+
     def crontab_time(self):
         s = self._tkpointsHalflife
         m = int(time.strftime('%M'))
@@ -482,7 +465,7 @@ class TkPlugin(b3.plugin.Plugin):
         if m > 59:
             m -= 60
         return m, s
-    
+
     def getMultipliers(self, client):
         level = ()
         for lev, mult in six.iteritems(self._levels):
@@ -492,8 +475,8 @@ class TkPlugin(b3.plugin.Plugin):
         if not level:
             return 0, 0, 0
 
-        #self.debug('getMultipliers = %s', level)
-        #self.debug('round time %s' % self.console.game.roundTime())
+        # self.debug('getMultipliers = %s', level)
+        # self.debug('round time %s' % self.console.game.roundTime())
         if self._round_grace and self.console.game.roundTime() < self._round_grace:
             # triple tk damage for first 15 seconds of round
             level = (level[0] * 1.5, level[1] * 3, level[2])
@@ -508,16 +491,16 @@ class TkPlugin(b3.plugin.Plugin):
 
         # 10/20/2008 - 1.1.6b0 - mindriot
         # * in clientDamage, kill and damage mutlipliers were reversed - changed if killed: to [0] and else: to [1]
-        if killed:        
+        if killed:
             points = int(round(points * self.getMultipliers(attacker)[0]))
         else:
             points = int(round(points * self.getMultipliers(attacker)[1]))
 
         a.damage(v.cid, points)
         v.damaged(a.cid, points)
-        
+
         self.debug('attacker: %s, TK points: %s, attacker.maxLevel: %s, last warn time: %s, console time: %s' % (
-                   attacker.exactName, points, attacker.maxLevel, a.lastwarntime, self.console.time()))
+            attacker.exactName, points, attacker.maxLevel, a.lastwarntime, self.console.time()))
 
         if self._round_grace and self._issue_warning and \
                 self.console.game.roundTime() < self._round_grace and \
@@ -621,12 +604,6 @@ class TkPlugin(b3.plugin.Plugin):
 
         return points
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    COMMANDS                                                                                                      #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def cmd_grudge(self, data, client, cmd=None):
         """
         <name> - grudge a player for team damaging, a grudge player will not be auto-forgiven
@@ -693,7 +670,7 @@ class TkPlugin(b3.plugin.Plugin):
         elif v.lastAttacker and not v.isGrudged(v.lastAttacker):
             self.forgive(v.lastAttacker, client)
         else:
-            client.message(self.getMessage('no_forgive'))            
+            client.message(self.getMessage('no_forgive'))
 
     def cmd_forgiveall(self, data, client, cmd=None):
         """
@@ -772,10 +749,10 @@ class TkPlugin(b3.plugin.Plugin):
                     victim = self.console.clients.getByCID(cid)
                     if not victim:
                         continue
-                    
+
                     v = self.getClientTkInfo(victim)
                     myvictims.append('%s ^7(^1%s^7)' % (victim.name, v.getAttackerPoints(sclient.cid)))
-                    
+
                 if len(myvictims):
                     msg += ', ^1Attacked^7: %s' % ', '.join(myvictims)
 
@@ -785,12 +762,12 @@ class TkPlugin(b3.plugin.Plugin):
                     attacker = self.console.clients.getByCID(cid)
                     if not attacker:
                         continue
-                    
+
                     if tkinfo.isGrudged(attacker.cid):
                         myattackers.append('^1%s ^7[^3%s^7]' % (attacker.name, points))
                     else:
                         myattackers.append('%s ^7[^3%s^7]' % (attacker.name, points))
-                    
+
                 if len(myattackers):
                     msg += ', ^3Attacked By^7: %s' % ', '.join(myattackers)
 

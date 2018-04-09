@@ -297,7 +297,7 @@ class CensorPlugin(b3.plugin.Plugin):
                 break
             if w.regexp.search(cleaned_name):
                 self.debug("badname rule [%s] matches cleaned name '%s' for player '%s'" % (
-                w.name, cleaned_name, client.exactName))
+                    w.name, cleaned_name, client.exactName))
                 self.penalizeClientBadname(w.penalty, client, '%s (rule %s)' % (client.exactName, w.name))
                 was_penalized = True
                 break

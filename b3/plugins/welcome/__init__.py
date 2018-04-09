@@ -22,8 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-import b3.events
+from __future__ import print_function, absolute_import
+
+__version__ = '1.4'
+__author__ = 'ThorN, xlr8or, Courgette'
+
 import b3.plugin
 import threading
 import time
@@ -31,9 +34,6 @@ import re
 
 from b3.functions import getCmd
 from six.moves.configparser import NoOptionError
-
-__version__ = '1.4'
-__author__ = 'ThorN, xlr8or, Courgette'
 
 F_FIRST = 4
 F_NEWB = 1
@@ -44,7 +44,6 @@ F_CUSTOM_GREETING = 32
 
 
 class WelcomePlugin(b3.plugin.Plugin):
-
     _adminPlugin = None
     _newbConnections = 15
     _welcomeFlags = F_FIRST | F_NEWB | F_USER | F_ANNOUNCE_FIRST | F_ANNOUNCE_USER | F_CUSTOM_GREETING
@@ -67,12 +66,6 @@ class WelcomePlugin(b3.plugin.Plugin):
         'greeting_changed': '^7Greeting changed to: %s',
         'greeting_cleared': '^7Greeting cleared',
     }
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onStartup(self):
         """
@@ -185,12 +178,6 @@ class WelcomePlugin(b3.plugin.Plugin):
                     self.warning('could not find settings/%s config value' % opt)
                     self.debug('using default value (yes) for settings/%s' % opt)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    EVENTS                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onAuth(self, event):
         """
         Handle EVT_CLIENT_AUTH
@@ -207,12 +194,6 @@ class WelcomePlugin(b3.plugin.Plugin):
             return
         t = threading.Timer(self._welcomeDelay, self.welcome, (event.client,))
         t.start()
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    OTHER METHODS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def welcome(self, client):
         """
@@ -273,12 +254,6 @@ class WelcomePlugin(b3.plugin.Plugin):
             info['lastVisit'] = 'Unknown'
 
         return info
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    COMMANDS                                                                                                      #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def cmd_greeting(self, data, client, cmd=None):
         """

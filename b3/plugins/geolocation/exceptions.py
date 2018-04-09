@@ -22,10 +22,14 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
+
 class GeolocalizationError(Exception):
     """
     Raised when we are not able to geolocalize an IP address
     """
+
     def __init__(self, message):
         Exception.__init__(self, message)
 

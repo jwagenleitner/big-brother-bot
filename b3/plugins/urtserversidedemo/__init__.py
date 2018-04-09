@@ -22,6 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
+__version__ = '2.2'
+__author__ = 'Courgette'
+
 import re
 
 from threading import Timer
@@ -31,11 +36,8 @@ from b3.plugin import Plugin
 from b3.functions import minutesStr
 from b3.functions import getCmd
 
-__version__ = '2.2'
-__author__ = 'Courgette'
 
 class UrtserversidedemoPlugin(Plugin):
-
     requiresParsers = ['iourt41', 'iourt42', 'iourt43']
     loadAfterPlugins = ['follow', 'haxbusterurt']
     demo_manager = None
@@ -44,18 +46,13 @@ class UrtserversidedemoPlugin(Plugin):
         """
         Initialize plugin object
         """
-        self._re_startserverdemo_success = re.compile(r"""^startserverdemo: recording (?P<name>.+) to (?P<file>.+\.(?:dm_68|urtdemo))$""")
+        self._re_startserverdemo_success = re.compile(
+            r"""^startserverdemo: recording (?P<name>.+) to (?P<file>.+\.(?:dm_68|urtdemo))$""")
         self._adminPlugin = None
-        self._haxbusterurt_demo_duration = 0 # if the haxbusterurt plugin is present, how long should last demo of cheaters
-        self._follow_demo_duration = 0 # if the follow plugin is present, how long should last demo of cheaters
-        self._recording_all_players = False # if True, then connecting players will be recorded
+        self._haxbusterurt_demo_duration = 0  # if the haxbusterurt plugin is present, how long should last demo of cheaters
+        self._follow_demo_duration = 0  # if the follow plugin is present, how long should last demo of cheaters
+        self._recording_all_players = False  # if True, then connecting players will be recorded
         Plugin.__init__(self, console, config)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   PLUGIN INTERFACE IMPLEMENTATION                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onLoadConfig(self):
         """
@@ -111,12 +108,6 @@ class UrtserversidedemoPlugin(Plugin):
             self.registerEvent('EVT_FOLLOW_CONNECTED', self.onFollowConnectedEvent)
         else:
             self.info("Follow plugin not found")
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   HANDLE EVENTS                                                                                                  #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onExit(self, event):
         """
@@ -188,12 +179,6 @@ class UrtserversidedemoPlugin(Plugin):
         if self._recording_all_players:
             self.start_recording_all_players()
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   COMMANDS IMPLEMENTATIONS                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def cmd_startserverdemo(self, data, client, cmd=None):
         """
         <player> - starts recording a demo for the given player. Use 'all' for all players.
@@ -234,12 +219,6 @@ class UrtserversidedemoPlugin(Plugin):
 
         self.demo_manager.stop_demo(targetted_player, admin=client)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   OTHER METHODS                                                                                                  #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def has_startserverdemo_cmd(self):
         rv = self.console.write('cmdlist startserverdemo')
         return 'startserverdemo' in rv
@@ -247,14 +226,14 @@ class UrtserversidedemoPlugin(Plugin):
     def _load_config_haxbusterurt(self):
         try:
             self._haxbusterurt_demo_duration = self.config.getint('haxbusterurt', 'demo_duration')
-        except Exception, err:
+        except Exception as err:
             self.warning(err)
         self.info('haxbusterurt demo_duration: %s minutes' % self._haxbusterurt_demo_duration)
 
     def _load_config_follow(self):
         try:
             self._follow_demo_duration = self.config.getint('follow', 'demo_duration')
-        except Exception, err:
+        except Exception as err:
             self.warning(err)
         self.info('follow demo_duration: %s minutes' % self._follow_demo_duration)
 
@@ -281,9 +260,11 @@ class UrtserversidedemoPlugin(Plugin):
         rv = self.console.write("startserverdemo %s" % client.cid)
         match = self._re_startserverdemo_success.match(rv)
         if match:
-            self.info("%sstart recording player \"%s\" %s %s : %s" % (msg_prefix, client.name, client.guid, client.ip, match.group('file')))
+            self.info("%sstart recording player \"%s\" %s %s : %s" % (
+            msg_prefix, client.name, client.guid, client.ip, match.group('file')))
         else:
-            self.warning("%sstart recording player \"%s\" %s %s : %s" % (msg_prefix, client.name, client.guid, client.ip, rv))
+            self.warning(
+                "%sstart recording player \"%s\" %s %s : %s" % (msg_prefix, client.name, client.guid, client.ip, rv))
         return rv
 
     def stop_recording_player(self, client, admin=None):
@@ -298,15 +279,15 @@ class DemoManager(object):
     """
     Class that remembers which demo is being taken, or waiting to be taken
     """
-    
+
     def __init__(self, plugin):
         self.plugin = plugin
-        self._demo_starters = {} # dict<guid, DemoStarter>
-        self._auto_stop_timers = {} # dict<guid, Timer object for the auto-stopping demos>
+        self._demo_starters = {}  # dict<guid, DemoStarter>
+        self._auto_stop_timers = {}  # dict<guid, Timer object for the auto-stopping demos>
 
-    #--------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------
     #   PUBLIC API
-    #--------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------
 
     def take_demo(self, player, admin=None, duration=None):
         """
@@ -370,9 +351,9 @@ class DemoManager(object):
         if starter:
             starter.tick()
 
-    #--------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------
     #   API for DemoStarters only
-    #--------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------
 
     def _done_callback(self, player_guid):
         """
@@ -382,7 +363,7 @@ class DemoManager(object):
             del self._demo_starters[player_guid]
 
     def _start_autostop_timer(self, client, duration, admin=None):
-        str_duration = minutesStr(duration/60.0)
+        str_duration = minutesStr(duration / 60.0)
         self.plugin.info("starting auto-stop demo timer for %s and %s" % (client.name, str_duration))
         t = self._auto_stop_timers.get(client.guid, None)
         if t:
@@ -391,11 +372,11 @@ class DemoManager(object):
         t = self._auto_stop_timers[client.guid] = Timer(duration, self._autostop_recording_player, [client])
         t.start()
         if admin:
-           admin.message("demo for %s will stop in %s" % (client.name, str_duration))
+            admin.message("demo for %s will stop in %s" % (client.name, str_duration))
 
-    #--------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------
     #   OTHER METHODS
-    #--------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------
 
     def _autostop_recording_player(self, client):
         self.plugin.debug("auto-stopping demo for %s" % client.name)
@@ -429,13 +410,13 @@ class DemoStarter(Thread):
         self.client = client
         self.admin = admin
         self.duration = duration
-        self._cancel_event = TEvent() # will be used to give up trying
-        self._try_event = TEvent() # will be used to trigger another try
+        self._cancel_event = TEvent()  # will be used to give up trying
+        self._try_event = TEvent()  # will be used to trigger another try
         Thread.__init__(self, name="DemoStarter(%s)" % client.name)
 
-    #--------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------
     #   API
-    #--------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------
 
     def run(self):
         while True:
@@ -456,8 +437,9 @@ class DemoStarter(Thread):
                 break
             elif state == self.STATE_PLAYER_NOT_ACTIVE:
                 if self.admin:
-                    self.admin.message("player %s has not joined the game yet, will retry in a while" % self.client.name)
-                self._try_event.wait() # for player to join a team / disconnect or bot to stop
+                    self.admin.message(
+                        "player %s has not joined the game yet, will retry in a while" % self.client.name)
+                self._try_event.wait()  # for player to join a team / disconnect or bot to stop
             elif state in (self.STATE_DEMO_ALREADY_STARTED, self.STATE_DEMO_CANNOT_BE_STARTED):
                 if self.admin:
                     self.admin.message(rv)
@@ -482,9 +464,9 @@ class DemoStarter(Thread):
         self._cancel_event.set()
         self.tick()
 
-    #--------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------
     #   PRIVATE
-    #--------------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------------
 
     def _try_to_start_demo(self):
         rv = self.plugin.start_recording_player(self.client, self.admin)

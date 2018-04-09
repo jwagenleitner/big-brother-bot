@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__ = 'Fenix'
 __version__ = '1.2'
 
@@ -43,18 +45,12 @@ from b3.plugin import PluginData
 from b3.update import B3version
 from traceback import extract_tb
 
-class PluginmanagerPlugin(b3.plugin.Plugin):
 
+class PluginmanagerPlugin(b3.plugin.Plugin):
     _adminPlugin = None
     _reSplit = re.compile(r'''\w+''')
     _reParse = re.compile(r'''^(?P<command>\w+)\s*(?P<data>.*)$''')
     _protected = ('admin', 'publist', 'ftpytail', 'sftpytail', 'httpytail', 'cod7http', 'pluginmanager')
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    STARTUP                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def onStartup(self):
         """
@@ -77,12 +73,6 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
 
         # notice plugin started
         self.debug('plugin started')
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    AUX METHODS                                                                                                   #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def do_enable(self, client, name=None):
         """
@@ -130,12 +120,14 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
         :param client: The client who launched the command
         :param name: The name of the plugin to load
         """
+
         def _get_plugin_config(p_name, p_clazz):
             """
             Helper that load and return a configuration file for the given Plugin
             :param p_name: The plugin name
             :param p_clazz: The class implementing the plugin
             """
+
             def _search_config_file(match):
                 """
                 Helper that returns a list of available configuration file paths for the given plugin.
@@ -149,7 +141,8 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
                     return collection
                 # if none is found, then search in the extplugins directory
                 extplugins_dir = self.console.config.get_external_plugins_dir()
-                search = '%s%s*%s*' % (os.path.join(b3.getAbsolutePath(extplugins_dir), match, 'conf'), os.path.sep, match)
+                search = '%s%s*%s*' % (
+                os.path.join(b3.getAbsolutePath(extplugins_dir), match, 'conf'), os.path.sep, match)
                 self.debug('searching for configuration file(s) matching: %s' % search)
                 collection = glob.glob(search)
                 return collection
@@ -191,11 +184,13 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
             self.error('could not create plugin %s instance: %s' % (name, extract_tb(sys.exc_info()[2])))
         except b3.config.ConfigFileNotFound:
             client.message('^7Missing ^1%s ^7plugin configuration file' % name)
-            client.message('^7Please put the plugin configuration file in ^3@b3/conf ^7or ^3@b3/extplugins/%s/conf' % name)
+            client.message(
+                '^7Please put the plugin configuration file in ^3@b3/conf ^7or ^3@b3/extplugins/%s/conf' % name)
         except b3.config.ConfigFileNotValid:
             client.message('^7invalid configuration file found for plugin ^1%s' % name)
             client.message('^7Please inspect your b3 log file for more information')
-            self.error('plugin %s has an invalid configuration file and can\'t be loaded: %s' % (name, extract_tb(sys.exc_info()[2])))
+            self.error('plugin %s has an invalid configuration file and can\'t be loaded: %s' % (
+            name, extract_tb(sys.exc_info()[2])))
         else:
 
             plugin_required = []
@@ -208,20 +203,23 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
                 """
                 # check for correct B3 version
                 if p_data.clazz.requiresVersion and B3version(p_data.clazz.requiresVersion) > B3version(currentVersion):
-                    raise MissingRequirement('plugin %s requires B3 version %s (you have version %s) : please update your '
-                                             'B3 if you want to run this plugin' % (p_data.name, p_data.clazz.requiresVersion, currentVersion))
+                    raise MissingRequirement(
+                        'plugin %s requires B3 version %s (you have version %s) : please update your '
+                        'B3 if you want to run this plugin' % (
+                        p_data.name, p_data.clazz.requiresVersion, currentVersion))
 
                 # check if the current game support this plugin (this may actually exclude more than one plugin
                 # in case a plugin is built on top of an incompatible one, due to plugin dependencies)
                 if p_data.clazz.requiresParsers and self.console.gameName not in p_data.clazz.requiresParsers:
                     raise MissingRequirement('plugin %s is not compatible with %s parser : supported games are : %s' % (
-                                             p_data.name, self.console.gameName, ', '.join(p_data.clazz.requiresParsers)))
+                        p_data.name, self.console.gameName, ', '.join(p_data.clazz.requiresParsers)))
 
                 # check if the plugin needs a particular storage protocol to work
                 if p_data.clazz.requiresStorage and self.console.storage.protocol not in p_data.clazz.requiresStorage:
                     raise MissingRequirement('plugin %s is not compatible with the storage protocol being used (%s) : '
-                                             'supported protocols are : %s' % (p_data.name, self.console.storage.protocol,
-                                                                               ', '.join(p_data.clazz.requiresStorage)))
+                                             'supported protocols are : %s' % (
+                                             p_data.name, self.console.storage.protocol,
+                                             ', '.join(p_data.clazz.requiresStorage)))
 
                 if p_data.clazz.requiresPlugins:
                     collection = []
@@ -229,10 +227,11 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
                         if r not in self.console._plugins and r not in plugin_required:
                             try:
                                 # missing requirement, try to load it
-                                self.warning('plugin %s has unmet dependency : %s : trying to load plugin %s...' % (p_data.name, r, r))
+                                self.warning('plugin %s has unmet dependency : %s : trying to load plugin %s...' % (
+                                p_data.name, r, r))
                                 collection += _get_plugin_data(PluginData(name=r))
                                 self.debug('plugin %s dependency satisfied: %s' % r)
-                            except Exception, err:
+                            except Exception as err:
                                 raise MissingRequirement('missing required plugin: %s' % r, err)
 
                     return collection
@@ -246,7 +245,7 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
                     p_data.module = self.console.pluginImport(p_data.name)
                     p_data.clazz = getattr(p_data.module, '%sPlugin' % p_data.name.title())
                     p_data.conf = _get_plugin_config(p_data.name, p_data.clazz)
-                    plugin_required.append(p_data.name) # load just once
+                    plugin_required.append(p_data.name)  # load just once
 
                 return [p_data]
 
@@ -254,12 +253,14 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
 
             try:
 
-                plugin_list = _get_plugin_data(plugin_data)     # generate a list of PluginData (also requirements)
+                plugin_list = _get_plugin_data(plugin_data)  # generate a list of PluginData (also requirements)
                 plugin_dict = {x.name: x for x in plugin_list}  # dict(str, PluginData)
-                sorted_list = [y for y in topological_sort([(x.name, set(x.clazz.requiresPlugins)) for x in plugin_list])]
+                sorted_list = [y for y in
+                               topological_sort([(x.name, set(x.clazz.requiresPlugins)) for x in plugin_list])]
 
                 if len(sorted_list) > 1:
-                    client.message('^7Plugin ^3%s ^7relies on other plugins to work: they will be automatically loaded' % name)
+                    client.message(
+                        '^7Plugin ^3%s ^7relies on other plugins to work: they will be automatically loaded' % name)
 
                 for s in sorted_list:
                     p = plugin_dict[s]
@@ -283,7 +284,7 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
                 # here we do not have to rollback
                 client.message('^7Plugin ^1%s can\'t be loaded due to unmet dependencies' % name)
                 client.message('^7Please inspect your b3 log file for more information')
-            except Exception, e:
+            except Exception as e:
                 # here we rollback all the plugins loaded which are not needed anymore
                 client.message('^7Could not load plugin ^1%s^7: %s' % (name, e))
                 client.message('^7Please inspect your b3 log file for more information')
@@ -318,8 +319,8 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
 
                     # remove all the crontabs bounded to this plugin
                     unreg = [x for x in self.console.cron._tabs
-                                if isinstance(self.console.cron._tabs[x], b3.cron.PluginCronTab)
-                                    and self.console.cron._tabs[x].plugin == plugin]
+                             if isinstance(self.console.cron._tabs[x], b3.cron.PluginCronTab)
+                             and self.console.cron._tabs[x].plugin == plugin]
 
                     for tab in unreg:
                         self.console.cron.cancel(tab)
@@ -343,17 +344,11 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
             a = getattr(module, '__author__', 'unknown')
             v = getattr(module, '__version__', 'unknown')
             # cleanup a bit the author so it prints nice
-            for r in [re.compile(r'(?:http[s]?://|www.)[^\s]*'),                         # website
+            for r in [re.compile(r'(?:http[s]?://|www.)[^\s]*'),  # website
                       re.compile(r'[a-zA-Z0-9._%-+]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}')]:  # email
                 a = re.sub(r, '', a)
                 a = re.sub(re.compile(r'-|\|'), '', a).strip()
             client.message('^7You are running plugin ^3%s ^7v%s by %s' % (name, v, a))
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    MAIN METHODS                                                                                                  #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def plugin_enable(self, client, data=None):
         """
@@ -430,12 +425,6 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
             for plugin in plugin_list:
                 self.do_info(client, plugin)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #    COMMANDS                                                                                                      #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def cmd_plugin(self, data, client, cmd=None):
         """
         <action> [<plugin>] - manage plugins
@@ -447,10 +436,11 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
             command_list = [m[7:] for m in dir(self) if callable(getattr(self, m)) and m.startswith('plugin_')]
             if not match.group('command') in command_list:
                 command_list.sort()
-                client.message('^7usage: %splugin <%s> [<data>]' % (self._adminPlugin.cmdPrefix, '|'.join(command_list)))
+                client.message(
+                    '^7usage: %splugin <%s> [<data>]' % (self._adminPlugin.cmdPrefix, '|'.join(command_list)))
             else:
                 try:
                     func = getattr(self, 'plugin_%s' % match.group('command'))
                     func(client=client, data=match.group('data'))
-                except Exception, e:
+                except Exception as e:
                     client.message('unhandled exception: %s' % e)

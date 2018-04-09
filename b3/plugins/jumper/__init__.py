@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+from __future__ import print_function, absolute_import
+
 __author__ = 'Fenix'
 __version__ = '2.31'
 
@@ -38,17 +40,10 @@ import six
 from b3.functions import getCmd
 from b3.functions import getStuffSoundingLike
 from b3.functions import right_cut
-from six.moves.configparser import NoOptionError
 from threading import Timer
 
-########################################################################################################################
-#                                                                                                                      #
-#   JUMPRUN DEDICATED CODE                                                                                             #
-#                                                                                                                      #
-########################################################################################################################
 
 class JumpRun(object):
-
     p = None
 
     client = None
@@ -100,12 +95,6 @@ class JumpRun(object):
             self.stopdemo()
             self.unlinkdemo()
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   OTHER METHODS                                                                                                  #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def startdemo(self):
         """
         Start recording the client's jumprun.
@@ -156,7 +145,8 @@ class JumpRun(object):
                     return
 
             # construct a possible demo filepath where to search the demo which is going to be deleted
-            path = os.path.normpath(os.path.join(self.p.console.game.fs_basepath, self.p.console.game.fs_game, self.demo))
+            path = os.path.normpath(
+                os.path.join(self.p.console.game.fs_basepath, self.p.console.game.fs_game, self.demo))
 
             if not os.path.isfile(path):
 
@@ -172,7 +162,8 @@ class JumpRun(object):
                         return
 
                 # construct a possible demo filepath where to search the demo which is going to be deleted
-                path = os.path.normpath(os.path.join(self.p.console.game.fs_homepath, self.p.console.game.fs_game, self.demo))
+                path = os.path.normpath(
+                    os.path.join(self.p.console.game.fs_homepath, self.p.console.game.fs_game, self.demo))
 
                 if not os.path.isfile(path):
                     self.p.debug('demo not found under fs_homepath : %s' % path)
@@ -229,12 +220,6 @@ class JumpRun(object):
         cursor.close()
         return False
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   STORAGE METHODS                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def insert(self):
         """
         Insert the jumprun in the storage.
@@ -266,16 +251,12 @@ class JumpRun(object):
         Object representation.
         """
         return 'JumpRun<id=%s,client=%s,mapname=%s,way_id=%s,way_time=%s,demo=%s>' % (self.jumprun_id or 'NEW',
-                self.client.id, self.mapname, self.way_id, self.way_time, self.demo or 'NONE')
+                                                                                      self.client.id, self.mapname,
+                                                                                      self.way_id, self.way_time,
+                                                                                      self.demo or 'NONE')
 
-########################################################################################################################
-#                                                                                                                      #
-#   PLUGIN IMPLEMENTATION                                                                                              #
-#                                                                                                                      #
-########################################################################################################################
 
 class JumperPlugin(b3.plugin.Plugin):
-
     adminPlugin = None
     powerAdminUrtPlugin = None
     serverSideDemoPlugin = None
@@ -323,7 +304,7 @@ class JumperPlugin(b3.plugin.Plugin):
         'jw2': """INSERT INTO jumpways VALUES (NULL, '%s', '%d', '%s')""",
         'jw3': """UPDATE jumpways SET way_name = '%s' WHERE mapname = '%s' AND way_id = '%d'""",
     }
-    
+
     _demo_record = True
     _skip_standard_maps = True
     _min_level_delete = 80
@@ -331,12 +312,6 @@ class JumperPlugin(b3.plugin.Plugin):
     _cycle_count = 0
     _timeout = 4
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   STARTUP                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
-     
     def onLoadConfig(self):
         """
         Load plugin configuration.
@@ -458,12 +433,6 @@ class JumperPlugin(b3.plugin.Plugin):
                 self._cycle_count += 1
                 self.console.write('cyclemap')
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   EVENTS                                                                                                         #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def onPluginEnabled(self, event):
         """
         Handle EVT_PLUGIN_ENABLED
@@ -488,7 +457,8 @@ class JumperPlugin(b3.plugin.Plugin):
             jumprun.cancel()
             client.delvar(self, 'jumprun')
 
-        jumprun = JumpRun(plugin=self, client=client, mapname=self.console.game.mapName, way_id=int(event.data['way_id']))
+        jumprun = JumpRun(plugin=self, client=client, mapname=self.console.game.mapName,
+                          way_id=int(event.data['way_id']))
         jumprun.start()
 
         client.setvar(self, 'jumprun', jumprun)
@@ -573,12 +543,6 @@ class JumperPlugin(b3.plugin.Plugin):
         thread.setDaemon(True)
         thread.start()
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   OTHER METHODS                                                                                                  #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     @staticmethod
     def getDateString(msec):
         """
@@ -623,7 +587,8 @@ class JumperPlugin(b3.plugin.Plugin):
         """
         try:
             self.debug('contacting http://api.urtjumpers.com to retrieve maps data...')
-            rt = requests.get('http://api.urtjumpers.com/?key=B3urtjumpersplugin&liste=maps&format=json', timeout=self._timeout).json()
+            rt = requests.get('http://api.urtjumpers.com/?key=B3urtjumpersplugin&liste=maps&format=json',
+                              timeout=self._timeout).json()
         except Exception as e:
             self.warning('could not connect to http://api.urtjumpers.com: %s' % e)
             return {}
@@ -682,12 +647,6 @@ class JumperPlugin(b3.plugin.Plugin):
 
         # multiple matches, provide suggestions
         return matches
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   STORAGE METHODS                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def getMapRecords(self, mapname):
         """
@@ -772,12 +731,6 @@ class JumperPlugin(b3.plugin.Plugin):
         c1.close()
         return records
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   COMMANDS                                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def cmd_record(self, data, client, cmd=None):
         """
         [<client>] [<mapname>] - display the best run(s) of a client on a specific map
@@ -805,12 +758,14 @@ class JumperPlugin(b3.plugin.Plugin):
         # get the records of the client
         records = self.getClientRecords(cl, mp)
         if len(records) == 0:
-            cmd.sayLoudOrPM(client, self.getMessage('client_record_unknown', {'client': cl.name, 'id': cl.id, 'mapname': mp}))
+            cmd.sayLoudOrPM(client,
+                            self.getMessage('client_record_unknown', {'client': cl.name, 'id': cl.id, 'mapname': mp}))
             return
 
         if len(records) > 1:
             # print a sort of a list header so players will know what's going on
-            cmd.sayLoudOrPM(client, self.getMessage('client_record_header', {'client': cl.name, 'id': cl.id, 'mapname': mp}))
+            cmd.sayLoudOrPM(client,
+                            self.getMessage('client_record_header', {'client': cl.name, 'id': cl.id, 'mapname': mp}))
 
         for jumprun in records:
             wi = jumprun.way_name if jumprun.way_name else str(jumprun.way_id)
@@ -847,7 +802,7 @@ class JumperPlugin(b3.plugin.Plugin):
             wi = jumprun.way_name if jumprun.way_name else str(jumprun.way_id)
             tm = self.getTimeString(jumprun.way_time)
             cmd.sayLoudOrPM(client, self.getMessage('map_record_pattern', {'way': wi, 'client': jumprun.client.name,
-                                                                           'id':  jumprun.client.id, 'time': tm}))
+                                                                           'id': jumprun.client.id, 'time': tm}))
 
     def cmd_topruns(self, data, client, cmd=None):
         """
@@ -919,7 +874,8 @@ class JumperPlugin(b3.plugin.Plugin):
 
         records = self.getClientRecords(cl, mp)
         if len(records) == 0:
-            cmd.sayLoudOrPM(client, self.getMessage('client_record_unknown', {'client': cl.name, 'id': cl.id, 'mapname': mp}))
+            cmd.sayLoudOrPM(client,
+                            self.getMessage('client_record_unknown', {'client': cl.name, 'id': cl.id, 'mapname': mp}))
             return
 
         for jumprun in records:
@@ -928,7 +884,8 @@ class JumperPlugin(b3.plugin.Plugin):
         num = len(records)
         self.verbose('removed %d record%s for client @%s on %s' % (num, 's' if num > 1 else '', cl.id, mp))
         cmd.sayLoudOrPM(client, self.getMessage('client_record_deleted', {'num': num, 'plural': 's' if num > 1 else '',
-                                                                          'client': cl.name, 'id': cl.id, 'mapname': mp}))
+                                                                          'client': cl.name, 'id': cl.id,
+                                                                          'mapname': mp}))
 
     def cmd_mapinfo(self, data, client, cmd=None):
         """
@@ -1076,16 +1033,16 @@ class JumperPlugin(b3.plugin.Plugin):
         if not self.adminPlugin.aquireCmdLock(cmd, client, 60, True):
             client.message('^7do not spam commands')
             return
-        
+
         maps = self.console.getMaps()
         if maps is None:
             client.message('^1ERROR: ^7could not get map list')
             return
-    
+
         if not len(maps):
             cmd.sayLoudOrPM(client, '^7map rotation list is empty')
             return
-        
+
         maplist = []
         for m in maps:
             if self._skip_standard_maps:
@@ -1096,6 +1053,6 @@ class JumperPlugin(b3.plugin.Plugin):
         if not len(maplist):
             cmd.sayLoudOrPM(client, '^7map rotation list is empty')
             return
-            
+
         # display the map rotation
         cmd.sayLoudOrPM(client, '^7map rotation: %s' % ', '.join(maplist))
