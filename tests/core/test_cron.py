@@ -174,8 +174,8 @@ class Test_Crontab_getRate(unittest.TestCase):
         self.assertEquals(-1, self.t('*'))
 
     def test_str_everySo(self):
-        self.assertEquals(range(0, 60, 2), self.t('*/2'))
-        self.assertEquals(range(0, 60, 17), self.t('*/17'))
+        self.assertEquals(list(range(0, 60, 2)), self.t('*/2'))
+        self.assertEquals(list(range(0, 60, 17)), self.t('*/17'))
         self.assertEquals([0, 59], self.t('*/59'))
         self.assertEquals([0], self.t('*/60'))
         self.assertRaises(ValueError, self.t, ('*/61'))
@@ -183,14 +183,14 @@ class Test_Crontab_getRate(unittest.TestCase):
         self.assertRaises(ValueError, self.t, ('*/80'))
 
     def test_str_range(self):
-        self.assertEquals(range(5, 12), self.t('5-11'))
+        self.assertEquals(list(range(5, 12)), self.t('5-11'))
         self.assertRaises(TypeError, self.t, ('-5-11'))
         self.assertRaises(ValueError, self.t, ('35-11'))
         self.assertRaises(TypeError, self.t, ('5--11'))
         self.assertRaises(ValueError, self.t, ('5-80'))
 
     def test_str_range_with_step(self):
-        self.assertEquals(range(5, 12, 2), self.t('5-11/2'))
+        self.assertEquals(list(range(5, 12, 2)), self.t('5-11/2'))
         self.assertEquals([5], self.t('5-11/60'))
         self.assertRaises(ValueError, self.t, ('5-11/80'))
         self.assertRaises(TypeError, self.t, ('5-11/'))

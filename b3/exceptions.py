@@ -36,7 +36,7 @@ class ConfigFileNotFound(Exception):
         Exception.__init__(self, message)
 
     def __str__(self):
-        return repr(self.message)
+        return repr(self.args[0])
 
 
 class ConfigFileNotValid(Exception):
@@ -48,7 +48,7 @@ class ConfigFileNotValid(Exception):
         Exception.__init__(self, message)
 
     def __str__(self):
-        return repr(self.message)
+        return repr(self.args[0])
 
 
 class MissingRequirement(Exception):
@@ -62,8 +62,8 @@ class MissingRequirement(Exception):
 
     def __str__(self):
         if self.throwable:
-            return '%s - %r' % (self.message, repr(self.throwable))
-        return repr(self.message)
+            return '%s - %r' % (self.args[0], repr(self.throwable))
+        return repr(self.args[0])
 
 
 class ProgrammingError(Exception):
@@ -75,7 +75,7 @@ class ProgrammingError(Exception):
         Exception.__init__(self, message)
 
     def __str__(self):
-        return repr(self.message)
+        return repr(self.args[0])
 
 
 class DatabaseError(Exception):
@@ -87,7 +87,7 @@ class DatabaseError(Exception):
         Exception.__init__(self, message)
 
     def __str__(self):
-        return repr(self.message)
+        return repr(self.args[0])
 
 
 class UpdateError(Exception):
@@ -101,8 +101,8 @@ class UpdateError(Exception):
 
     def __str__(self):
         if self.throwable:
-            return '%s - %r' % (self.message, repr(self.throwable))
-        return repr(self.message)
+            return '%s - %r' % (self.args[0], repr(self.throwable))
+        return repr(self.args[0])
 
 
 NoOptionError = configparser.NoOptionError

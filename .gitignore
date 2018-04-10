@@ -22,3 +22,4 @@ venv3/
 b3_doc.htm
 scratch.py
 conf30/status.xml
+.pytest_cache

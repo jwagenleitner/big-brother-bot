@@ -311,7 +311,8 @@ def soundex(s1):
     """
     ignore = "~!@#$%^&*()_+=-`[]\|;:'/?.,<>\" \t\f\v"
     if six.PY2:
-        table = str.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '01230120022455012623010202')
+        import string
+        table = string.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '01230120022455012623010202')
     else:
         table = str.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '01230120022455012623010202', ignore)
 
@@ -322,7 +323,7 @@ def soundex(s1):
     if six.PY2:
         s1 = s1.encode('ascii', 'ignore').translate(table, ignore)
     else:
-        s1 = s1.encode('ascii', 'ignore').translate(table)
+        s1 = s1.translate(table)
     if not s1:
         return "Z000"
     prev = s1[0]
@@ -421,7 +422,7 @@ def getStuffSoundingLike(stuff, expected_stuff):
         match = [clean_expected_stuff[clean_stuff]]
     else:
         # stuff could be a substring of one of the expected value
-        matching_subset = filter(lambda x: x.lower().find(clean_stuff) >= 0, clean_expected_stuff.keys())
+        matching_subset = list(filter(lambda x: x.lower().find(clean_stuff) >= 0, clean_expected_stuff.keys()))
         if len(matching_subset) == 1:
             match = [clean_expected_stuff[matching_subset[0]]]
         elif len(matching_subset) > 1:

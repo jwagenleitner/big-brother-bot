@@ -190,7 +190,7 @@ class CronTab(object):
             step = int(r.results.group(1))
             if step > maxrate:
                 raise ValueError('%s cannot be over every %s' % (rate, maxrate - 1))
-            return range(0, maxrate, step)
+            return list(range(0, maxrate, step))
         elif r.match(r'^(?P<lmin>[0-9]+)-(?P<lmax>[0-9]+)(/(?P<step>[0-9]+))?$', rate):
             # 10-20 = [0, 10, 20, 30, 40, 50]
             lmin = int(r.results.group('lmin'))
@@ -206,7 +206,7 @@ class CronTab(object):
                 raise ValueError('%s is out of accepted range 0-%s' % (rate, maxrate - 1))
             if lmin > lmax:
                 raise ValueError('%s cannot be greater than %s in %s' % (lmin, lmax, rate))
-            return range(lmin, lmax + 1, step)
+            return list(range(lmin, lmax + 1, step))
 
         raise TypeError('"%s" is not a known cron rate type' % rate)
 

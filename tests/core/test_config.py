@@ -31,7 +31,7 @@ import sys
 from b3.config import XmlConfigParser, CfgConfigParser, ConfigFileNotValid
 from tests import B3TestCase
 
-from six.moves.configparser import ConfigParser
+from six.moves import configparser as ConfigParser
 
 
 @unittest.skipUnless(sys.platform.startswith("win"), "requires Windows")

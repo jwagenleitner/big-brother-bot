@@ -120,6 +120,12 @@ $''', re.VERBOSE)
         # we have to compare build num
         return self.__cmp_build(other)
 
+    def __gt__(self, other):
+        return self.__cmp__(other) > 0
+
+    def __lt__(self, other):
+        return self.__cmp__(other) < 0
+
     def __cmp_prerelease(self, other):
         # case 1: neither has prerelease; they're equal
         # case 2: self has prerelease, other doesn't; other is greater

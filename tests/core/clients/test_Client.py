@@ -161,9 +161,9 @@ class Test_Client_groups(B3TestCase):
         self.group_superadmin = self.console.storage.getGroup(Group(keyword="superadmin"))
 
     def assertGroups(self, groups):
-        keywords = map(operator.attrgetter('keyword'), groups)
-        self.assertListEqual(keywords, map(operator.attrgetter('keyword'), self.client.groups))
-        self.assertListEqual(keywords, map(operator.attrgetter('keyword'), self.client.getGroups()))
+        keywords = list(map(operator.attrgetter('keyword'), groups))
+        self.assertListEqual(keywords, list(map(operator.attrgetter('keyword'), self.client.groups)))
+        self.assertListEqual(keywords, list(map(operator.attrgetter('keyword'), self.client.getGroups())))
 
     def test_addGroup(self):
         # GIVEN

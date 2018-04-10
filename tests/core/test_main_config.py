@@ -116,7 +116,7 @@ class Test_XmlMainConfigParser(CommonDefaultTestMethodsMixin, unittest.TestCase)
         self.assertListEqual(
             ['admin', 'adv', 'censor', 'cmdmanager', 'pingwatch', 'pluginmanager', 'punkbuster', 'spamcontrol', 'stats',
              'status', 'tk', 'welcome'],
-            map(lambda x: x.get('name'), self.conf._config_parser.get('plugins/plugin')))
+            list(map(lambda x: x.get('name'), self.conf._config_parser.get('plugins/plugin'))))
 
 
 class Test_CfgMainConfigParser(CommonDefaultTestMethodsMixin, unittest.TestCase):
