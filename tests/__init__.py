@@ -122,7 +122,7 @@ class B3TestCase(unittest.TestCase):
                 # WHEN
                 self.client.team = 24
         """
-        if isinstance(event_type, six.string_types):
+        if type(event_type) is basestring:
             event_type_name = event_type
         else:
             event_type_name = self.console.getEventName(event_type)
