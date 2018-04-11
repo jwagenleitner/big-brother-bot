@@ -22,14 +22,15 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-import sys
-
-from b3.plugins.tk import TkPlugin
-from b3.config import CfgConfigParser
-from ConfigParser import NoOptionError
 from textwrap import dedent
+
+import six
 from mock import patch, call
+from six.moves.configparser import NoOptionError
+
+import b3
+from b3.config import CfgConfigParser
+from b3.plugins.tk import TkPlugin
 from tests import B3TestCase
 from tests.plugins.tk import Test_Tk_plugin
 
@@ -110,6 +111,7 @@ class Test_onLoadConfig(Test_Tk_plugin):
         self.assertEqual(10, self.p._warn_level)
         self.assertEqual(3, self.p._tkpointsHalflife)
         self.assertEqual('3h', self.p._tk_warn_duration)
+
 
 class Test_get_config_for_levels(Test_Tk_plugin):
 
@@ -337,14 +339,11 @@ class Test_get_config_for_levels(Test_Tk_plugin):
         except ValueError:
             pass
         # THEN
-        if sys.version_info < (2, 7):
-            self.assertListEqual([
-                call('value for kill_multiplier is invalid. invalid literal for float(): f00'),
-            ], self.error_mock.mock_calls)
-        else:
-            self.assertListEqual([
-                call('value for kill_multiplier is invalid. could not convert string to float: f00'),
-            ], self.error_mock.mock_calls)
+        self.assertListEqual([
+            call('value for kill_multiplier is invalid. '
+                 'could not convert string to float: {}'
+                 .format("f00" if six.PY2 else "'f00'")),
+        ], self.error_mock.mock_calls)
 
     def test_bad_damage_multiplier(self):
         # GIVEN
@@ -364,14 +363,11 @@ class Test_get_config_for_levels(Test_Tk_plugin):
         except ValueError:
             pass
         # THEN
-        if sys.version_info < (2, 7):
-            self.assertListEqual([
-                call('value for damage_multiplier is invalid. invalid literal for float(): f00'),
-            ], self.error_mock.mock_calls)
-        else:
-            self.assertListEqual([
-                call('value for damage_multiplier is invalid. could not convert string to float: f00'),
-            ], self.error_mock.mock_calls)
+        self.assertListEqual([
+            call('value for damage_multiplier is invalid. '
+                 'could not convert string to float: {}'
+                 .format("f00" if six.PY2 else "'f00'")),
+        ], self.error_mock.mock_calls)
 
     def test_bad_ban_length(self):
         # GIVEN
@@ -410,11 +406,11 @@ class Test_Tk_default_config(B3TestCase):
         self.assertEqual(400, self.p._maxPoints)
         self.assertEqual(40, self.p._maxLevel)
         self.assertEqual({
-                0: (2.0, 1.0, 2),
-                1: (2.0, 1.0, 2),
-                2: (1.0, 0.5, 1),
-                20: (1.0, 0.5, 0),
-                40: (0.75, 0.5, 0)
+            0: (2.0, 1.0, 2),
+            1: (2.0, 1.0, 2),
+            2: (1.0, 0.5, 1),
+            20: (1.0, 0.5, 0),
+            40: (0.75, 0.5, 0)
         }, self.p._levels)
         self.assertEqual(7, self.p._round_grace)
         self.assertEqual("sfire", self.p._issue_warning)
@@ -428,14 +424,18 @@ class Test_Tk_default_config(B3TestCase):
     def test_messages(self):
         self.assertEqual("^7team damage over limit", self.p.config.get('messages', 'ban'))
         self.assertEqual("^7$vname^7 has forgiven $aname [^3$points^7]", self.p.config.get('messages', 'forgive'))
-        self.assertEqual("^7$vname^7 has a ^1grudge ^7against $aname [^3$points^7]", self.p.config.get('messages', 'grudged'))
+        self.assertEqual("^7$vname^7 has a ^1grudge ^7against $aname [^3$points^7]",
+                         self.p.config.get('messages', 'grudged'))
         self.assertEqual("^7$vname^7 has forgiven $attackers", self.p.config.get('messages', 'forgive_many'))
-        self.assertEqual("^1ALERT^7: $name^7 auto-kick if not forgiven. Type ^3!forgive $cid ^7to forgive. [^3damage: $points^7]", self.p.config.get('messages', 'forgive_warning'))
+        self.assertEqual(
+            "^1ALERT^7: $name^7 auto-kick if not forgiven. Type ^3!forgive $cid ^7to forgive. [^3damage: $points^7]",
+            self.p.config.get('messages', 'forgive_warning'))
         self.assertEqual("^7no one to forgive", self.p.config.get('messages', 'no_forgive'))
         self.assertEqual("^7Forgive who? %s", self.p.config.get('messages', 'players'))
         self.assertEqual("^7$name^7 has ^3$points^7 TK points", self.p.config.get('messages', 'forgive_info'))
         self.assertEqual("^7$name^7 cleared of ^3$points^7 TK points", self.p.config.get('messages', 'forgive_clear'))
-        self.assertEqual("^3Do not attack teammates, ^1Attacked: ^7$vname ^7[^3$points^7]", self.p.config.get('messages', 'tk_warning_reason'))
+        self.assertEqual("^3Do not attack teammates, ^1Attacked: ^7$vname ^7[^3$points^7]",
+                         self.p.config.get('messages', 'tk_warning_reason'))
 
     def test__default_messages(self):
         conf_items = self.p.config.items('messages')
@@ -443,7 +443,8 @@ class Test_Tk_default_config(B3TestCase):
             if conf_message_id not in self.p._default_messages:
                 self.fail("%s should be added to the _default_messages dict" % conf_message_id)
             if conf_message != self.p._default_messages[conf_message_id]:
-                self.fail("default message in the _default_messages dict for %s does not match the message from the config file" % conf_message_id)
+                self.fail(
+                    "default message in the _default_messages dict for %s does not match the message from the config file" % conf_message_id)
         for default_message_id in self.p._default_messages:
-            if default_message_id not in zip(*conf_items)[0]:
+            if default_message_id not in list(zip(*conf_items))[0]:
                 self.fail("%s exists in the _default_messages dict, but not in the config file" % default_message_id)
