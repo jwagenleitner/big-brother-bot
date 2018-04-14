@@ -122,11 +122,8 @@ class B3TestCase(unittest.TestCase):
                 # WHEN
                 self.client.team = 24
         """
-        if type(event_type) is basestring:
-            event_type_name = event_type
-        else:
-            event_type_name = self.console.getEventName(event_type)
-            self.assertIsNotNone(event_type_name, "could not find event with name '%s'" % event_type)
+        event_type_name = self.console.getEventName(event_type)
+        self.assertIsNotNone(event_type_name, "could not find event with name '%s'" % event_type)
 
         with patch.object(self.console, 'queueEvent') as queueEvent:
             yield

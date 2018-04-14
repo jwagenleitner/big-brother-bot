@@ -74,7 +74,7 @@ class DuelPlugin(b3.plugin.Plugin):
             self.debug('client disconnecting : %r' % event.client)
             for c in self.console.clients.getList():
                 duels = c.var(self, 'duelling', {}).value
-                for duel in duels.values():
+                for duel in list(duels.values()):
                     if duel.clientA == event.client or duel.clientB == event.client:
                         duel.announceScoreTo(duel.clientA)
                         duel.announceScoreTo(duel.clientB)

@@ -68,7 +68,7 @@ class Iourt41TestCase(unittest.TestCase):
 
         # simulate game server actions
         def write(*args, **kwargs):
-            pretty_args = map(repr, args) + ["%s=%s" % (k, v) for k, v in kwargs.iteritems()]
+            pretty_args = list(map(repr, args)) + ["%s=%s" % (k, v) for k, v in kwargs.items()]
             log.info("write(%s)" % ', '.join(pretty_args))
             return self.output_mock.write(*args, **kwargs)
 
@@ -88,11 +88,8 @@ class Iourt41TestCase(unittest.TestCase):
             assert queueEvent.called, "No event was fired"
             args = queueEvent.call_args
 
-        if type(event_type) is basestring:
-            event_type_name = event_type
-        else:
-            event_type_name = self.console.getEventName(event_type)
-            self.assertIsNotNone(event_type_name, "could not find event with name '%s'" % event_type)
+        event_type_name = self.console.getEventName(event_type)
+        self.assertIsNotNone(event_type_name, "could not find event with name '%s'" % event_type)
 
         eventraised = args[0][0]
         self.assertIsInstance(eventraised, Event)

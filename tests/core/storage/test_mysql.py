@@ -70,7 +70,7 @@ if is_mysql_ready:
         driver.connect(host=MYSQL_TEST_HOST, user=MYSQL_TEST_USER, passwd=MYSQL_TEST_PASSWORD)
     except driver.Error as err:
         is_mysql_ready = False
-        no_mysql_reason = "%s" % err[1]
+        no_mysql_reason = "%s" % err.args[1]
     except Exception as err:
         is_mysql_ready = False
         no_mysql_reason = "%s" % err
@@ -116,6 +116,7 @@ class Test_MySQL(B3TestCase, StorageAPITest):
              'groups',
              'penalties',
              'data',
+             'plugin_hof'
              ]), set(self.storage.getTables()))
 
 

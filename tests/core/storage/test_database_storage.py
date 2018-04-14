@@ -68,7 +68,7 @@ class Test_DatabaseStorage(unittest.TestCase):
         self.assertEqual(100, c1._tempLevel)
 
         mock_storage.console.config.has_option = Mock(return_value=False)
-        self.assertRaises(KeyError, mock_storage.getClient, mock_storage, Mock())
+        self.assertRaises(KeyError, mock_storage.getClient, mock_storage, Mock(id=666))
 
     def test_getConnection_mysql(self):
         # mock the pymysql module so we can test in an environement which does not have this module installed
