@@ -73,6 +73,8 @@ class JumperTestCase(unittest2.TestCase):
         when(self.console).getCvar('fs_homepath').thenReturn(Cvar('fs_homepath', value='/fake/homepath'))
         when(self.console).getCvar('fs_game').thenReturn(Cvar('fs_game', value='q3ut4'))
         when(self.console).getCvar('gamename').thenReturn(Cvar('gamename', value='q3urt42'))
+        when(self.console).getCvar("auth_owners").thenReturn(None)
+        when(self.console).getPlugin("poweradminurt").thenReturn(None)
 
         # start the parser
         self.console.startup()

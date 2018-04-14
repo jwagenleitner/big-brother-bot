@@ -78,7 +78,7 @@ class Test_events(SpreeTestCase):
         self.console.queueEvent(self.console.getEvent('EVT_CLIENT_KILL', client=self.mike, target=self.bill))
         # THEN
         self.console.say.assert_has_calls([call('Bill is on fire! (10 kills in a row)'),
-                                           call('Mike iced Bill')])
+                                           call('Mike iced Bill')], any_order=True)
 
     def test_losing_spree_start_with_12_kills(self):
         # GIVEN

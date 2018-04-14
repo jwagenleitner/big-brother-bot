@@ -86,7 +86,7 @@ class Test_misc_cmd(Admin_TestCase):
         assert mock_client.message.called
 
     def test_maps(self):
-        mock_client = Mock(spec=Client, name="client")
+        mock_client = Mock(spec=Client, maxLevel=100, name="client")
         mock_cmd = Mock(spec=Command)
 
         # None
@@ -1314,7 +1314,7 @@ class Test_cmd_warns(Admin_functional_test):
         self.joe.says('!warns')
         self.joe.message.assert_called_once_with('^7Warnings: adv, afk, argue, badname, camp, ci, color, cuss, fakecmd,'
         ' jerk, lang, language, name, nocmd, obj, profanity, racism, recruit, rule1, rule10, rule2, rule3, rule4, rule5'
-        ', rule6, rule7, rule8, rule9, sfire, spam, spawnfire, spec, spectator, stack, tk')
+        ', rule6, rule7, rule8, rule9, sfire, spam, spawnfire, spec, spectator, stack, stacking, tk')
 
 
 class Test_cmd_admins(Admin_functional_test):

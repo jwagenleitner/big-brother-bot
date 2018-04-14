@@ -42,6 +42,7 @@ class PluginmanagerTestCase(B3TestCase):
 
         self.adminPlugin = AdminPlugin(self.console, '@b3/conf/plugin_admin.ini')
         when(self.console).getPlugin("admin").thenReturn(self.adminPlugin)
+        when(self.console).getPlugin("fake").thenReturn(None)
         self.adminPlugin.onLoadConfig()
         self.adminPlugin.onStartup()
 

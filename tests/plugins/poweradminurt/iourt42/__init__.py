@@ -68,6 +68,8 @@ class Iourt42TestCase(unittest.TestCase):
             # make sure the admin plugin obtained by other plugins is our admin plugin
             when(self.console).getPlugin('admin').thenReturn(self.adminPlugin)
 
+            when(self.console).getPlugin("xlrstats").thenReturn(None)
+
             # prepare a few players
             from b3.fake import FakeClient
             self.joe = FakeClient(self.console, name="Joe", exactName="Joe", guid="zaerezarezar", groupBits=1, team=TEAM_UNKNOWN, teamId=0, squad=0)
