@@ -31,7 +31,7 @@ class Test_config(AdvTestCase):
         self.init_plugin()
         self.assertEqual('2', self.p._rate)
         self.assertIsNone(self.p._fileName)
-        self.assertEqual("http://forum.bigbrotherbot.net/news-2/?type=rss;action=.xml", self.p._feed)
+        self.assertIsNone(self.p._feed)
         self.assertEqual("News: ", self.p._feedpre)
         self.assertEqual(4, self.p._feedmaxitems)
         self.assertEqual('News: ', self.p._feedpre)
@@ -58,7 +58,7 @@ class Test_config(AdvTestCase):
         self.assertEqual(self.p._rate, '2')
         self.assertIsNone(self.p._fileName)
         self.assertEqual(0, len(self.p._msg.items))
-        self.assertEqual("http://forum.bigbrotherbot.net/news-2/?type=rss;action=.xml", self.p._feed)
+        self.assertIsNone(self.p._feed)
         self.assertEqual("News: ", self.p._feedpre)
         self.assertEqual(4, self.p._feedmaxitems)   # changed to 4 since plugin configuration loading is not stopped
         self.assertEqual('News: ', self.p._feedpre) # by empty rate anymore, so maxfeed is reduced by 1 unit
@@ -101,8 +101,8 @@ class Test_config(AdvTestCase):
     </settings>
 </configuration>
 """)
-        except TypeError, err:
-            print err
+        except TypeError as err:
+            print(err)
         except Exception:
             raise
         self.assertEqual('f00', self.p._rate)

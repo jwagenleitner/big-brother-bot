@@ -44,7 +44,7 @@ LOCATION_MIKE.isp = 'Fastweb'
 LOCATION_MIKE.timezone = 'Europe/Rome'
 LOCATION_MIKE.lat = 41.9
 LOCATION_MIKE.lon = 12.4833
-LOCATION_MIKE.zipcode = 00100
+LOCATION_MIKE.zipcode = "00100"
 
 LOCATION_BILL = Mock()
 LOCATION_BILL.country = 'United States'
@@ -56,7 +56,7 @@ LOCATION_BILL.isp = 'Google Inc.'
 LOCATION_BILL.timezone = 'America/Los_Angeles'
 LOCATION_BILL.lat = 37.386
 LOCATION_BILL.lon = -122.0838
-LOCATION_BILL.zipcode = 94035
+LOCATION_BILL.zipcode = "94035"
 
 
 class CountryFilterTestCase(unittest2.TestCase):

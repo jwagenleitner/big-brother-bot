@@ -381,7 +381,7 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
         List loaded plugins
         :param client: The client who launched the command
         """
-        plugin_list = self.console._plugins.keys()
+        plugin_list = list(self.console._plugins.keys())
         plugin_list.sort()
         plugin_list = ['^2' + x if self.console.getPlugin(x).isEnabled() else '^1' + x for x in plugin_list]
         client.message('^7Loaded plugins: %s' % '^3, ^7'.join(plugin_list))

@@ -49,7 +49,7 @@ class StatsPlugin(b3.plugin.Plugin):
         self.testscorelevel = 0
         self.topstatslevel = 2
         self.topxplevel = 2
-        self.startPoints = 100
+        self.startPoints = 100.0
         self.resetscore = False
         self.resetxp = False
         self.show_awards = False
@@ -116,7 +116,7 @@ class StatsPlugin(b3.plugin.Plugin):
         self.info('commands::topxp level: %s', self.topxplevel)
 
         try:
-            self.startPoints = self.config.getint('settings', 'startPoints')
+            self.startPoints = self.config.getfloat('settings', 'startPoints')
             self.debug('loaded settings/startPoints: %s' % self.startPoints)
         except NoOptionError:
             self.warning('could not find settings/startPoints in config file, '
@@ -227,10 +227,10 @@ class StatsPlugin(b3.plugin.Plugin):
                         c.setvar(self, 'pointsWon', 0)
                         c.setvar(self, 'points', self.startPoints)
                     if self.resetxp:
-                        c.setvar(self, 'experience', 0)
+                        c.setvar(self, 'experience', 0.0)
                     else:
-                        c.var(self, 'oldexperience', 0).value += c.var(self, 'experience', 0).value
-                        c.setvar(self, 'experience', 0)
+                        c.var(self, 'oldexperience', 0.0).value += c.var(self, 'experience', 0.0).value
+                        c.setvar(self, 'experience', 0.0)
                 except Exception as e:
                     self.error(e)
 
@@ -333,7 +333,7 @@ class StatsPlugin(b3.plugin.Plugin):
             experience = (sclient.var(self, 'kills', 0).value * realpoints) / sclient.var(self, 'deaths', 0).value
         else:
             experience = sclient.var(self, 'kills', 0).value * realpoints
-        sclient.var(self, 'experience', 0).value = experience
+        sclient.var(self, 'experience', 0.0).value = experience * 1.0
 
     def score(self, killer, victim):
         """
@@ -375,7 +375,7 @@ class StatsPlugin(b3.plugin.Plugin):
                        sclient.var(self, 'assists', 0).value, sclient.var(self, 'teamKills', 0).value,
                        sclient.var(self, 'damageHit', 0).value,
                        round(sclient.var(self, 'points', self.startPoints).value, 2),
-                       round(sclient.var(self, 'oldexperience', 0).value + sclient.var(self, 'experience', 0).value, 2))
+                       round(sclient.var(self, 'oldexperience', 0.0).value + sclient.var(self, 'experience', 0.0).value, 2))
 
         else:
 
@@ -383,7 +383,7 @@ class StatsPlugin(b3.plugin.Plugin):
                       (sclient.exactName, sclient.var(self, 'kills', 0).value, sclient.var(self, 'deaths', 0).value,
                        sclient.var(self, 'teamKills', 0).value, sclient.var(self, 'damageHit', 0).value,
                        round(sclient.var(self, 'points', self.startPoints).value, 2),
-                       round(sclient.var(self, 'oldexperience', 0).value + sclient.var(self, 'experience', 0).value, 2))
+                       round(sclient.var(self, 'oldexperience', 0.0).value + sclient.var(self, 'experience', 0.0).value, 2))
 
         cmd.sayLoudOrPM(client, message)
 
@@ -410,7 +410,6 @@ class StatsPlugin(b3.plugin.Plugin):
         """
         - list the top 5 map-stats players
         """
-        self.debug('Haha')
         scores = []
         for c in self.console.clients.getList():
             if c.isvar(self, 'points'):

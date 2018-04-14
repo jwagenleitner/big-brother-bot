@@ -22,13 +22,15 @@
 #                                                                     #
 # ################################################################### #
 
-import StringIO
+from six import StringIO
+
 import feedparser
 
 from b3.fake import FakeClient
 from mock import patch, call, Mock
 from mockito import when, any as ANY
 from tests.plugins.adv import AdvTestCase, RSS_FEED_CONTENT
+
 
 class Test_keywords(AdvTestCase):
 

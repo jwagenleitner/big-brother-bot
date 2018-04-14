@@ -24,6 +24,7 @@
 from b3.fake import FakeClient
 from tests.plugins.adv import AdvTestCase
 
+
 class Test_commands(AdvTestCase):
 
     def setUp(self):

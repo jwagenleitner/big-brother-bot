@@ -679,7 +679,7 @@ class TkPlugin(b3.plugin.Plugin):
         v = self.getClientTkInfo(client)
         if len(v.attackers) > 0:
             forgave = []
-            for cid, points in v.attackers.items():
+            for cid, points in list(v.attackers.items()):
                 if v.isGrudged(cid):
                     continue
 
@@ -693,10 +693,10 @@ class TkPlugin(b3.plugin.Plugin):
 
             if len(forgave):
                 if self._private_messages:
-                    variables = {'vname': client.exactName, 'attackers': string.join(forgave, ', ')}
+                    variables = {'vname': client.exactName, 'attackers': ', '.join(forgave)}
                     client.message(self.getMessage('forgive_many', variables))
                 else:
-                    variables = {'vname': client.exactName, 'attackers': string.join(forgave, ', ')}
+                    variables = {'vname': client.exactName, 'attackers': ', '.join(forgave)}
                     self.console.say(self.getMessage('forgive_many', variables))
             else:
                 client.message(self.getMessage('no_forgive'))

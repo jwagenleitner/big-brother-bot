@@ -31,9 +31,10 @@ import b3
 import b3.plugin
 import b3.plugins.admin
 import b3.events
-import new
 import os
 import re
+
+from types import MethodType
 
 from six.moves import configparser as ConfigParser
 from six.moves.configparser import NoSectionError
@@ -621,4 +622,4 @@ def patch_admin_module(adminPlugin):
 
     # patch all the Command objects already instantiated
     for key in adminPlugin._commands:
-        adminPlugin._commands[key].canUse = new.instancemethod(new_canUse, adminPlugin._commands[key])
+        adminPlugin._commands[key].canUse = MethodType(new_canUse, adminPlugin._commands[key])

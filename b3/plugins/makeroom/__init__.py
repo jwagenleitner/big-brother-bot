@@ -141,7 +141,7 @@ class MakeroomPlugin(Plugin):
     def uninstall_automation(self):
         self._automation_enabled = None
         # remove !makeroomauto command
-        if self._adminPlugin._commands.has_key('makeroomauto'):
+        if 'makeroomauto' in self._adminPlugin._commands:
             self._adminPlugin._commands.pop('makeroomauto')
         self.warning("could not set up automation")
 

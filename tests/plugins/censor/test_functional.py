@@ -22,6 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
+import sys
+
 from mock import Mock
 from tests.plugins.censor import CensorTestCase
 

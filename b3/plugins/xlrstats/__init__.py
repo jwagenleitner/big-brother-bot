@@ -508,7 +508,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
             self.debug('nothing to do at the moment: XLRstats is already %s', _status)
 
     def win_prob(self, player_skill, opponent_skill):
-        return 1 / (10 ** ((opponent_skill - player_skill) / self.steepness) + 1)
+        return 1.0 / (10 ** ((opponent_skill - player_skill) / self.steepness) + 1)
 
     def get_PlayerStats(self, client=None):
         """
