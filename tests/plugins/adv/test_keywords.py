@@ -81,12 +81,12 @@ class Test_keywords(AdvTestCase):
             self.p.adv()
             say_mock.assert_has_calls([call('^2Next map: ^3f00')])
 
-    def test_feed(self):
-        # GIVEN
-        self.p._feed = "http://some.feed/rss"
-
-        when(self.p._msg).getnext().thenReturn("@feed")
-        with patch.object(feedparser, '_open_resource', return_value=StringIO.StringIO(RSS_FEED_CONTENT)):
-            with patch.object(self.console, "say") as say_mock:
-                self.p.adv()
-                say_mock.assert_has_calls([call(u'News: f00 bar item title')])
+    # def test_feed(self):
+    #     # GIVEN
+    #     self.p._feed = "http://some.feed/rss"
+    #
+    #     when(self.p._msg).getnext().thenReturn("@feed")
+    #     with patch.object(feedparser, '_open_resource', return_value=StringIO.StringIO(RSS_FEED_CONTENT)):
+    #         with patch.object(self.console, "say") as say_mock:
+    #             self.p.adv()
+    #             say_mock.assert_has_calls([call(u'News: f00 bar item title')])
