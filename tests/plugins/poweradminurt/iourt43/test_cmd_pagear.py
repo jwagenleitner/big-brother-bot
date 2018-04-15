@@ -211,8 +211,8 @@ pagear-gear: 20
         self.superadmin.message_history = []
         self.superadmin.says("!gear")
         # THEN
-        self.assertListEqual(["current gear: med:ON, vest:ON, frf1:ON, p90:ON, ak:ON, de:ON, psg:ON, nvg:ON, hk:ON, mac:ON, mp5:ON, mag:ON, ben:ON, las:ON, ber:ON, ump:ON, g36:ON, neg:ON, glo:ON, smo:ON, m4:ON, lr:ON, hel:ON, spas:ON, sr8:ON, he:ON, colt:ON, ammo:ON, sil:ON",
-                              "Usage: !pagear [+/-][med|vest|frf1|p90|ak|de|psg|nvg|hk|mac|mp5|mag|ben|las|ber|ump|g36|neg|glo|smo|m4|lr|hel|spas|sr8|he|colt|ammo|sil]",
+        self.assertListEqual(["current gear: med:ON, vest:ON, frf1:ON, p90:ON, ak:ON, de:ON, psg:ON, ber:ON, nvg:ON, hk:ON, mac:ON, mp5:ON, mag:ON, las:ON, ben:ON, ump:ON, g36:ON, neg:ON, glo:ON, smo:ON, m4:ON, lr:ON, hel:ON, spas:ON, sr8:ON, he:ON, colt:ON, ammo:ON, sil:ON",
+                              "Usage: !pagear [+/-][med|vest|frf1|p90|ak|de|psg|ber|nvg|hk|mac|mp5|mag|las|ben|ump|g36|neg|glo|smo|m4|lr|hel|spas|sr8|he|colt|ammo|sil]",
                               "Load weapon groups: !pagear [+/-][all_nades|all_shotgun|all_snipers|all_ak|all_sec|all_auto|all_pistols]",
                               "Load defaults: !pagear [reset|all|none]"],
                               self.superadmin.message_history)

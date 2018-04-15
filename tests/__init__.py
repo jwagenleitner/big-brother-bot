@@ -170,3 +170,16 @@ class InstantTimer(object):
 
     def run(self):
         self.function(*self.args, **self.kwargs)
+
+
+## Makes a way to patch threading.Thread so it behaves synchronously and
+## instantly. Usage:
+##
+## @patch('threading.Thread', new_callable=lambda: InstantThread)
+## def test_my_code_using_threading_Timer(instant_thread):
+##     t = threading.Thread(target=some_func)
+##     t.start()
+##
+class InstantThread(threading.Thread):
+    def start(self):
+        super(InstantThread, self).start()

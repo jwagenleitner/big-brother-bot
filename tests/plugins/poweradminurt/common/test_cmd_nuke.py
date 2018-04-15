@@ -23,14 +23,15 @@
 # ################################################################### #
 
 import time
-try:
-    import thread
-except ImportError:
-    import _thread as thread
+
 from mock import patch, call, Mock
+
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
+
+from tests import InstantThread
 from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
+
 
 class mixin_cmd_nuke(object):
 
@@ -79,18 +80,14 @@ panuke-nuke: 20
         self.assertEqual([], self.joe.message_history)
         self.console.write.assert_has_calls([call('nuke 3')])
 
-    def test_joe_multi(self):
-
-        def _start_new_thread(function, args):
-            function(*args)
-
-        with patch.object(thread, 'start_new_thread', wraps=_start_new_thread):
-            self.joe.connects('3')
-            self.moderator.message_history = []
-            self.moderator.says("!nuke joe 3")
-            self.assertEqual([], self.moderator.message_history)
-            self.assertEqual([], self.joe.message_history)
-            self.console.write.assert_has_calls([call('nuke 3'), call('nuke 3'), call('nuke 3')])
+    @patch('threading.Thread', new_callable=lambda: InstantThread)
+    def test_joe_multi(self, instant_thread):
+        self.joe.connects('3')
+        self.moderator.message_history = []
+        self.moderator.says("!nuke joe 3")
+        self.assertEqual([], self.moderator.message_history)
+        self.assertEqual([], self.joe.message_history)
+        self.console.write.assert_has_calls([call('nuke 3'), call('nuke 3'), call('nuke 3')])
 
 
 class Test_cmd_nuke_43(mixin_cmd_nuke, Iourt43TestCase):
