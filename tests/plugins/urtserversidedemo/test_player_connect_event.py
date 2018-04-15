@@ -69,4 +69,3 @@ stopserverdemo = 20
         # THEN
         sleep(.5) # sleep so the thread has time of doing its job
         self.assertFalse(self.p.start_recording_player.called)
-

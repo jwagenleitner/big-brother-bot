@@ -27,9 +27,9 @@ from mock import Mock, call
 from mockito import when
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
-from tests.plugins.poweradminurt.iourt42 import Iourt42TestCase
+from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
 
-class Test_radio_spam_protection(Iourt42TestCase):
+class Test_radio_spam_protection(Iourt43TestCase):
     def setUp(self):
         super(Test_radio_spam_protection, self).setUp()
         self.conf = CfgConfigParser()

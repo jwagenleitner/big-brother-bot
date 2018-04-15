@@ -28,10 +28,10 @@ from mockito import when
 from b3.config import CfgConfigParser
 from b3.cvar import Cvar
 from b3.plugins.poweradminurt import PoweradminurtPlugin
-from tests.plugins.poweradminurt.iourt42 import Iourt42TestCase
+from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
 
 
-G_ALL = "FGHIJKLMNZacefghOQRSTUVWX"
+G_ALL = "FGHIJKLMNZacefghijklOQRSTUVWX"
 G_NONE = ""
 G_BERETTA_92FS = "F"
 G_50_DESERT_EAGLE = "G"
@@ -58,6 +58,10 @@ G_SILENCER = "U"
 G_LASER_SIGHT = "V"
 G_HELMET = "W"
 G_EXTRA_AMMO = "X"
+G_P90 = "k"
+G_FRF1 = "i"
+G_MAGNUM = "l"
+G_BENELI = "j"
 
 weapon_codes = (
     ('beretta', G_BERETTA_92FS),
@@ -160,7 +164,7 @@ def only_gear(*args):
     return "".join(sorted(G_ALL.translate(None, all_gear_but(*args))))
 
 
-class Test_cmd_pagear(Iourt42TestCase):
+class Test_cmd_pagear(Iourt43TestCase):
 
     def setUp(self):
         super(Test_cmd_pagear, self).setUp()
@@ -207,9 +211,9 @@ pagear-gear: 20
         self.superadmin.message_history = []
         self.superadmin.says("!gear")
         # THEN
-        self.assertListEqual(["current gear: med:ON, vest:ON, ak:ON, de:ON, psg:ON, nvg:ON, hk:ON, mac:ON, mp5:ON, las:ON, ber:ON, ump:ON, g36:ON, neg:ON, glo:ON, smo:ON, m4:ON, lr:ON, hel:ON, spas:ON, sr8:ON, he:ON, colt:ON, ammo:ON, sil:ON",
-                              "Usage: !pagear [+/-][med|vest|ak|de|psg|nvg|hk|mac|mp5|las|ber|ump|g36|neg|glo|smo|m4|lr|hel|spas|sr8|he|colt|ammo|sil]",
-                              "Load weapon groups: !pagear [+/-][all_nades|all_auto|all_pistols|all_snipers]",
+        self.assertListEqual(["current gear: med:ON, vest:ON, frf1:ON, p90:ON, ak:ON, de:ON, psg:ON, nvg:ON, hk:ON, mac:ON, mp5:ON, mag:ON, ben:ON, las:ON, ber:ON, ump:ON, g36:ON, neg:ON, glo:ON, smo:ON, m4:ON, lr:ON, hel:ON, spas:ON, sr8:ON, he:ON, colt:ON, ammo:ON, sil:ON",
+                              "Usage: !pagear [+/-][med|vest|frf1|p90|ak|de|psg|nvg|hk|mac|mp5|mag|ben|las|ber|ump|g36|neg|glo|smo|m4|lr|hel|spas|sr8|he|colt|ammo|sil]",
+                              "Load weapon groups: !pagear [+/-][all_nades|all_shotgun|all_snipers|all_ak|all_sec|all_auto|all_pistols]",
                               "Load defaults: !pagear [reset|all|none]"],
                               self.superadmin.message_history)
 
@@ -326,7 +330,7 @@ pagear-gear: 20
         # WHEN
         self.superadmin.says("!gear +all_snipers")
         # THEN
-        self.assert_set_gear(all_gear_but(G_SR8, G_PSG1))
+        self.assert_set_gear(all_gear_but(G_SR8, G_PSG1, G_FRF1))
 
     def test_disallow_all_snipers(self):
        # GIVEN
@@ -334,7 +338,7 @@ pagear-gear: 20
         # WHEN
         self.superadmin.says("!gear -all_snipers")
         # THEN
-        self.assert_set_gear(only_gear(G_SR8, G_PSG1))
+        self.assert_set_gear(only_gear(G_SR8, G_PSG1, G_FRF1))
 
     def test_allow_all_pistols(self):
        # GIVEN
@@ -342,7 +346,7 @@ pagear-gear: 20
         # WHEN
         self.superadmin.says("!gear +all_pistols")
         # THEN
-        self.assert_set_gear(all_gear_but(G_BERETTA_92FS, G_50_DESERT_EAGLE, G_GLOCK, G_COLT1911))
+        self.assert_set_gear(all_gear_but(G_BERETTA_92FS, G_50_DESERT_EAGLE, G_GLOCK, G_COLT1911, G_MAGNUM))
 
     def test_disallow_all_pistols(self):
        # GIVEN
@@ -350,7 +354,8 @@ pagear-gear: 20
         # WHEN
         self.superadmin.says("!gear -all_pistols")
         # THEN
-        self.assert_set_gear(only_gear(G_BERETTA_92FS, G_50_DESERT_EAGLE, G_GLOCK, G_COLT1911))
+        self.assert_set_gear(only_gear(G_BERETTA_92FS, G_50_DESERT_EAGLE, G_GLOCK,
+                                       G_COLT1911, G_MAGNUM))
 
     def test_allow_all_auto(self):
        # GIVEN
@@ -358,7 +363,7 @@ pagear-gear: 20
         # WHEN
         self.superadmin.says("!gear +all_auto")
         # THEN
-        self.assert_set_gear(all_gear_but(G_MP5K, G_LR300ML, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103, G_NEGEV_LMG))
+        self.assert_set_gear(all_gear_but(G_MP5K, G_LR300ML, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103, G_NEGEV_LMG, G_P90))
 
     def test_disallow_all_auto(self):
        # GIVEN
@@ -366,7 +371,7 @@ pagear-gear: 20
         # WHEN
         self.superadmin.says("!gear -all_auto")
         # THEN
-        self.assert_set_gear(only_gear(G_MP5K, G_LR300ML, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103, G_NEGEV_LMG))
+        self.assert_set_gear(only_gear(G_MP5K, G_LR300ML, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103, G_NEGEV_LMG, G_P90))
 
     def test_disallow_all_auto_and_no_smoke(self):
        # GIVEN
@@ -374,7 +379,8 @@ pagear-gear: 20
         # WHEN
         self.superadmin.says("!gear all -all_auto -smoke")
         # THEN
-        self.assert_set_gear(only_gear(G_MP5K, G_LR300ML, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103, G_NEGEV_LMG, G_SMOKE_GRENADE))
+        self.assert_set_gear(only_gear(G_MP5K, G_LR300ML, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103,
+                                       G_NEGEV_LMG, G_SMOKE_GRENADE, G_P90))
 
     def test_disallow_all_auto_and_no_smoke_spaced(self):
        # GIVEN
@@ -382,7 +388,8 @@ pagear-gear: 20
         # WHEN
         self.superadmin.says("!gear all - all_auto - smoke")
         # THEN
-        self.assert_set_gear(only_gear(G_MP5K, G_LR300ML, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103, G_NEGEV_LMG, G_SMOKE_GRENADE))
+        self.assert_set_gear(only_gear(G_MP5K, G_LR300ML, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103,
+                                       G_NEGEV_LMG, G_SMOKE_GRENADE, G_P90))
 
     def test_disallow_all_auto_but_lr300(self):
        # GIVEN
@@ -390,7 +397,8 @@ pagear-gear: 20
         # WHEN
         self.superadmin.says("!gear all -all_auto +lr")
         # THEN
-        self.assert_set_gear(only_gear(G_MP5K, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103, G_NEGEV_LMG))
+        self.assert_set_gear(only_gear(G_MP5K, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103,
+                                       G_NEGEV_LMG, G_P90))
 
     def test_disallow_all_auto_but_lr300_spaced(self):
        # GIVEN
@@ -398,4 +406,5 @@ pagear-gear: 20
         # WHEN
         self.superadmin.says("!gear all - all_auto + lr")
         # THEN
-        self.assert_set_gear(only_gear(G_MP5K, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103, G_NEGEV_LMG))
+        self.assert_set_gear(only_gear(G_MP5K, G_COLT_M4, G_MAC11, G_UMP45, G_G36, G_AK103,
+                                       G_NEGEV_LMG, G_P90))

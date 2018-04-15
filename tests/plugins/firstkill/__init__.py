@@ -31,7 +31,7 @@ from b3.cvar import Cvar
 from b3.config import MainConfig
 from b3.config import XmlConfigParser
 from b3.config import CfgConfigParser
-from b3.parsers.iourt42 import Iourt42Parser
+from b3.parsers.iourt43 import Iourt43Parser
 from b3.plugins.admin import AdminPlugin
 from b3.plugins.firstkill import FirstkillPlugin
 from tests import logging_disabled
@@ -46,10 +46,10 @@ class FirstKillCase(unittest2.TestCase):
             from b3.fake import FakeConsole
             AbstractParser.__bases__ = (FakeConsole,)
             # Now parser inheritance hierarchy is :
-            # Iourt41Parser -> abstractParser -> FakeConsole -> Parser
+            # Iourt43Parser -> abstractParser -> FakeConsole -> Parser
 
     def setUp(self):
-        # create a Iourt42 parser
+        # create a Iourt43 parser
         parser_conf = XmlConfigParser()
         parser_conf.loadFromString(dedent(r"""
             <configuration>
@@ -60,14 +60,14 @@ class FirstKillCase(unittest2.TestCase):
         """))
 
         self.parser_conf = MainConfig(parser_conf)
-        self.console = Iourt42Parser(self.parser_conf)
+        self.console = Iourt43Parser(self.parser_conf)
 
         # initialize some fixed cvars which will be used by both the plugin and the iourt42 parser
         when(self.console).getCvar('auth').thenReturn(Cvar('auth', value='0'))
         when(self.console).getCvar('fs_basepath').thenReturn(Cvar('fs_basepath', value='/fake/basepath'))
         when(self.console).getCvar('fs_homepath').thenReturn(Cvar('fs_homepath', value='/fake/homepath'))
         when(self.console).getCvar('fs_game').thenReturn(Cvar('fs_game', value='q3ut4'))
-        when(self.console).getCvar('gamename').thenReturn(Cvar('gamename', value='q3urt42'))
+        when(self.console).getCvar('gamename').thenReturn(Cvar('gamename', value='q3urt43'))
 
         # start the parser
         self.console.startup()

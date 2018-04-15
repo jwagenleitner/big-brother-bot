@@ -26,8 +26,7 @@ import time
 from mock import patch, Mock
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
-from tests.plugins.poweradminurt.iourt41 import Iourt41TestCase
-from tests.plugins.poweradminurt.iourt42 import Iourt42TestCase
+from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
 from b3.plugins.poweradminurt import __version__ as plugin_version, __author__ as plugin_author
 
 
@@ -66,12 +65,7 @@ paversion-version: 20
 
 
 
-class Test_cmd_nuke_41(mixin_cmd_version, Iourt41TestCase):
+class Test_cmd_nuke_43(mixin_cmd_version, Iourt43TestCase):
     """
-    call the mixin_cmd_nuke test using the Iourt41TestCase parent class
-    """
-
-class Test_cmd_nuke_42(mixin_cmd_version, Iourt42TestCase):
-    """
-    call the mixin_cmd_nuke test using the Iourt42TestCase parent class
+    call the mixin_cmd_nuke test using the Iourt43TestCase parent class
     """

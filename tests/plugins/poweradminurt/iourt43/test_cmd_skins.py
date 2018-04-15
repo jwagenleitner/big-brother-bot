@@ -25,15 +25,16 @@
 from mock import  call, Mock
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
-from tests.plugins.poweradminurt.iourt42 import Iourt42TestCase
+from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
 
-class Test_cmd_lms(Iourt42TestCase):
+
+class Test_cmd_skins(Iourt43TestCase):
     def setUp(self):
-        super(Test_cmd_lms, self).setUp()
+        super(Test_cmd_skins, self).setUp()
         self.conf = CfgConfigParser()
         self.conf.loadFromString("""
 [commands]
-palms-lms: 20           ; change game type to Last Man Standing
+pagoto-goto: 20         ; set the goto <on/off>
         """)
         self.p = PoweradminurtPlugin(self.console, self.conf)
         self.init_default_cvar()
@@ -45,11 +46,22 @@ palms-lms: 20           ; change game type to Last Man Standing
 
         self.moderator.connects("2")
 
-
-    def test_nominal(self):
+    def test_missing_parameter(self):
         self.moderator.message_history = []
-        self.moderator.says("!lms")
-        self.console.write.assert_has_calls([call('set g_gametype "1"')])
-        self.assertEqual(['game type changed to Last Man Standing'], self.moderator.message_history)
+        self.moderator.says("!goto")
+        self.assertListEqual(["invalid or missing data, try !help pagoto"], self.moderator.message_history)
+
+    def test_junk(self):
+        self.moderator.message_history = []
+        self.moderator.says("!goto qsdf")
+        self.assertListEqual(["invalid or missing data, try !help pagoto"], self.moderator.message_history)
+
+    def test_on(self):
+        self.moderator.says("!goto on")
+        self.console.write.assert_has_calls([call('set g_allowgoto "1"')])
+
+    def test_off(self):
+        self.moderator.says("!goto off")
+        self.console.write.assert_has_calls([call('set g_allowgoto "0"')])
 
 

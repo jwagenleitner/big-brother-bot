@@ -81,4 +81,3 @@ demo_duration: 2
         sleep(.2)
         # THEN
         self.p.stop_recording_player.assert_called_with(joe)
-

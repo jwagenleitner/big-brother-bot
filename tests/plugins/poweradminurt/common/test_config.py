@@ -26,8 +26,7 @@ import logging
 
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin, __file__ as poweradminurt_file
-from tests.plugins.poweradminurt.iourt41 import Iourt41TestCase
-from tests.plugins.poweradminurt.iourt42 import Iourt42TestCase
+from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
 
 class mixin_conf(object):
 
@@ -77,17 +76,7 @@ plugins_disable: foo, bar
         self.assertEqual(['foo', 'bar'], self.p._match_plugin_disable)
 
 
-
-
-
-
-##############################################################################
-class Test_41(mixin_conf, Iourt41TestCase):
+class Test_43(mixin_conf, Iourt43TestCase):
     """
-    call the mixin tests using the Iourt41TestCase parent class
-    """
-
-class Test_42(mixin_conf, Iourt42TestCase):
-    """
-    call the mixin tests using the Iourt42TestCase parent class
+    call the mixin tests using the Iourt43TestCase parent class
     """

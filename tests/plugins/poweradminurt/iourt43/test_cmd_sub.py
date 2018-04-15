@@ -22,46 +22,58 @@
 #                                                                     #
 # ################################################################### #
 
+from b3 import TEAM_SPEC
+from b3 import TEAM_RED
+from b3 import TEAM_BLUE
 from mock import  call, Mock
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
-from tests.plugins.poweradminurt.iourt42 import Iourt42TestCase
+from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
 
 
-class Test_cmd_funstuff(Iourt42TestCase):
+class Test_cmd_sub(Iourt43TestCase):
     def setUp(self):
-        super(Test_cmd_funstuff, self).setUp()
+        super(Test_cmd_sub, self).setUp()
         self.conf = CfgConfigParser()
         self.conf.loadFromString("""
 [commands]
-pafunstuff-funstuff: 20 ; set the use of funstuff <on/off>
+pasub-sub:40           ; set the given client as a substitute for its team
         """)
         self.p = PoweradminurtPlugin(self.console, self.conf)
         self.init_default_cvar()
         self.p.onLoadConfig()
         self.p.onStartup()
-
         self.console.say = Mock()
         self.console.write = Mock()
+        self.admin.connects("2")
+        self.moderator.connects("3")
 
-        self.moderator.connects("2")
+    def test_match_mode_deactivated(self):
+        self.p._matchmode = False
+        self.admin.message_history = []
+        self.admin.says("!sub")
+        self.assertListEqual(["!pasub command is available only in match mode"], self.admin.message_history)
 
-    def test_missing_parameter(self):
+    def test_client_spectator(self):
+        self.p._matchmode = True
+        self.admin.message_history = []
+        self.admin.team = TEAM_SPEC
+        self.admin.says("!sub")
+        self.assertListEqual(["Level-40-Admin is a spectator! - Can't set substitute status"], self.admin.message_history)
+
+    def test_client_with_no_parameters(self):
+        self.p._matchmode = True
+        self.admin.message_history = []
+        self.admin.team = TEAM_RED
+        self.admin.says("!sub")
+        self.console.write.assert_has_calls([call('forcesub %s' % self.admin.cid)])
+
+    def test_client_with_parameters(self):
+        self.p._matchmode = True
+        self.admin.message_history = []
+        self.admin.team = TEAM_RED
         self.moderator.message_history = []
-        self.moderator.says("!funstuff")
-        self.assertListEqual(["invalid or missing data, try !help pafunstuff"], self.moderator.message_history)
-
-    def test_junk(self):
-        self.moderator.message_history = []
-        self.moderator.says("!funstuff qsdf")
-        self.assertListEqual(["invalid or missing data, try !help pafunstuff"], self.moderator.message_history)
-
-    def test_on(self):
-        self.moderator.says("!funstuff on")
-        self.console.write.assert_has_calls([call('set g_funstuff "1"')])
-
-    def test_off(self):
-        self.moderator.says("!funstuff off")
-        self.console.write.assert_has_calls([call('set g_funstuff "0"')])
-
-
+        self.moderator.team = TEAM_BLUE
+        self.admin.says("!sub 3")
+        self.console.write.assert_has_calls([call('forcesub %s' % self.moderator.cid)])
+        self.assertListEqual(["You were set as substitute for the BLUE team by the Admin"], self.moderator.message_history)

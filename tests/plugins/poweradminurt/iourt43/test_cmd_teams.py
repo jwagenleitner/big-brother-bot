@@ -25,25 +25,30 @@
 from mock import  call, Mock
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
-from tests.plugins.poweradminurt.iourt42 import Iourt42TestCase
+from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
 from b3 import TEAM_BLUE, TEAM_RED
 from tests import logging_disabled
 from textwrap import dedent
 
-class Test_cmd_balance(Iourt42TestCase):
+
+class Test_cmd_teams(Iourt43TestCase):
 
     def setUp(self):
-        super(Test_cmd_balance, self).setUp()
+        super(Test_cmd_teams, self).setUp()
         self.conf = CfgConfigParser()
         self.conf.loadFromString(dedent("""
         [commands]
-        pabalance-balance: 1
+        pateams-teams: 1
 
-        [skillbalancer]
-        min_bal_interval: 1
-        interval: 0
-        difference: 0.5
-        mode: 2
+        [teambalancer]
+        tinterval: 0
+        teamdifference: 1
+        maxlevel: 60
+        announce: 2
+        team_change_force_balance_enable: True
+        autobalance_gametypes: tdm,ctf,cah,ftl,ts,bm,freeze
+        teamLocksPermanent: False
+        timedelay: 60
         """))
         self.p = PoweradminurtPlugin(self.console, self.conf)
         self.init_default_cvar()
@@ -74,60 +79,38 @@ class Test_cmd_balance(Iourt42TestCase):
         self.p._teamred = 2
         self.p._teamblue = 4
 
-    def test_balancing_already_done(self):
-        # GIVEN
-        self.blue1.clearMessageHistory()
-        self.p._lastbal = 0
-        self.p.ignoreCheck = Mock(return_value=True)
-        self.console.time = Mock(return_value=10)
-        # WHEN
-        self.blue1.says('!balance')
-        # THEN
-        self.assertEqual(self.blue1.message_history, ['Teams changed recently, please wait a while'])
-
     def test_non_round_based_gametype(self):
         # GIVEN
         self.blue1.clearMessageHistory()
-        self.p._lastbal = 0
-        self.p.ignoreCheck = Mock(return_value=False)
-        self.console.time = Mock(return_value=120)
         self.console.game.gameType = 'tdm'
         # WHEN
-        self.blue1.says('!balance')
+        self.blue1.says('!teams')
         # THEN
-        self.console.write.assert_has_calls([call('bigtext "Balancing teams!"')])
+        self.console.write.assert_has_calls([call('bigtext "Autobalancing Teams!"')])
+        self.assertEqual(self.blue1.message_history, ['Teams are now balanced'])
 
     def test_round_based_gametype_delayed_announce_only(self):
         # GIVEN
         self.blue1.clearMessageHistory()
-        self.p._lastbal = 0
-        self.p.ignoreCheck = Mock(return_value=False)
-        self.console.time = Mock(return_value=120)
         self.console.game.gameType = 'bm'
         # WHEN
-        self.blue1.says('!balance')
+        self.blue1.says('!teams')
         # THEN
         self.assertEqual(self.blue1.message_history, ['Teams will be balanced at the end of this round'])
-        self.assertFalse(self.p._pending_teambalance)
-        self.assertTrue(self.p._pending_skillbalance)
-        self.assertEqual(self.p.cmd_pabalance, self.p._skillbalance_func)
+        self.assertTrue(self.p._pending_teambalance)
+        self.assertFalse(self.p._pending_skillbalance)
 
     def test_round_based_gametype_delayed_execution(self):
         # GIVEN
         self.blue1.clearMessageHistory()
-        self.p._lastbal = 0
-        self.p.ignoreCheck = Mock(return_value=False)
-        self.console.time = Mock(return_value=120)
         self.console.game.gameType = 'bm'
-        self.blue1.says('!balance')
+        self.blue1.says('!teams')
         self.assertEqual(self.blue1.message_history, ['Teams will be balanced at the end of this round'])
-        self.assertFalse(self.p._pending_teambalance)
-        self.assertTrue(self.p._pending_skillbalance)
-        self.assertEqual(self.p.cmd_pabalance, self.p._skillbalance_func)
+        self.assertTrue(self.p._pending_teambalance)
+        self.assertFalse(self.p._pending_skillbalance)
         # WHEN
         self.console.queueEvent(self.console.getEvent('EVT_GAME_ROUND_END'))
         # THEN
-        self.console.write.assert_has_calls([call('bigtext "Balancing teams!"')])
+        self.console.write.assert_has_calls([call('bigtext "Autobalancing Teams!"')])
         self.assertFalse(self.p._pending_teambalance)
         self.assertFalse(self.p._pending_skillbalance)
-        self.assertIsNone(self.p._skillbalance_func)

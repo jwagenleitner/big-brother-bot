@@ -26,8 +26,7 @@ import time
 from mock import patch, Mock, call
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
-from tests.plugins.poweradminurt.iourt41 import Iourt41TestCase
-from tests.plugins.poweradminurt.iourt42 import Iourt42TestCase
+from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
 
 
 class mixin_cmd_paset(object):
@@ -81,12 +80,7 @@ paset: 20
         self.assertListEqual([], self.moderator.message_history)
 
 
-class Test_cmd_nuke_41(mixin_cmd_paset, Iourt41TestCase):
+class Test_cmd_nuke_43(mixin_cmd_paset, Iourt43TestCase):
     """
-    call the mixin test using the Iourt41TestCase parent class
-    """
-
-class Test_cmd_nuke_42(mixin_cmd_paset, Iourt42TestCase):
-    """
-    call the mixin test using the Iourt42TestCase parent class
+    call the mixin test using the Iourt43TestCase parent class
     """

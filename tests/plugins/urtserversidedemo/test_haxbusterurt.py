@@ -107,4 +107,3 @@ demo_duration: 2
         # WHEN
         sleep(.5) # sleep so the thread has time of doing its job
         self.p.stop_recording_player.assert_called_with(joe)
-

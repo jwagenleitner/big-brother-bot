@@ -27,8 +27,7 @@ from mock import patch, call, Mock, ANY
 from b3.config import CfgConfigParser
 from b3.fake import FakeClient
 from b3.plugins.poweradminurt import PoweradminurtPlugin
-from tests.plugins.poweradminurt.iourt41 import Iourt41TestCase
-from tests.plugins.poweradminurt.iourt42 import Iourt42TestCase
+from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
 
 class mixin_name_checker(object):
 
@@ -128,12 +127,7 @@ checkbadnames: True
 
 
 
-class Test_cmd_nuke_41(mixin_name_checker, Iourt41TestCase):
+class Test_cmd_nuke_41(mixin_name_checker, Iourt43TestCase):
     """
-    call the mixin test using the Iourt41TestCase parent class
-    """
-
-class Test_cmd_nuke_42(mixin_name_checker, Iourt42TestCase):
-    """
-    call the mixin test using the Iourt42TestCase parent class
+    call the mixin test using the Iourt43TestCase parent class
     """
