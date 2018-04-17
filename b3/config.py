@@ -212,14 +212,14 @@ class XmlConfigParser(B3ConfigParserMixin):
         Return the list of sections of the configuration file.
         :return list
         """
-        return self._settings.keys()
+        return list(self._settings.keys())
 
     def options(self, section):
         """
         Return the list of options in the given section.
         :return list
         """
-        return self._settings[section].keys()
+        return list(self._settings[section].keys())
 
     def has_section(self, section):
         """
@@ -249,7 +249,7 @@ class XmlConfigParser(B3ConfigParserMixin):
         """
         Return all the elements of the given section.
         """
-        return self._settings[section].items()
+        return list(self._settings[section].items())
 
     def load(self, filename):
         """

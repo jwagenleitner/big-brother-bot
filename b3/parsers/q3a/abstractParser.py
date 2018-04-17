@@ -32,6 +32,7 @@ import string
 import time
 
 import six
+from six.moves import range
 
 import b3
 import b3.clients
@@ -529,7 +530,7 @@ class AbstractParser(b3.parser.Parser):
         """
         # We get here if a name was given, and the name was not found as a client
         # This will allow the kicking of non autenticated players
-        if 'kickbyfullname' in self._commands.keys():
+        if 'kickbyfullname' in self._commands:
             self.debug('Trying kick by full name: %s for %s' % (client, reason))
             result = self.write(self.getCommand('kickbyfullname', name=client))
             if result.endswith('is not on the server\n'):

@@ -30,6 +30,8 @@ from distutils import version
 from time import sleep
 
 import six
+from six.moves import map
+from six.moves import input
 
 import b3
 import b3.config

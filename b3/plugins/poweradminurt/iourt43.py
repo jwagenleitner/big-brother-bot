@@ -24,14 +24,15 @@
 
 from __future__ import print_function, absolute_import
 
-import os
 import random
 import re
+import os
 import threading
 import time
 
 import six
-from six.moves import range as xrange
+from six.moves import map
+from six.moves import range
 
 import b3
 import b3.config
@@ -1728,7 +1729,7 @@ class Poweradminurt43Plugin(b3.plugin.Plugin):
         d = {}
         if self.isEnabled() and self.console.time() > self._ignoreTill:
             for player in self.console.clients.getList():
-                if not player.name in d.keys():
+                if not player.name in d:
                     d[player.name] = [player.cid]
                 else:
                     # l = d[player.name]
@@ -2330,7 +2331,7 @@ class Poweradminurt43Plugin(b3.plugin.Plugin):
             cleaned_data = re.sub(r'\s', "", param_data)
 
             # set a predefined gear
-            if cleaned_data in self._gears.keys():
+            if cleaned_data in self._gears:
                 gear_set.clear()
                 gear_set.add(self._gears[cleaned_data])
                 return
@@ -2776,7 +2777,7 @@ class Poweradminurt43Plugin(b3.plugin.Plugin):
 
         queue = []
 
-        for _ in xrange(moves):
+        for _ in range(moves):
             newteam = None
 
             if (blue and numblue < numred) or (blue and not red):
@@ -2871,7 +2872,7 @@ class Poweradminurt43Plugin(b3.plugin.Plugin):
             bestblue, bestred = self._getRandomTeams(clients, checkforced=True)
             bestdiff = self._getTeamScoreDiff(bestblue, bestred, scores)
 
-        for _ in xrange(times):
+        for _ in range(times):
             blue, red = self._getRandomTeams(clients, checkforced=True)
             m = self._countMoves(oldblue, blue) + self._countMoves(oldred, red)
             if maxmovesperc and m > max(2, int(round(maxmovesperc * n))):

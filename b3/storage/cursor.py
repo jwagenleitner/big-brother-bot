@@ -24,7 +24,7 @@
 
 from __future__ import print_function, absolute_import
 
-from six.moves import range as xrange
+from six.moves import range
 
 
 class Cursor(object):
@@ -86,7 +86,7 @@ class Cursor(object):
             return dict()
         d = dict()
         desc = self._cursor.description
-        for i in xrange(0, len(self.fields)):
+        for i in range(0, len(self.fields)):
             d[desc[i][0]] = self.fields[i]
         return d
 

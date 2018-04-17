@@ -87,10 +87,14 @@
 # </pre>
 ##
 
-import re, sys, string
+from __future__ import absolute_import
+
+import re
+
+import six
 
 try:
-    unicode("")
+    six.text_type("")
 except NameError:
     def encode(s, encoding):
         # 1.5.2: application must use the right encoding
@@ -107,7 +111,7 @@ def encode_entity(text, pattern=_escape):
         out = []
         for char in m.group():
             out.append("&#%d;" % ord(char))
-        return string.join(out, "")
+        return out.join("")
     return encode(pattern.sub(escape_entities, text), "ascii")
 
 del _escape
@@ -116,7 +120,7 @@ del _escape
 # the following functions assume an ascii-compatible encoding
 # (or "utf-16")
 
-def escape_cdata(s, encoding=None, replace=string.replace):
+def escape_cdata(s, encoding=None, replace=lambda s, o, n: str(s).replace(o, n)):
     s = replace(s, "&", "&amp;")
     s = replace(s, "<", "&lt;")
     s = replace(s, ">", "&gt;")
@@ -127,7 +131,7 @@ def escape_cdata(s, encoding=None, replace=string.replace):
             return encode_entity(s)
     return s
 
-def escape_attrib(s, encoding=None, replace=string.replace):
+def escape_attrib(s, encoding=None, replace=lambda s, o, n: str(s).replace(o, n)):
     s = replace(s, "&", "&amp;")
     s = replace(s, "'", "&apos;")
     s = replace(s, "\"", "&quot;")
@@ -166,7 +170,7 @@ class XMLWriter:
             self.__write(">")
             self.__open = 0
         if self.__data:
-            data = string.join(self.__data, "")
+            data = self.__data.join("")
             self.__write(escape_cdata(data, self.__encoding))
             self.__data = []
 
@@ -202,7 +206,7 @@ class XMLWriter:
         if attrib or extra:
             attrib = attrib.copy()
             attrib.update(extra)
-            attrib = attrib.items()
+            attrib = list(attrib.items())
             attrib.sort()
             for k, v in attrib:
                 k = escape_cdata(k, self.__encoding)
@@ -267,7 +271,7 @@ class XMLWriter:
     # can be omitted.
 
     def element(self, tag, text=None, attrib={}, **extra):
-        apply(self.start, (tag, attrib), extra)
+        self.start(*(tag, attrib), **extra)
         if text:
             self.data(text)
         self.end()

@@ -22,10 +22,12 @@
 #                                                                     #
 # ################################################################### #
 
-import os
-import re
+from __future__ import absolute_import
 
+import re
+import os
 import os.path
+
 import requests
 import six
 

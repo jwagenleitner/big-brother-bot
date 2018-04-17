@@ -896,7 +896,7 @@ class Parser(object):
             if remote_log_plugin and remote_log_plugin not in self._plugins:
                 _load_plugin(self, remote_log_plugin)
 
-        self.screen.write(' (%s)\n' % len(self._plugins.keys()))
+        self.screen.write(' (%s)\n' % len(self._plugins))
         self.screen.flush()
 
     def pluginImport(self, name, path=None):

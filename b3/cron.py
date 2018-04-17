@@ -34,7 +34,7 @@ import threading
 import time
 import traceback
 
-import six
+from six.moves import range
 
 
 class ReMatcher(object):
@@ -158,9 +158,7 @@ class CronTab(object):
                         for val in result:
                             myset[int(val)] = None
 
-                mylist = myset.keys()
-                if not six.PY2:
-                    mylist = list(mylist)
+                mylist = list(myset.keys())
                 mylist.sort()
                 return mylist
             else:

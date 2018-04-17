@@ -164,7 +164,7 @@ class PostgresqlStorage(DatabaseStorage):
         if cursor and not cursor.EOF:
             while not cursor.EOF:
                 row = cursor.getRow()
-                tables.append(row.values()[0])
+                tables.append(list(row.values())[0])
                 cursor.moveNext()
         cursor.close()
         return tables
@@ -245,7 +245,7 @@ def patch_query_builder(console):
         Escape quotes from a given string.
         :param word: The string on which to perform the escape
         """
-        if isinstance(word, int) or isinstance(word, long) or isinstance(word, complex) or isinstance(word, float):
+        if isinstance(word, int) or isinstance(word, complex) or isinstance(word, float):
             return str(word)
         elif word is None:
             return "'None'"

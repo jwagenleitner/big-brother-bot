@@ -2037,7 +2037,7 @@ class Iourt43Parser(AbstractParser):
         cleaned_wanted_map = re.sub("^ut4?_", '', wanted_map, count=1)
 
         matches = [cleaned_supported_maps[match] for match in getStuffSoundingLike(cleaned_wanted_map,
-                                                                                   cleaned_supported_maps.keys())]
+                                                                                   list(cleaned_supported_maps.keys()))]
         if len(matches) == 1:
             # one match, get the map id
             return matches[0]

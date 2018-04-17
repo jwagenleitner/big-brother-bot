@@ -37,6 +37,8 @@ import traceback
 
 import six
 from six.moves.configparser import NoOptionError
+from six.moves import map
+from six.moves import range
 
 import b3.cron
 import b3.plugin

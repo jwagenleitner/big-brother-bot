@@ -34,7 +34,6 @@ import threading
 import time
 
 import six
-from six.moves import urllib as urllib2
 
 import b3
 import b3.cron
@@ -468,7 +467,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
         else:
             req = str(self.webfront_url.rstrip('/')) + '/' + str(self.webfront_config_nr) + '/pluginreq/index'
         try:
-            f = urllib2.urlopen(req)
+            f = six.moves.urllib.request.urlopen(req)
             res = f.readline().split(',')
             # Our webfront will present us 3 values ie.: 200,20,30 -> minKills,minRounds,maxDays
             if len(res) == 3:

@@ -27,13 +27,15 @@ from __future__ import print_function, absolute_import
 __version__ = '1.4'
 __author__ = 'ThorN, xlr8or, Courgette'
 
-import b3.plugin
+import re
 import threading
 import time
-import re
 
 from b3.functions import getCmd
 from six.moves.configparser import NoOptionError
+from six.moves import zip
+
+import b3.plugin
 
 F_FIRST = 4
 F_NEWB = 1
@@ -152,7 +154,7 @@ class WelcomePlugin(b3.plugin.Plugin):
         def unset_flag(flag):
             self._welcomeFlags &= ~flag
 
-        if not any(map(lambda o: self.config.has_option('settings', o), config_options)):
+        if not any([self.config.has_option('settings', o) for o in config_options]):
             if self.config.has_option('settings', 'flags'):
                 # old style config
                 try:

@@ -31,6 +31,7 @@ import time
 import traceback
 
 import six
+from six.moves import range
 
 import b3
 import b3.events
@@ -69,7 +70,7 @@ class ClientVar(object):
         """
         if self.value is None:
             return ()
-        return self.value.items()
+        return list(self.value.items())
 
     def length(self):
         """
@@ -1489,7 +1490,7 @@ class Clients(dict):
             return value
 
     def __escape_string_py2(self, value, mapping=None):
-        if isinstance(value, unicode):
+        if isinstance(value, six.text_type):
             return value.translate(self.escape_table)
         if isinstance(value, (bytes, bytearray)):
             value = value.replace('\\', '\\\\')

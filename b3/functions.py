@@ -37,7 +37,7 @@ import zipfile
 from hashlib import md5
 
 import six
-from six.moves import urllib
+from six.moves import range
 
 from b3.exceptions import ProgrammingError
 
@@ -129,13 +129,13 @@ def confirm(client):
     msg = 'No confirmation...'
     try:
         # First test again known guids
-        f = urllib.urlopen('http://www.bigbrotherbot.net/confirm.php?uid=%s' % client.guid)
+        f = six.moves.urllib.request.urlopen('http://www.bigbrotherbot.net/confirm.php?uid=%s' % client.guid)
         response = f.read()
         if not response == 'Error' and not response == 'False':
             msg = '%s is confirmed to be %s!' % (client.name, response)
         else:
             # If it fails, try ip (must be static)
-            f = urllib.urlopen('http://www.bigbrotherbot.net/confirm.php?ip=%s' % client.ip)
+            f = six.moves.urllib.request.urlopen('http://www.bigbrotherbot.net/confirm.php?ip=%s' % client.ip)
             response = f.read()
             if not response == 'Error' and not response == 'False':
                 msg = '%s is confirmed to be %s!' % (client.name, response)
@@ -422,7 +422,7 @@ def getStuffSoundingLike(stuff, expected_stuff):
         match = [clean_expected_stuff[clean_stuff]]
     else:
         # stuff could be a substring of one of the expected value
-        matching_subset = list(filter(lambda x: x.lower().find(clean_stuff) >= 0, clean_expected_stuff.keys()))
+        matching_subset = list([x for x in list(clean_expected_stuff.keys()) if x.lower().find(clean_stuff) >= 0])
         if len(matching_subset) == 1:
             match = [clean_expected_stuff[matching_subset[0]]]
         elif len(matching_subset) > 1:

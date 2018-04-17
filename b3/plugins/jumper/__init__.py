@@ -27,20 +27,22 @@ from __future__ import print_function, absolute_import
 __author__ = 'Fenix'
 __version__ = '2.31'
 
+import datetime
+import re
+import os
+import requests
+from threading import Timer
+import time
+
+import six
+from six.moves import map
+
 import b3
 import b3.plugin
 import b3.events
-import time
-import datetime
-import requests
-import os
-import re
-import six
-
 from b3.functions import getCmd
 from b3.functions import getStuffSoundingLike
 from b3.functions import right_cut
-from threading import Timer
 
 
 class JumpRun(object):
@@ -640,7 +642,7 @@ class JumperPlugin(b3.plugin.Plugin):
         cleaned_wanted_map = re.sub("^ut4?_", '', wanted_map, count=1)
 
         matches = [cleaned_supported_maps[match] for match in getStuffSoundingLike(cleaned_wanted_map,
-                                                                                   cleaned_supported_maps.keys())]
+                                                                                   list(cleaned_supported_maps.keys()))]
         if len(matches) == 1:
             # one match, get the map id
             return matches[0]

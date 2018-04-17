@@ -101,7 +101,7 @@ class Rcon(object):
         """
         try:
             if six.PY2 and isinstance(data, str):
-                data = unicode(data, errors='ignore')
+                data = six.text_type(data, errors='ignore')
             data = data.encode(self.console.encoding, 'replace')
         except Exception as msg:
             self.console.warning('%s: error encoding data: %r', source, msg)
