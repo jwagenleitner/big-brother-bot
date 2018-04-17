@@ -33,6 +33,7 @@ from b3 import TEAM_UNKNOWN, TEAM_RED, TEAM_BLUE
 from b3.clients import Alias, IpAlias
 from b3.clients import Client, Group
 from tests import B3TestCase
+from six.moves import map
 
 
 class Test_Client(B3TestCase):

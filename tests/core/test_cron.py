@@ -31,6 +31,7 @@ from mock import sentinel, Mock
 
 from b3.cron import CronTab, OneTimeCronTab, PluginCronTab, Cron
 from tests import B3TestCase
+from six.moves import range
 
 
 class Test_Crontab(unittest.TestCase):

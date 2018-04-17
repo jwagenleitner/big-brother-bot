@@ -38,6 +38,7 @@ from b3.fake import FakeClient as original_FakeClient
 from b3.output import VERBOSE2
 from b3.parsers.iourt43 import Iourt43Client, Iourt43Parser
 from tests import logging_disabled
+from six.moves import map
 
 log = logging.getLogger("test")
 log.setLevel(logging.INFO)
