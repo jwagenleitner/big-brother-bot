@@ -25,9 +25,9 @@
 from __future__ import print_function, absolute_import
 
 import logging
+import unittest
 from textwrap import dedent
 
-import unittest2 as unittest
 from six.moves import configparser as ConfigParser
 
 import b3

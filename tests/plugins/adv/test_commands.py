@@ -34,7 +34,6 @@ class Test_commands(AdvTestCase):
     def tearDown(self):
         AdvTestCase.tearDown(self)
 
-    #################### advlist ####################
     def test_advlist_empty(self):
         self.init_plugin("""
             <configuration>
@@ -83,8 +82,6 @@ class Test_commands(AdvTestCase):
         self.p.cmd_advlist(data=None, client=self.joe)
         self.assertEqual(['f00', 'bar', 'test'], self.p._msg.items)
         self.assertEqual(['Adv: [1] f00', 'Adv: [2] bar', 'Adv: [3] test'], self.joe.message_history)
-
-    #################### advrate ####################
 
     def test_advrate_no_arg_30s(self):
         self.init_plugin("""
@@ -160,8 +157,6 @@ class Test_commands(AdvTestCase):
         self.assertEqual('3', self.p._rate)
         self.assertEqual(['Adv: rate set to 3 minutes'], self.joe.message_history)
 
-    #################### advrem ####################
-
     def test_advrem_nominal(self):
         self.init_plugin("""
             <configuration>
@@ -217,7 +212,8 @@ class Test_commands(AdvTestCase):
         self.joe.clearMessageHistory()
         self.p.cmd_advrem(data='f00', client=self.joe)
         self.assertEqual(['f00', 'bar', 'test'], self.p._msg.items)
-        self.assertEqual(['Invalid data, use the !advlist command to list valid items numbers'], self.joe.message_history)
+        self.assertEqual(['Invalid data, use the !advlist command to list valid items numbers'],
+                         self.joe.message_history)
 
     def test_advrem_invalid_index(self):
         self.init_plugin("""
@@ -236,9 +232,8 @@ class Test_commands(AdvTestCase):
         self.joe.clearMessageHistory()
         self.p.cmd_advrem(data='-18', client=self.joe)
         self.assertEqual(['f00', 'bar', 'test'], self.p._msg.items)
-        self.assertEqual(['Invalid data, use the !advlist command to list valid items numbers'], self.joe.message_history)
-
-    #################### advadd ####################
+        self.assertEqual(['Invalid data, use the !advlist command to list valid items numbers'],
+                         self.joe.message_history)
 
     def test_advadd_nominal(self):
         self.init_plugin("""

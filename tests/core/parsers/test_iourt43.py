@@ -25,10 +25,11 @@
 from __future__ import print_function, absolute_import
 
 import logging
+import unittest
 
-import unittest2 as unittest
 from mock import Mock, call, patch
 from mockito import mock, when, any as anything
+from six.moves import map
 
 import b3
 from b3.clients import Clients, Client
@@ -38,7 +39,6 @@ from b3.fake import FakeClient as original_FakeClient
 from b3.output import VERBOSE2
 from b3.parsers.iourt43 import Iourt43Client, Iourt43Parser
 from tests import logging_disabled
-from six.moves import map
 
 log = logging.getLogger("test")
 log.setLevel(logging.INFO)
@@ -387,7 +387,6 @@ class Test_log_lines_parsing(Iourt43TestCase):
         self.assertEvent(r'''Pop!''', event_type='EVT_BOMB_EXPLODED', event_data=None, event_client=None)
 
     def test_say_after_player_changed_name(self):
-
         def assert_new_name_and_text_does_not_break_auth(new_name, text="!help"):
             # WHEN the player renames himself
             self.console.parseLine(

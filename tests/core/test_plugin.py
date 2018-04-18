@@ -28,7 +28,6 @@ import imp
 import logging
 import os
 from textwrap import dedent
-import unittest2 as unittest
 
 from mock import ANY
 from mock import call

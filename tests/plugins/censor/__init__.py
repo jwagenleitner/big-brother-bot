@@ -22,21 +22,23 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-import b3.events
 import logging
 
 from mock import Mock, patch
-from b3.fake import FakeClient
-from tests import B3TestCase
-from b3.plugins.censor import CensorPlugin
+
+import b3
+import b3.events
 from b3.config import XmlConfigParser
+from b3.fake import FakeClient
+from b3.plugins.censor import CensorPlugin
+from tests import B3TestCase
 
 
 class CensorTestCase(B3TestCase):
     """
     Ease testcases that need an working B3 console and need to control the censor plugin config
     """
+
     def setUp(self):
         # Timer needs to be patched or the Censor plugin would schedule a 2nd check one minute after
         # penalizing a player.
@@ -50,7 +52,8 @@ class CensorTestCase(B3TestCase):
         self.console.startup()
         self.log.propagate = True
 
-        self.joe = FakeClient(self.console, name="Joe", exactName="Joe", guid="zaerezarezar", groupBits=1, team=b3.TEAM_UNKNOWN)
+        self.joe = FakeClient(self.console, name="Joe", exactName="Joe", guid="zaerezarezar", groupBits=1,
+                              team=b3.TEAM_UNKNOWN)
 
     def tearDown(self):
         B3TestCase.tearDown(self)
@@ -71,6 +74,7 @@ class Detection_TestCase(CensorTestCase):
     """
     Base class for TestCase that verify bad words and bad names are correctly detected.
     """
+
     def setUp(self):
         CensorTestCase.setUp(self)
         self.init_plugin(r"""
@@ -92,7 +96,8 @@ class Detection_TestCase(CensorTestCase):
         mock_client.exactName = name
 
         self.p.checkBadName(mock_client)
-        self.assertEquals(count, self.p.penalizeClientBadname.call_count, "name '%s' should have been penalized %s time" % (name, count))
+        self.assertEquals(count, self.p.penalizeClientBadname.call_count,
+                          "name '%s' should have been penalized %s time" % (name, count))
 
     def assert_name_is_penalized(self, name):
         self.assert_name_penalized_count(name, 1)

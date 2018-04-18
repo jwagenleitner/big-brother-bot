@@ -23,11 +23,14 @@
 # ################################################################### #
 
 import sys
+
 from mock import Mock, call
 from mockito import when
+
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
 from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
+
 
 class Test_radio_spam_protection(Iourt43TestCase):
     def setUp(self):
@@ -35,7 +38,6 @@ class Test_radio_spam_protection(Iourt43TestCase):
         self.conf = CfgConfigParser()
         self.p = PoweradminurtPlugin(self.console, self.conf)
         self.init_default_cvar()
-
 
     def init(self, config_content=None):
         if config_content:
@@ -49,8 +51,6 @@ mute_duration: 2
         self.p.onLoadConfig()
         self.p.onStartup()
 
-
-
     def test_conf_nominal(self):
         self.init("""
 [radio_spam_protection]
@@ -59,7 +59,6 @@ mute_duration: 2
         """)
         self.assertTrue(self.p._rsp_enable)
         self.assertEqual(2, self.p._rsp_mute_duration)
-
 
     def test_conf_nominal_2(self):
         self.init("""
@@ -70,7 +69,6 @@ mute_duration: 1
         self.assertFalse(self.p._rsp_enable)
         self.assertEqual(1, self.p._rsp_mute_duration)
 
-
     def test_conf_broken(self):
         self.init("""
 [radio_spam_protection]
@@ -79,8 +77,6 @@ mute_duration: 0
         """)
         self.assertFalse(self.p._rsp_enable)
         self.assertEqual(1, self.p._rsp_mute_duration)
-
-
 
     def test_spam(self):
         # GIVEN

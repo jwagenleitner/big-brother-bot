@@ -58,6 +58,7 @@ class Test_game_specific_spam(SpamcontrolTestCase):
         # patch joe to make him able to send radio messages
         def radios(me, text):
             me.console.queueEvent(Event(type=EVT_CLIENT_RADIO, client=me, data={'text': text}))
+
         self.joe.radios = MethodType(radios, self.joe)
 
     def test_radio_spam(self):

@@ -22,13 +22,16 @@
 #                                                                     #
 # ################################################################### #
 
-from mock import  call, Mock
+from textwrap import dedent
+
+from mock import call, Mock
+
+from b3 import TEAM_BLUE, TEAM_RED
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
-from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
-from b3 import TEAM_BLUE, TEAM_RED
 from tests import logging_disabled
-from textwrap import dedent
+from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
+
 
 class Test_cmd_balance(Iourt43TestCase):
 

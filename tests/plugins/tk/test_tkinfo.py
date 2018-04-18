@@ -22,10 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
-import unittest2 as unittest
+import unittest
+from mock import Mock, sentinel
 
 from b3.plugins.tk import TkPlugin, TkInfo
-from mock import Mock, sentinel
+
 
 class Test_TkInfo(unittest.TestCase):
 
@@ -85,8 +86,8 @@ class Test_TkInfo(unittest.TestCase):
             cid2: TkInfo(self.mock_plugin, cid2),
             cid3: TkInfo(self.mock_plugin, cid3)
         }
-        self.mock_plugin.console.clients.getByCID = Mock(side_effect=lambda cid:cid)
-        self.mock_plugin.getClientTkInfo = Mock(side_effect=lambda cid:infos[cid])
+        self.mock_plugin.console.clients.getByCID = Mock(side_effect=lambda cid: cid)
+        self.mock_plugin.getClientTkInfo = Mock(side_effect=lambda cid: infos[cid])
 
         points_2 = 45
         self.info.damage(cid2, points_2)

@@ -22,10 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-
 from textwrap import dedent
+
+import b3
 from tests.plugins.spamcontrol import SpamcontrolTestCase
+
 
 class Test_config(SpamcontrolTestCase):
     """

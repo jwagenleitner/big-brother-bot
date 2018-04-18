@@ -23,6 +23,7 @@
 # ################################################################### #
 
 from mock import Mock, patch
+
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
 from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
@@ -77,12 +78,11 @@ paident_full_level: 40
         # GIVEN
         self.joe.pbid = "joe_pbid"
         self.joe.connects('3')
-        self.joe.timeAdd = 90*60.0
+        self.joe.timeAdd = 90 * 60.0
         self.superadmin.connects('1')
         # WHEN
-        with patch('time.time', return_value=180*60.0):
+        with patch('time.time', return_value=180 * 60.0):
             self.superadmin.says("!id joe")
         # THEN
-        self.assertListEqual(['03:00AM GMT 01/01/70 @3 Joe  [joe_pbid] since 01:30AM GMT 01/01/70'], self.superadmin.message_history)
-
-
+        self.assertListEqual(['03:00AM GMT 01/01/70 @3 Joe  [joe_pbid] since 01:30AM GMT 01/01/70'],
+                             self.superadmin.message_history)

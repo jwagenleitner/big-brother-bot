@@ -23,8 +23,9 @@
 # ################################################################### #
 
 from mockito import when
-from tests.plugins.urtserversidedemo import PluginTestCase
+
 from b3.fake import FakeClient
+from tests.plugins.urtserversidedemo import PluginTestCase
 
 
 class Test_stopserverdemo(PluginTestCase):
@@ -32,13 +33,14 @@ class Test_stopserverdemo(PluginTestCase):
 [commands]
 stopserverdemo = 20
 """
+
     def setUp(self):
         PluginTestCase.setUp(self)
         self.p.onStartup()
-        self.moderator = FakeClient(self.console, name="Moderator", exactName="Moderator", guid="654654654654654654", groupBits=8)
+        self.moderator = FakeClient(self.console, name="Moderator", exactName="Moderator", guid="654654654654654654",
+                                    groupBits=8)
         self.moderator.connects('0')
         self.moderator.clearMessageHistory()
-
 
     def test_no_parameter(self):
         self.moderator.says("!stopserverdemo")

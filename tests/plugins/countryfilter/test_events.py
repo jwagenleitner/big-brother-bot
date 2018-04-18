@@ -22,9 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
-from mock import Mock, call
-from tests.plugins.countryfilter import CountryFilterTestCase
 from textwrap import dedent
+
+from mock import Mock, call
+
+from tests.plugins.countryfilter import CountryFilterTestCase
 
 
 class Test_events(CountryFilterTestCase):
@@ -46,7 +48,8 @@ class Test_events(CountryFilterTestCase):
         self.console.queueEvent(self.console.getEvent('EVT_CLIENT_GEOLOCATION_SUCCESS', client=self.bill))
         self.console.queueEvent(self.console.getEvent('EVT_CLIENT_GEOLOCATION_SUCCESS', client=self.mike))
         # THEN
-        self.console.say.assert_has_calls([call('^7Bill ^1(country: United States)^7 was rejected by B3'), call('^7Mike ^2(country: Italy)^7 is accepted by B3')])
+        self.console.say.assert_has_calls([call('^7Bill ^1(country: United States)^7 was rejected by B3'),
+                                           call('^7Mike ^2(country: Italy)^7 is accepted by B3')])
         self.bill.kick.assert_called_with(silent=True)
 
     def test_deny_from_united_states(self):
@@ -66,7 +69,8 @@ class Test_events(CountryFilterTestCase):
         self.console.queueEvent(self.console.getEvent('EVT_CLIENT_GEOLOCATION_SUCCESS', client=self.bill))
         self.console.queueEvent(self.console.getEvent('EVT_CLIENT_GEOLOCATION_SUCCESS', client=self.mike))
         # THEN
-        self.console.say.assert_has_calls([call('^7Bill ^1(country: United States)^7 was rejected by B3'), call('^7Mike ^2(country: Italy)^7 is accepted by B3')])
+        self.console.say.assert_has_calls([call('^7Bill ^1(country: United States)^7 was rejected by B3'),
+                                           call('^7Mike ^2(country: Italy)^7 is accepted by B3')])
         self.bill.kick.assert_called_with(silent=True)
 
     def test_deny_from_united_states_with_ignore_name(self):

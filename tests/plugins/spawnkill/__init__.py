@@ -22,16 +22,17 @@
 #                                                                     #
 # ################################################################### #
 
-import unittest2 as unittest
+import unittest
+from textwrap import dedent
+
+from mockito import when
 
 from b3 import TEAM_BLUE, TEAM_RED
-from textwrap import dedent
-from mockito import when
-from b3.plugins.admin import AdminPlugin
 from b3.config import CfgConfigParser
 from b3.config import XmlConfigParser
 from b3.cvar import Cvar
 from b3.parsers.iourt43 import Iourt43Parser
+from b3.plugins.admin import AdminPlugin
 from b3.plugins.spawnkill import SpawnkillPlugin
 from tests import logging_disabled
 
@@ -98,7 +99,7 @@ class SpawnkillTestCase(unittest.TestCase):
             from b3.fake import FakeClient
 
         # create some clients
-        self.mike = FakeClient(console=self.console, name="Mike", guid="mikeguid", team=TEAM_RED,  groupBits=1)
+        self.mike = FakeClient(console=self.console, name="Mike", guid="mikeguid", team=TEAM_RED, groupBits=1)
         self.bill = FakeClient(console=self.console, name="Bill", guid="billguid", team=TEAM_BLUE, groupBits=1)
         self.mark = FakeClient(console=self.console, name="Mark", guid="markguid", team=TEAM_BLUE, groupBits=128)
 

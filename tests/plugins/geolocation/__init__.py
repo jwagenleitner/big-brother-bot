@@ -22,11 +22,12 @@
 #                                                                     #
 # ################################################################### #
 
-import time
 import logging
+import time
 
 from mock import Mock
 from mockito import unstub
+
 from b3.fake import FakeClient
 from b3.plugins.geolocation import GeolocationPlugin
 from tests import B3TestCase

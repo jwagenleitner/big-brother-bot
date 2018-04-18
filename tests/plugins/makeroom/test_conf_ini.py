@@ -22,15 +22,15 @@
 #                                                                     #
 # ################################################################### #
 
-import os
-import pytest
 from textwrap import dedent
+
 from tests.plugins.makeroom import *
 
 
-@pytest.mark.skipif(not os.path.exists(DEFAULT_PLUGIN_CONFIG_FILE), reason="Could not find default plugin config file %r" % DEFAULT_PLUGIN_CONFIG_FILE)
+@pytest.mark.skipif(not os.path.exists(DEFAULT_PLUGIN_CONFIG_FILE),
+                    reason="Could not find default plugin config file %r" % DEFAULT_PLUGIN_CONFIG_FILE)
 def test_default_conf(console):
-    plugin = plugin_maker(console,  DEFAULT_PLUGIN_CONFIG_FILE)
+    plugin = plugin_maker(console, DEFAULT_PLUGIN_CONFIG_FILE)
     # [global_settings]
     assert 2 == plugin._non_member_level
     assert 2.0 == plugin._delay
@@ -56,7 +56,7 @@ def test_default_conf(console):
 
 
 def test_empty_conf(console):
-    plugin = plugin_maker_ini(console,  dedent(""""""))
+    plugin = plugin_maker_ini(console, dedent(""""""))
     assert 2 == plugin._non_member_level
     assert 5.0 == plugin._delay
     assert None is plugin._automation_enabled

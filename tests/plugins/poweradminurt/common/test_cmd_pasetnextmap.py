@@ -23,8 +23,10 @@
 # ################################################################### #
 
 import time
+
 from mock import patch, Mock
 from mockito import when, verify
+
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
 from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
@@ -52,17 +54,14 @@ pasetnextmap-snmap: 20
 
         self.moderator.connects("2")
 
-
     def tearDown(self):
         super(mixin_cmd_pasetnextmap, self).tearDown()
         self.sleep_patcher.stop()
-
 
     def test_missing_parameter(self):
         self.moderator.clearMessageHistory()
         self.moderator.says("!snmap")
         self.assertEqual(['Invalid or missing data, try !help pasetnextmap'], self.moderator.message_history)
-
 
     def test_existing_map(self):
         # GIVEN
@@ -73,7 +72,6 @@ pasetnextmap-snmap: 20
         # THEN
         verify(self.console).getMapsSoundingLike('f00')
         self.assertEqual(['nextmap set to f00'], self.moderator.message_history)
-
 
     def test_suggestions(self):
         # GIVEN

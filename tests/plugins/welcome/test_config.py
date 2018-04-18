@@ -23,8 +23,10 @@
 # ################################################################### #
 
 from textwrap import dedent
+
 from b3.plugins.welcome import F_FIRST, F_NEWB, F_ANNOUNCE_USER, F_ANNOUNCE_FIRST, F_USER, F_CUSTOM_GREETING
 from tests.plugins.welcome import Welcome_functional_test
+
 
 class Test_default_config(Welcome_functional_test):
 
@@ -45,16 +47,19 @@ class Test_default_config(Welcome_functional_test):
         self.assertEqual(3600, self.p._min_gap)
 
     def test_messages_user(self):
-        self.assertEqual("^7[^2Authed^7] Welcome back $name ^7[^3@$id^7], last visit ^3$lastVisit^7, you're a ^2$group^7, played $connections times",
-                         self.conf.get("messages", 'user'))
+        self.assertEqual(
+            "^7[^2Authed^7] Welcome back $name ^7[^3@$id^7], last visit ^3$lastVisit^7, you're a ^2$group^7, played $connections times",
+            self.conf.get("messages", 'user'))
 
     def test_messages_newb(self):
-        self.assertEqual('^7[^2Authed^7] Welcome back $name ^7[^3@$id^7], last visit ^3$lastVisit. Type !register in chat to register. Type !help for help',
-                         self.conf.get("messages", 'newb'))
+        self.assertEqual(
+            '^7[^2Authed^7] Welcome back $name ^7[^3@$id^7], last visit ^3$lastVisit. Type !register in chat to register. Type !help for help',
+            self.conf.get("messages", 'newb'))
 
     def test_messages_announce_user(self):
-        self.assertEqual('^7Everyone welcome back $name^7, player number ^3#$id^7, to the server, played $connections times',
-                         self.conf.get("messages", 'announce_user'))
+        self.assertEqual(
+            '^7Everyone welcome back $name^7, player number ^3#$id^7, to the server, played $connections times',
+            self.conf.get("messages", 'announce_user'))
 
     def test_messages_first(self):
         self.assertEqual('^7Welcome $name^7, this must be your first visit, you are player ^3#$id. Type !help for help',

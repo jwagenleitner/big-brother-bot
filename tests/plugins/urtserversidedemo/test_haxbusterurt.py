@@ -22,13 +22,14 @@
 #                                                                     #
 # ################################################################### #
 
+from time import sleep
+
 from mock import Mock
 from mockito import when
-from time import sleep
+
+from b3.events import eventManager, Event
 from b3.fake import FakeClient
 from tests.plugins.urtserversidedemo import PluginTestCase
-from b3.events import eventManager, Event
-from time import sleep
 
 EVT_BAD_GUID = eventManager.createEvent('EVT_BAD_GUID', 'Bad guid detected')
 EVT_1337_PORT = eventManager.createEvent('EVT_1337_PORT', '1337 port detected')
@@ -38,6 +39,7 @@ class HaxbusterurtPlugin():
     """
     dummy HaxbusterurtPlugin
     """
+
     def __init__(self, console):
         self.working = True
 
@@ -72,7 +74,7 @@ demo_duration: 2
 
     def test_event_EVT_BAD_GUID(self):
         # GIVEN
-        self.p._haxbusterurt_demo_duration = (1.0/60)/8 # will make the auto-stop timer end after 125ms
+        self.p._haxbusterurt_demo_duration = (1.0 / 60) / 8  # will make the auto-stop timer end after 125ms
         self.p.start_recording_player = Mock()
         self.p.stop_recording_player = Mock()
         joe = FakeClient(console=self.console, name="Joe", guid="JOE_GUID")
@@ -82,16 +84,16 @@ demo_duration: 2
         self.console.queueEvent(Event(self.console.getEventID('EVT_BAD_GUID'), data=joe.guid, client=joe))
 
         # THEN
-        sleep(.5) # sleep so the thread has time of doing its job
+        sleep(.5)  # sleep so the thread has time of doing its job
         self.p.start_recording_player.assert_called_with(joe, None)
 
         # THEN
-        sleep(.5) # sleep so the thread has time of doing its job
+        sleep(.5)  # sleep so the thread has time of doing its job
         self.p.stop_recording_player.assert_called_with(joe)
 
     def test_event_EVT_1337_PORT(self):
         # GIVEN
-        self.p._haxbusterurt_demo_duration = (1.0 / 60) / 8 # will make the auto-stop timer end after 125ms
+        self.p._haxbusterurt_demo_duration = (1.0 / 60) / 8  # will make the auto-stop timer end after 125ms
         self.p.start_recording_player = Mock()
         self.p.stop_recording_player = Mock()
         joe = FakeClient(console=self.console, name="Joe", guid="JOE_GUID")
@@ -101,9 +103,9 @@ demo_duration: 2
         self.console.queueEvent(Event(self.console.getEventID('EVT_1337_PORT'), data=joe.guid, client=joe))
 
         # THEN
-        sleep(.5) # sleep so the thread has time of doing its job
+        sleep(.5)  # sleep so the thread has time of doing its job
         self.p.start_recording_player.assert_called_with(joe, None)
 
         # WHEN
-        sleep(.5) # sleep so the thread has time of doing its job
+        sleep(.5)  # sleep so the thread has time of doing its job
         self.p.stop_recording_player.assert_called_with(joe)

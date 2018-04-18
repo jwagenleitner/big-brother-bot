@@ -24,14 +24,16 @@
 
 import logging
 import os
+
 import pytest
 from mockito import when
-from b3.plugins.afk import AfkPlugin
+
 from b3 import TEAM_UNKNOWN
+from b3 import __version__ as b3_version
 from b3.config import CfgConfigParser
 from b3.plugins.admin import AdminPlugin
+from b3.plugins.afk import AfkPlugin
 from b3.update import B3version
-from b3 import __version__ as b3_version
 
 DEFAULT_PLUGIN_CONFIG_FILE = os.path.join(os.path.dirname(__file__), '../../../b3/conf/plugin_afk.ini')
 

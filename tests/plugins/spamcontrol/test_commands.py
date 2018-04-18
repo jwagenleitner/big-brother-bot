@@ -22,10 +22,10 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-
-from mockito import when
 from mock import Mock
+from mockito import when
+
+import b3
 from b3.fake import FakeClient
 from b3.plugins.admin import AdminPlugin
 from tests.plugins.spamcontrol import SpamcontrolTestCase
@@ -53,18 +53,18 @@ class Test_commands(SpamcontrolTestCase):
     def test_cmd_spamins(self):
         # GIVEN
         when(self.p).getTime().thenReturn(0).thenReturn(3).thenReturn(4).thenReturn(4).thenReturn(500)
-        self.joe.says("doh") # 0s
-        self.joe.says("doh") # 3s
-        self.joe.says("doh") # 4s
+        self.joe.says("doh")  # 0s
+        self.joe.says("doh")  # 3s
+        self.joe.says("doh")  # 4s
         # WHEN
         self.superadmin.clearMessageHistory()
         self.superadmin.says("!spamins joe")
         # THEN
-        self.assertListEqual(['Joe currently has 9 spamins, peak was 9'], self.superadmin.message_history) # 4s
+        self.assertListEqual(['Joe currently has 9 spamins, peak was 9'], self.superadmin.message_history)  # 4s
         # WHEN
         self.superadmin.clearMessageHistory()
         self.superadmin.says("!spamins joe")
-        self.assertListEqual(['Joe currently has 0 spamins, peak was 9'], self.superadmin.message_history) # 500s
+        self.assertListEqual(['Joe currently has 0 spamins, peak was 9'], self.superadmin.message_history)  # 500s
 
     def test_cmd_spamins_lowercase(self):
         # GIVEN

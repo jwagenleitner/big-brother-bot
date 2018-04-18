@@ -22,11 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-import b3.cron
-
 from mock import Mock
 from mockito import when
+
+import b3
+import b3.cron
 from b3.fake import FakeClient
 from b3.plugin import Plugin
 from b3.plugins.admin import Command
@@ -53,13 +53,8 @@ class Test_commands(PluginmanagerTestCase):
         superadmin.clearMessageHistory()
         superadmin.says("!plugin fake")
         # THEN
-        self.assertListEqual(['usage: !plugin <disable|enable|info|list|load|unload> [<data>]'], superadmin.message_history)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   PLUGIN LIST                                                                                                    #
-    #                                                                                                                  #
-    ####################################################################################################################
+        self.assertListEqual(['usage: !plugin <disable|enable|info|list|load|unload> [<data>]'],
+                             superadmin.message_history)
 
     def test_cmd_plugin_list(self):
         # GIVEN
@@ -70,12 +65,6 @@ class Test_commands(PluginmanagerTestCase):
         superadmin.says("!plugin list")
         # THEN
         self.assertListEqual(['Loaded plugins: admin, pluginmanager'], superadmin.message_history)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   PLUGIN ENABLE                                                                                                  #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_cmd_plugin_enable_with_no_plugin_name(self):
         # GIVEN
@@ -162,12 +151,6 @@ class Test_commands(PluginmanagerTestCase):
         # THEN
         self.assertListEqual(['Plugin mock is now enabled', 'Plugin fake is not loaded'], superadmin.message_history)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   PLUGIN DISABLE                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def test_cmd_plugin_disable_with_no_plugin_name(self):
         # GIVEN
         superadmin = FakeClient(self.console, name="superadmin", guid="superadminguid", groupBits=128)
@@ -238,7 +221,8 @@ class Test_commands(PluginmanagerTestCase):
         superadmin.clearMessageHistory()
         superadmin.says("!plugin disable mocka mockb")
         # THEN
-        self.assertListEqual(['Plugin mocka is now disabled', 'Plugin mockb is now disabled'], superadmin.message_history)
+        self.assertListEqual(['Plugin mocka is now disabled', 'Plugin mockb is now disabled'],
+                             superadmin.message_history)
 
     def test_cmd_plugin_disable_mixed_multiple(self):
         # GIVEN
@@ -252,12 +236,6 @@ class Test_commands(PluginmanagerTestCase):
         superadmin.says("!plugin disable mock fake")
         # THEN
         self.assertListEqual(['Plugin mock is now disabled', 'Plugin fake is not loaded'], superadmin.message_history)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   PLUGIN LOAD                                                                                                    #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_cmd_plugin_load_with_no_plugin_name(self):
         # GIVEN
@@ -299,15 +277,10 @@ class Test_commands(PluginmanagerTestCase):
         superadmin.clearMessageHistory()
         superadmin.says("!plugin load fake")
         # THEN
-        self.assertListEqual(['Missing fake plugin python module', 'Please put the plugin module in @b3/extplugins/'], superadmin.message_history)
+        self.assertListEqual(['Missing fake plugin python module', 'Please put the plugin module in @b3/extplugins/'],
+                             superadmin.message_history)
 
     # TODO: add test cases for successful plugin load
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   PLUGIN UNLOAD                                                                                                  #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_cmd_plugin_unload_with_no_plugin_name(self):
         # GIVEN
@@ -364,13 +337,14 @@ class Test_commands(PluginmanagerTestCase):
         ###### MOCK COMMAND
         mock_func = Mock()
         mock_func.__name__ = 'cmd_mockfunc'
-        self.adminPlugin._commands['mockcommand'] = Command(plugin=mock_plugin, cmd='mockcommand', level=100, func=mock_func)
+        self.adminPlugin._commands['mockcommand'] = Command(plugin=mock_plugin, cmd='mockcommand', level=100,
+                                                            func=mock_func)
         ###### MOCK EVENT
         mock_plugin.onSay = Mock()
         mock_plugin.registerEvent('EVT_CLIENT_SAY', mock_plugin.onSay)
         ###### MOCK CRON
         mock_plugin.mockCronjob = Mock()
-        mock_plugin.mockCrontab = b3.cron.PluginCronTab(mock_plugin, mock_plugin.mockCronjob, minute='*', second= '*/60')
+        mock_plugin.mockCrontab = b3.cron.PluginCronTab(mock_plugin, mock_plugin.mockCronjob, minute='*', second='*/60')
         self.console.cron.add(mock_plugin.mockCrontab)
         self.assertIn(id(mock_plugin.mockCrontab), self.console.cron._tabs)
 
@@ -385,12 +359,6 @@ class Test_commands(PluginmanagerTestCase):
         self.assertNotIn(mock_plugin, self.console._handlers[self.console.getEventID('EVT_CLIENT_SAY')])
         self.assertNotIn(id(mock_plugin.mockCrontab), self.console.cron._tabs)
         self.assertListEqual(['Plugin mock has been unloaded'], superadmin.message_history)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   PLUGIN INFO                                                                                                    #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_cmd_plugin_info_with_no_plugin_name(self):
         # GIVEN

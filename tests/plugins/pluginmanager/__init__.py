@@ -22,21 +22,21 @@
 #                                                                     #
 # ################################################################### #
 
+from textwrap import dedent
+
+from mockito import when
+
 import b3
 import b3.cron
-
-from textwrap import dedent
-from mockito import when
+from b3.config import CfgConfigParser
 from b3.plugins.admin import AdminPlugin
 from b3.plugins.pluginmanager import PluginmanagerPlugin
-from b3.config import CfgConfigParser
 from tests import B3TestCase
 
 
 class PluginmanagerTestCase(B3TestCase):
 
     def setUp(self):
-
         B3TestCase.setUp(self)
         self.console.gameName = 'f00'
 

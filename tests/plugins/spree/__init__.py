@@ -22,18 +22,19 @@
 #                                                                     #
 # ################################################################### #
 
-import unittest2
+import unittest
+from textwrap import dedent
 
 from mockito import when, unstub
-from b3.config import MainConfig
+
 from b3.config import CfgConfigParser
+from b3.config import MainConfig
 from b3.plugins.admin import AdminPlugin
 from b3.plugins.spree import SpreePlugin
 from tests import logging_disabled
-from textwrap import dedent
 
 
-class SpreeTestCase(unittest2.TestCase):
+class SpreeTestCase(unittest.TestCase):
 
     def setUp(self):
         # create a FakeConsole parser

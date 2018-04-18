@@ -24,15 +24,16 @@
 
 import logging
 import os
-import unittest2 as unittest
+import unittest
 
-from b3.plugins.admin import AdminPlugin
-from tests import B3TestCase
-from mock import patch,  Mock
+from mock import patch, Mock
 from mockito import when, unstub
-from b3.plugins.adv import AdvPlugin
-from b3.config import XmlConfigParser, CfgConfigParser
+
 from b3 import __file__ as b3_module__file__
+from b3.config import XmlConfigParser, CfgConfigParser
+from b3.plugins.admin import AdminPlugin
+from b3.plugins.adv import AdvPlugin
+from tests import B3TestCase
 
 ADMIN_CONFIG_FILE = os.path.normpath(os.path.join(os.path.dirname(b3_module__file__), "conf/plugin_admin.ini"))
 ADV_CONFIG_FILE = os.path.normpath(os.path.join(os.path.dirname(__file__), "../../../b3/conf/plugin_adv.xml"))
@@ -65,6 +66,7 @@ class AdvTestCase(B3TestCase):
     """
     Ease test cases that need an working B3 console and need to control the ADV plugin config
     """
+
     def setUp(self):
         self.log = logging.getLogger('output')
         self.log.propagate = False

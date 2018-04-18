@@ -23,6 +23,7 @@
 # ################################################################### #
 
 from mock import Mock
+
 from b3 import TEAM_FREE, TEAM_SPEC
 from b3.plugins.jumper import JumpRun
 from tests import logging_disabled
@@ -50,15 +51,10 @@ class Test_events(JumperTestCase):
         self.bill.disconnects()
         JumperTestCase.tearDown(self)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   JUMPRUN EVENTS                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def test_event_client_jumprun_started(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '1'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '1'}))
         # THEN
         self.assertEqual(True, self.mike.isvar(self.p, 'jumprun'))
         self.assertIsNone(self.mike.var(self.p, 'jumprun').value.demo)
@@ -66,40 +62,50 @@ class Test_events(JumperTestCase):
 
     def test_event_client_jumprun_stopped(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike, data={'way_id' : '1', 'way_time' : '12345'}))
+        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike,
+                                                      data={'way_id': '1', 'way_time': '12345'}))
         # THEN
         self.assertEqual(False, self.mike.isvar(self.p, 'jumprun'))
         self.assertListEqual([], self.p.getClientRecords(self.mike, self.console.game.mapName))
 
     def test_event_client_jumprun_canceled(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_CANCEL', client=self.mike, data={'way_id' : '1'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_CANCEL', client=self.mike, data={'way_id': '1'}))
         # THEN
         self.assertEqual(False, self.mike.isvar(self.p, 'jumprun'))
         self.assertListEqual([], self.p.getClientRecords(self.mike, self.console.game.mapName))
 
     def test_event_client_jumprun_started_stopped(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '1'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike, data={'way_id' : '1', 'way_time' : '12345'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '1'}))
+        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike,
+                                                      data={'way_id': '1', 'way_time': '12345'}))
         # THEN
         self.assertEqual(False, self.mike.isvar(self.p, 'jumprun'))
         self.assertEqual(1, len(self.p.getClientRecords(self.mike, self.console.game.mapName)))
 
     def test_event_client_jumprun_started_canceled(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '1'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_CANCEL', client=self.mike, data={'way_id' : '1'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '1'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_CANCEL', client=self.mike, data={'way_id': '1'}))
         # THEN
         self.assertEqual(False, self.mike.isvar(self.p, 'jumprun'))
         self.assertEqual(0, len(self.p.getClientRecords(self.mike, self.console.game.mapName)))
 
     def test_event_client_jumprun_started_stopped_multiple_clients(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '1'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike, data={'way_id' : '1', 'way_time' : '12345'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id' : '1'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.bill, data={'way_id' : '1', 'way_time' : '12345'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '1'}))
+        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike,
+                                                      data={'way_id': '1', 'way_time': '12345'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id': '1'}))
+        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.bill,
+                                                      data={'way_id': '1', 'way_time': '12345'}))
         # THEN
         self.assertEqual(False, self.mike.isvar(self.p, 'jumprun'))
         self.assertEqual(False, self.bill.isvar(self.p, 'jumprun'))
@@ -108,41 +114,50 @@ class Test_events(JumperTestCase):
 
     def test_event_client_jumprun_started_stopped_multiple_ways(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '1'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike, data={'way_id' : '1', 'way_time' : '12345'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '2'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike, data={'way_id' : '2', 'way_time' : '12345'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '1'}))
+        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike,
+                                                      data={'way_id': '1', 'way_time': '12345'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '2'}))
+        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike,
+                                                      data={'way_id': '2', 'way_time': '12345'}))
         # THEN
         self.assertEqual(False, self.mike.isvar(self.p, 'jumprun'))
         self.assertEqual(2, len(self.p.getClientRecords(self.mike, self.console.game.mapName)))
 
     def test_event_client_jumprun_started_stopped_multiple_clients_multiple_ways(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '1'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike, data={'way_id' : '1', 'way_time' : '12345'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '2'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike, data={'way_id' : '2', 'way_time' : '12345'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id' : '1'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.bill, data={'way_id' : '1', 'way_time' : '12345'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id' : '2'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.bill, data={'way_id' : '2', 'way_time' : '12345'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '1'}))
+        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike,
+                                                      data={'way_id': '1', 'way_time': '12345'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '2'}))
+        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.mike,
+                                                      data={'way_id': '2', 'way_time': '12345'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id': '1'}))
+        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.bill,
+                                                      data={'way_id': '1', 'way_time': '12345'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id': '2'}))
+        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_STOP', client=self.bill,
+                                                      data={'way_id': '2', 'way_time': '12345'}))
         # THEN
         self.assertEqual(False, self.mike.isvar(self.p, 'jumprun'))
         self.assertEqual(False, self.bill.isvar(self.p, 'jumprun'))
         self.assertEqual(2, len(self.p.getClientRecords(self.mike, self.console.game.mapName)))
         self.assertEqual(2, len(self.p.getClientRecords(self.bill, self.console.game.mapName)))
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   OTHER EVENTS                                                                                                   #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def test_event_game_map_change(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '1'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id' : '1'}))
-        self.console.queueEvent(self.console.getEvent('EVT_GAME_MAP_CHANGE', data='\sv_allowdownload\0\g_matchmode\0\g_gametype\9\sv_maxclients\32\sv_floodprotect\1'))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '1'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id': '1'}))
+        self.console.queueEvent(self.console.getEvent('EVT_GAME_MAP_CHANGE',
+                                                      data='\sv_allowdownload\0\g_matchmode\0\g_gametype\9\sv_maxclients\32\sv_floodprotect\1'))
         # THEN
         self.assertEqual(False, self.mike.isvar(self.p, 'jumprun'))
         self.assertEqual(False, self.bill.isvar(self.p, 'jumprun'))
@@ -151,15 +166,18 @@ class Test_events(JumperTestCase):
 
     def test_event_client_disconnect(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '1'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '1'}))
         self.console.queueEvent(self.console.getEvent('EVT_CLIENT_DISCONNECT', client=self.mike, data=None))
         # THEN
         self.assertEqual(False, self.mike.isvar(self.p, 'jumprun'))
 
     def test_event_client_team_change(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '1'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id' : '1'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '1'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id': '1'}))
         self.mike.team = TEAM_SPEC  # will raise EVT_CLIENT_TEAM_CHANGE
         self.bill.team = TEAM_FREE  # will not raise EVT_CLIENT_TEAM_CHANGE
         # THEN
@@ -169,16 +187,12 @@ class Test_events(JumperTestCase):
         self.assertEqual(True, self.bill.isvar(self.p, 'jumprun'))
         self.assertIsInstance(self.bill.var(self.p, 'jumprun').value, JumpRun)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   PLUGIN HOOKS                                                                                                   #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def test_plugin_disable(self):
         # WHEN
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id' : '1'}))
-        self.console.queueEvent(self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id' : '1'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.mike, data={'way_id': '1'}))
+        self.console.queueEvent(
+            self.console.getEvent('EVT_CLIENT_JUMP_RUN_START', client=self.bill, data={'way_id': '1'}))
         self.p.disable()
         # THEN
         self.assertEqual(False, self.mike.isvar(self.p, 'jumprun'))
@@ -194,4 +208,3 @@ class Test_events(JumperTestCase):
         self.p.enable()
         self.p.console.write.assert_called_with('cyclemap')
         self.assertEqual(1, self.p._cycle_count)
-

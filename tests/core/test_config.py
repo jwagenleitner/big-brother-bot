@@ -25,13 +25,14 @@
 from __future__ import print_function, absolute_import
 
 import logging
-from unittest import TestCase
-import unittest2 as unittest
 import sys
-from b3.config import XmlConfigParser, CfgConfigParser, ConfigFileNotValid
-from tests import B3TestCase
+import unittest
+from unittest import TestCase
 
 from six.moves import configparser as ConfigParser
+
+from b3.config import XmlConfigParser, CfgConfigParser, ConfigFileNotValid
+from tests import B3TestCase
 
 
 @unittest.skipUnless(sys.platform.startswith("win"), "requires Windows")

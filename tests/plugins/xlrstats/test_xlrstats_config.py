@@ -25,11 +25,10 @@
 import logging
 import os
 
+from b3 import __file__ as b3_module__file__
 from b3.config import CfgConfigParser
 from b3.plugins.xlrstats import XlrstatsPlugin
-from b3 import __file__ as b3_module__file__
 from tests import B3TestCase
-
 
 DEFAULT_XLRSTATS_CONFIG_FILE = os.path.join(os.path.dirname(b3_module__file__), 'conf', 'plugin_xlrstats.ini')
 
@@ -1558,8 +1557,8 @@ class Test_conf_settings_auto_purge(Conf_settings_test_case):
         self.init('auto_purge: false')
         # THEN
         self.assertFalse(self.p.auto_purge)
-        
-        
+
+
 class Conf_tables_test_case(XlrstatsTestCase):
 
     def init(self, option_snippet=''):
@@ -1898,4 +1897,3 @@ class Test_conf_tables_ctime(Conf_tables_test_case):
         # THEN
         self.assertEqual('f00', self.p.ctime_table)
         self.assertFalse(self.p._defaultTableNames)
-

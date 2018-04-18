@@ -24,7 +24,8 @@
 
 from __future__ import print_function, absolute_import
 
-import unittest2 as unittest
+import unittest
+
 from b3.update import B3version
 
 

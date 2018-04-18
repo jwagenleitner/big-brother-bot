@@ -23,10 +23,13 @@
 # ################################################################### #
 
 from textwrap import dedent
-from tests.plugins.afk import *
+
 from mock import call, Mock
+
 from b3 import TEAM_SPEC
 from b3.events import Event
+from tests.plugins.afk import *
+
 
 # This test suite makes sure `check_client` is called appropriately
 
@@ -109,4 +112,3 @@ def testd_3_consecutive_deaths_with_no_activity_but_not_enough_players(plugin, j
     bot.kills(joe)  # 3rd consecutive death with no activity
     # THEN joe is not checked for inactivity as he is the last remaining human on the server (excluding spectators)
     assert not plugin.check_client.called
-

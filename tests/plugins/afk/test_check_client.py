@@ -24,9 +24,12 @@
 
 from textwrap import dedent
 from time import time
-from tests.plugins.afk import *
+
 from mock import call, Mock
+
 from b3.events import Event
+from tests.plugins.afk import *
+
 
 # This test suite makes sure `ask_client` is called appropriately when `check_client` is run
 
@@ -102,4 +105,3 @@ def test_not_active_recently_but_bot(plugin, bot):
     plugin.check_client(bot)
     # THEN bot is not asked if AFK
     assert not plugin.ask_client.called
-

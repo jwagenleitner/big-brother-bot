@@ -23,14 +23,15 @@
 # ################################################################### #
 
 import json
-import unittest2
-
 from textwrap import dedent
+
+import unittest
 from mockito import when
-from b3.cvar import Cvar
+
+from b3.config import CfgConfigParser
 from b3.config import MainConfig
 from b3.config import XmlConfigParser
-from b3.config import CfgConfigParser
+from b3.cvar import Cvar
 from b3.parsers.iourt43 import Iourt43Parser
 from b3.plugins.admin import AdminPlugin
 from b3.plugins.jumper import JumperPlugin
@@ -42,7 +43,7 @@ MAPDATA_JSON = '''{"ut4_uranus_beta1a": {"size": 1841559, "nom": "Uranus", "njum
 "pk3": "ut4_crouchtraining_a1", "level": 79, "id": 346, "utversion": 2, "nway": 1, "howjump": "", "mapper": "spidercochon"}}'''
 
 
-class JumperTestCase(unittest2.TestCase):
+class JumperTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -115,5 +116,3 @@ class JumperTestCase(unittest2.TestCase):
 
     def tearDown(self):
         self.console.working = False
-
-

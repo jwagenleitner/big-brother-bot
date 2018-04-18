@@ -22,11 +22,12 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
 import logging
 import sys
 
 from mock import patch, call, Mock
+
+import b3
 from tests.plugins.admin import Admin_TestCase, Admin_functional_test
 
 
@@ -66,7 +67,7 @@ class Config_reading_TestCase(Admin_TestCase):
             except IndexError:
                 pass
         self.assertListEqual([], found_calls, "'%s' was found mentioned in some warning calls %r"
-                                              % (self.MESSAGE_BEACON, found_calls))
+                             % (self.MESSAGE_BEACON, found_calls))
 
     def assertNoErrorMessage(self):
         """
@@ -80,7 +81,7 @@ class Config_reading_TestCase(Admin_TestCase):
             except IndexError:
                 pass
         self.assertListEqual([], found_calls, "'%s' was found mentioned in some warning calls %r"
-                                              % (self.MESSAGE_BEACON, found_calls))
+                             % (self.MESSAGE_BEACON, found_calls))
 
 
 class Test_conf_announce_registration(Config_reading_TestCase):
@@ -158,8 +159,9 @@ announce_registration:
         # THEN
         self.assertTrue(self.p._announce_registration)
         self.assertNoWarningMessage()
-        self.assertIn(call("could not load settings/announce_registration config value: settings.announce_registration : "
-                           "'' is not a boolean value"), self.error_mock.mock_calls)
+        self.assertIn(
+            call("could not load settings/announce_registration config value: settings.announce_registration : "
+                 "'' is not a boolean value"), self.error_mock.mock_calls)
 
     def test_junk(self):
         # GIVEN
@@ -171,8 +173,9 @@ announce_registration: xxxxxxxxx
         # THEN
         self.assertTrue(self.p._announce_registration)
         self.assertNoWarningMessage()
-        self.assertIn(call("could not load settings/announce_registration config value: settings.announce_registration : "
-                           "'xxxxxxxxx' is not a boolean value"), self.error_mock.mock_calls)
+        self.assertIn(
+            call("could not load settings/announce_registration config value: settings.announce_registration : "
+                 "'xxxxxxxxx' is not a boolean value"), self.error_mock.mock_calls)
 
 
 class Test_conf_regme_confirmation(Config_reading_TestCase):
@@ -190,8 +193,9 @@ class Test_conf_regme_confirmation(Config_reading_TestCase):
         # THEN
         self.assertEqual('^7Thanks for your registration. You are now a member of the group f00',
                          self.p.getMessage('regme_confirmation', 'f00'))
-        self.assertIn(call("could not find messages/regme_confirmation in config file, using default: ^7Thanks for your "
-                           "registration. You are now a member of the group %s"), self.warning_mock.mock_calls)
+        self.assertIn(
+            call("could not find messages/regme_confirmation in config file, using default: ^7Thanks for your "
+                 "registration. You are now a member of the group %s"), self.warning_mock.mock_calls)
         self.assertNoErrorMessage()
 
     def test_nominal(self):
@@ -254,24 +258,28 @@ class Test_warn_reasons_default_config(Admin_functional_test):
             assertWarn("rule2", 1440, '^3Rule #2: No clan stacking, members must split evenly between the teams')
             assertWarn("rule3", 1440, '^3Rule #3: No arguing with admins (listen and learn or leave)')
             assertWarn("rule4", 1440, '^3Rule #4: No abusive language or behavior towards admins or other players')
-            assertWarn("rule5", 60, '^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names')
+            assertWarn("rule5", 60,
+                       '^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names')
             assertWarn("rule6", 1440, '^3Rule #6: No recruiting for your clan, your server, or anything else')
             assertWarn("rule7", 1440, '^3Rule #7: No advertising or spamming of websites or servers')
             assertWarn("rule8", 4320, '^3Rule #8: No profanity or offensive language (in any language)')
             assertWarn("rule9", 180, '^3Rule #9: Do ^1NOT ^3fire at teammates or within 10 seconds of spawning')
             assertWarn("rule10", 4320, '^3Rule #10: Offense players must play for the objective and support their team')
-            assertWarn("stack", 1440, '^7No clan stacking, members must split evenly between the teams, go spectator and wait if you have to')
+            assertWarn("stack", 1440,
+                       '^7No clan stacking, members must split evenly between the teams, go spectator and wait if you have to')
             assertWarn("lang", 4320, '^3Rule #8: No profanity or offensive language (in any language)')
             assertWarn("language", 4320, '^3Rule #8: No profanity or offensive language (in any language)')
             assertWarn("cuss", 4320, '^3Rule #8: No profanity or offensive language (in any language)')
             assertWarn("profanity", 4320, '^3Rule #8: No profanity or offensive language (in any language)')
-            assertWarn("name", 60, '^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names')
+            assertWarn("name", 60,
+                       '^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names')
             assertWarn("color", 60, '^7No in-game (double caret (^)) color in names')
             assertWarn("badname", 60, '^7No offensive, potentially offensive, or annoying names')
             assertWarn("spec", 5, '^7spectator too long on full server')
             assertWarn("adv", 1440, '^3Rule #7: No advertising or spamming of websites or servers')
             assertWarn("racism", 14400, '^3Rule #1: No racism of any kind')
-            assertWarn("stack", 1440, '^7No clan stacking, members must split evenly between the teams, go spectator and wait if you have to')
+            assertWarn("stack", 1440,
+                       '^7No clan stacking, members must split evenly between the teams, go spectator and wait if you have to')
             assertWarn("recruit", 1440, '^3Rule #6: No recruiting for your clan, your server, or anything else')
             assertWarn("argue", 1440, '^3Rule #3: No arguing with admins (listen and learn or leave)')
             assertWarn("sfire", 180, '^3Rule #9: Do ^1NOT ^3fire at teammates or within 10 seconds of spawning')
@@ -297,7 +305,6 @@ class Test_reason_keywords(Admin_functional_test):
         self.mike.connects(1)
         self.adv_text = "^3Rule #7: No advertising or spamming of websites or servers"
 
-
     def test_warn_with_keyword(self):
         with patch.object(self.console, "say") as say_mock:
             self.joe.says('!warn mike adv')
@@ -307,7 +314,6 @@ class Test_reason_keywords(Admin_functional_test):
         with patch.object(self.console, "say") as say_mock:
             self.joe.says('!warn mike f00')
             say_mock.assert_has_calls([call('^1WARNING^7 [^31^7]: Mike^7^7, ^7 f00')])
-
 
     def test_notice_with_keyword(self):
         with patch.object(self.mike, "notice") as notice_mock:
@@ -319,7 +325,6 @@ class Test_reason_keywords(Admin_functional_test):
             self.joe.says('!notice mike f00')
             notice_mock.assert_has_calls([call('f00', None, self.joe)])
 
-
     def test_kick_with_keyword(self):
         with patch.object(self.console, "kick") as kick_mock:
             self.joe.says('!kick mike adv')
@@ -329,7 +334,6 @@ class Test_reason_keywords(Admin_functional_test):
         with patch.object(self.console, "kick") as kick_mock:
             self.joe.says('!kick mike f00')
             kick_mock.assert_has_calls([call(self.mike, 'f00', self.joe, False)])
-
 
     def test_ban_with_keyword(self):
         with patch.object(self.mike, "tempban") as tempban_mock:
@@ -341,7 +345,6 @@ class Test_reason_keywords(Admin_functional_test):
             self.joe.says('!ban mike f00')
             tempban_mock.assert_has_calls([call('f00', 'f00', 20160.0, self.joe)])
 
-
     def test_permban_with_keyword(self):
         with patch.object(self.mike, "ban") as permban_mock:
             self.joe.says('!permban mike adv')
@@ -351,7 +354,6 @@ class Test_reason_keywords(Admin_functional_test):
         with patch.object(self.mike, "ban") as permban_mock:
             self.joe.says('!permban mike f00')
             permban_mock.assert_has_calls([call('f00', 'f00', self.joe)])
-
 
 
 class Test_config(Admin_functional_test):
@@ -388,8 +390,8 @@ class Test_config(Admin_functional_test):
         self.joe.message.assert_called_once_with('^2TEST: ^1WARNING^7 [^31^7]: ^7behave yourself')
         self.joe.message.reset_mock()
         self.joe.says('!warntest argue')
-        self.joe.message.assert_called_once_with('^2TEST: ^1WARNING^7 [^31^7]: ^3Rule #3: No arguing with admins (listen and learn or leave)')
-
+        self.joe.message.assert_called_once_with(
+            '^2TEST: ^1WARNING^7 [^31^7]: ^3Rule #3: No arguing with admins (listen and learn or leave)')
 
     def test_bad_format_for_generic_and_default(self):
         self.init("""[warn_reasons]
@@ -429,7 +431,6 @@ bar: /foo
         self.assertIn('bar', self.p.warn_reasons)
         self.assertEqual((120, 'foo'), self.p.warn_reasons['bar'])
 
-
     def test_invalid_reference_to_warn_reason(self):
         self.init("""[warn_reasons]
 foo: 2h, foo
@@ -439,7 +440,6 @@ bar: /nonexisting
         self.assertEqual((120, 'foo'), self.p.warn_reasons['foo'])
         self.assertNotIn('bar', self.p.warn_reasons)
 
-
     def test_reference_to_spamage(self):
         self.init("""[spamages]
 foo: fOO fOO
@@ -448,7 +448,6 @@ bar: 4h, /spam#foo
 """)
         self.assertIn('bar', self.p.warn_reasons)
         self.assertEqual((240, 'fOO fOO'), self.p.warn_reasons['bar'])
-
 
     def test_invalid_reference_to_spamage(self):
         self.init("""[warn_reasons]

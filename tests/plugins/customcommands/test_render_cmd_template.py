@@ -23,11 +23,11 @@
 # ################################################################### #
 
 from mockito import when
+
 from b3.config import CfgConfigParser
 from b3.plugins.customcommands import CustomcommandsPlugin
 from tests import logging_disabled
 from tests.plugins.customcommands import CustomcommandsTestCase
-
 
 with logging_disabled():
     from b3.fake import FakeClient
@@ -57,7 +57,8 @@ class Test_render_cmd_template(CustomcommandsTestCase):
         self.assertEqual("hi", self.p._render_cmd_template("hi <ARG:OPT:>", data="", client=self.player1))
         self.assertEqual("hi f00", self.p._render_cmd_template("hi <ARG:OPT:f00>", data="", client=self.player1))
         self.assertEqual("hi bar", self.p._render_cmd_template("hi <ARG:OPT:f00>", data="bar", client=self.player1))
-        self.assertEqual("hi foo bar", self.p._render_cmd_template("hi <ARG:OPT:f00>", data="foo bar", client=self.player1))
+        self.assertEqual("hi foo bar",
+                         self.p._render_cmd_template("hi <ARG:OPT:f00>", data="foo bar", client=self.player1))
 
     def test_ARG_FIND_MAP_errors(self):
         # GIVEN
@@ -70,7 +71,9 @@ class Test_render_cmd_template(CustomcommandsTestCase):
     def test_ARG_FIND_MAP_nominal(self):
         def assertFoundMap(expected_map, cmd_parameter):
             self.assertEqual("map " + expected_map, self.p._render_cmd_template("map <ARG:FIND_MAP>",
-                                                                                data=cmd_parameter, client=self.player1))
+                                                                                data=cmd_parameter,
+                                                                                client=self.player1))
+
         # GIVEN
         when(self.p.console).getMaps().thenReturn(["map1", "map2", "map3", "ut4_turnpike", "ut4_casa"])
         # THEN
@@ -83,57 +86,89 @@ class Test_render_cmd_template(CustomcommandsTestCase):
         # GIVEN
         when(self.p._adminPlugin).findClientPrompt("f00", self.player1).thenReturn(self.player2)
         # THEN
-        self.assertEqual("kick slot2", self.p._render_cmd_template("kick <ARG:FIND_PLAYER:PID>", data="f00", client=self.player1))
-        self.assertEqual("kick player2PBID", self.p._render_cmd_template("kick <ARG:FIND_PLAYER:PBID>", data="f00", client=self.player1))
-        self.assertEqual("kick player2GUID", self.p._render_cmd_template("kick <ARG:FIND_PLAYER:GUID>", data="f00", client=self.player1))
-        self.assertEqual("kick Player2", self.p._render_cmd_template("kick <ARG:FIND_PLAYER:NAME>", data="f00", client=self.player1))
-        self.assertEqual("kick Player2^7", self.p._render_cmd_template("kick <ARG:FIND_PLAYER:EXACTNAME>", data="f00", client=self.player1))
-        self.assertEqual("kick @%s" % self.player2.id, self.p._render_cmd_template("kick <ARG:FIND_PLAYER:B3ID>", data="f00", client=self.player1))
+        self.assertEqual("kick slot2",
+                         self.p._render_cmd_template("kick <ARG:FIND_PLAYER:PID>", data="f00", client=self.player1))
+        self.assertEqual("kick player2PBID",
+                         self.p._render_cmd_template("kick <ARG:FIND_PLAYER:PBID>", data="f00", client=self.player1))
+        self.assertEqual("kick player2GUID",
+                         self.p._render_cmd_template("kick <ARG:FIND_PLAYER:GUID>", data="f00", client=self.player1))
+        self.assertEqual("kick Player2",
+                         self.p._render_cmd_template("kick <ARG:FIND_PLAYER:NAME>", data="f00", client=self.player1))
+        self.assertEqual("kick Player2^7", self.p._render_cmd_template("kick <ARG:FIND_PLAYER:EXACTNAME>", data="f00",
+                                                                       client=self.player1))
+        self.assertEqual("kick @%s" % self.player2.id,
+                         self.p._render_cmd_template("kick <ARG:FIND_PLAYER:B3ID>", data="f00", client=self.player1))
 
     def test_PLAYER(self):
         self.assertEqual("f00 slot1", self.p._render_cmd_template("f00 <PLAYER:PID>", data="", client=self.player1))
-        self.assertEqual("f00 player1PBID", self.p._render_cmd_template("f00 <PLAYER:PBID>", data="", client=self.player1))
-        self.assertEqual("f00 player1GUID", self.p._render_cmd_template("f00 <PLAYER:GUID>", data="", client=self.player1))
+        self.assertEqual("f00 player1PBID",
+                         self.p._render_cmd_template("f00 <PLAYER:PBID>", data="", client=self.player1))
+        self.assertEqual("f00 player1GUID",
+                         self.p._render_cmd_template("f00 <PLAYER:GUID>", data="", client=self.player1))
         self.assertEqual("f00 Player1", self.p._render_cmd_template("f00 <PLAYER:NAME>", data="", client=self.player1))
-        self.assertEqual("f00 Player1^7", self.p._render_cmd_template("f00 <PLAYER:EXACTNAME>", data="", client=self.player1))
+        self.assertEqual("f00 Player1^7",
+                         self.p._render_cmd_template("f00 <PLAYER:EXACTNAME>", data="", client=self.player1))
         self.assertEqual("f00 @1", self.p._render_cmd_template("f00 <PLAYER:B3ID>", data="", client=self.player1))
 
     def test_LAST_KILLER(self):
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template, "f00 <LAST_KILLER:PID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template, "f00 <LAST_KILLER:PBID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template, "f00 <LAST_KILLER:GUID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template, "f00 <LAST_KILLER:NAME>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template, "f00 <LAST_KILLER:EXACTNAME>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template, "f00 <LAST_KILLER:B3ID>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_KILLER:PID>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_KILLER:PBID>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_KILLER:GUID>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_KILLER:NAME>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_KILLER:EXACTNAME>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_KILLER:B3ID>", data="", client=self.player1)
         # WHEN
         self.player2.kills(self.player1)
         # THEN
-        self.assertEqual("f00 slot2", self.p._render_cmd_template("f00 <LAST_KILLER:PID>", data="", client=self.player1))
-        self.assertEqual("f00 player2PBID", self.p._render_cmd_template("f00 <LAST_KILLER:PBID>", data="", client=self.player1))
-        self.assertEqual("f00 player2GUID", self.p._render_cmd_template("f00 <LAST_KILLER:GUID>", data="", client=self.player1))
-        self.assertEqual("f00 Player2", self.p._render_cmd_template("f00 <LAST_KILLER:NAME>", data="", client=self.player1))
-        self.assertEqual("f00 Player2^7", self.p._render_cmd_template("f00 <LAST_KILLER:EXACTNAME>", data="", client=self.player1))
+        self.assertEqual("f00 slot2",
+                         self.p._render_cmd_template("f00 <LAST_KILLER:PID>", data="", client=self.player1))
+        self.assertEqual("f00 player2PBID",
+                         self.p._render_cmd_template("f00 <LAST_KILLER:PBID>", data="", client=self.player1))
+        self.assertEqual("f00 player2GUID",
+                         self.p._render_cmd_template("f00 <LAST_KILLER:GUID>", data="", client=self.player1))
+        self.assertEqual("f00 Player2",
+                         self.p._render_cmd_template("f00 <LAST_KILLER:NAME>", data="", client=self.player1))
+        self.assertEqual("f00 Player2^7",
+                         self.p._render_cmd_template("f00 <LAST_KILLER:EXACTNAME>", data="", client=self.player1))
         self.assertEqual("f00 @2", self.p._render_cmd_template("f00 <LAST_KILLER:B3ID>", data="", client=self.player1))
 
     def test_LAST_VICTIM(self):
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template, "f00 <LAST_VICTIM:PID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template, "f00 <LAST_VICTIM:PBID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template, "f00 <LAST_VICTIM:GUID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template, "f00 <LAST_VICTIM:NAME>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template, "f00 <LAST_VICTIM:EXACTNAME>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template, "f00 <LAST_VICTIM:B3ID>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_VICTIM:PID>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_VICTIM:PBID>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_VICTIM:GUID>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_VICTIM:NAME>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_VICTIM:EXACTNAME>", data="", client=self.player1)
+        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+                                "f00 <LAST_VICTIM:B3ID>", data="", client=self.player1)
         # WHEN
         self.player1.kills(self.player2)
         # THEN
-        self.assertEqual("f00 slot2", self.p._render_cmd_template("f00 <LAST_VICTIM:PID>", data="", client=self.player1))
-        self.assertEqual("f00 player2PBID", self.p._render_cmd_template("f00 <LAST_VICTIM:PBID>", data="", client=self.player1))
-        self.assertEqual("f00 player2GUID", self.p._render_cmd_template("f00 <LAST_VICTIM:GUID>", data="", client=self.player1))
-        self.assertEqual("f00 Player2", self.p._render_cmd_template("f00 <LAST_VICTIM:NAME>", data="", client=self.player1))
-        self.assertEqual("f00 Player2^7", self.p._render_cmd_template("f00 <LAST_VICTIM:EXACTNAME>", data="", client=self.player1))
+        self.assertEqual("f00 slot2",
+                         self.p._render_cmd_template("f00 <LAST_VICTIM:PID>", data="", client=self.player1))
+        self.assertEqual("f00 player2PBID",
+                         self.p._render_cmd_template("f00 <LAST_VICTIM:PBID>", data="", client=self.player1))
+        self.assertEqual("f00 player2GUID",
+                         self.p._render_cmd_template("f00 <LAST_VICTIM:GUID>", data="", client=self.player1))
+        self.assertEqual("f00 Player2",
+                         self.p._render_cmd_template("f00 <LAST_VICTIM:NAME>", data="", client=self.player1))
+        self.assertEqual("f00 Player2^7",
+                         self.p._render_cmd_template("f00 <LAST_VICTIM:EXACTNAME>", data="", client=self.player1))
         self.assertEqual("f00 @2", self.p._render_cmd_template("f00 <LAST_VICTIM:B3ID>", data="", client=self.player1))
 
     def test_ADMINGROUP_SHORT(self):
-        groups = {0: 'guest', 1: 'user', 2: 'reg', 8: 'mod', 16: 'admin', 32: 'fulladmin', 64: 'senioradmin', 128: 'superadmin'}
+        groups = {0: 'guest', 1: 'user', 2: 'reg', 8: 'mod', 16: 'admin', 32: 'fulladmin', 64: 'senioradmin',
+                  128: 'superadmin'}
         for groupBits, group_keyword in groups.items():
             # WHEN
             self.player1.groupBits = groupBits
@@ -143,7 +178,8 @@ class Test_render_cmd_template(CustomcommandsTestCase):
                              "failed with group %s" % group_keyword)
 
     def test_ADMINGROUP_LONG(self):
-        groups = {0: 'Guest', 1: 'User', 2: 'Regular', 8: 'Moderator', 16: 'Admin', 32: 'Full Admin', 64: 'Senior Admin', 128: 'Super Admin'}
+        groups = {0: 'Guest', 1: 'User', 2: 'Regular', 8: 'Moderator', 16: 'Admin', 32: 'Full Admin',
+                  64: 'Senior Admin', 128: 'Super Admin'}
         for groupBits, group_name in groups.items():
             # WHEN
             self.player1.groupBits = groupBits

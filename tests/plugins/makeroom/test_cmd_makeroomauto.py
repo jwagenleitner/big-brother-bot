@@ -22,8 +22,9 @@
 #                                                                     #
 # ################################################################### #
 
-from tests.plugins.makeroom import *
 import pytest
+
+from tests.plugins.makeroom import *
 
 
 @pytest.fixture
@@ -69,4 +70,3 @@ def test_junk(plugin, superadmin):
     superadmin.connects(0)
     superadmin.says('!makeroomauto f00')
     assert ["expecting 'on' or 'off'"] == superadmin.message_history
-

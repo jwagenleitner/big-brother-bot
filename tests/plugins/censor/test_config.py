@@ -95,7 +95,6 @@ class Test_config(CensorTestCase):
         """)
         self.assertEqual(0, self.p._maxLevel)
 
-
     def test_broken_conf__ignore_length_missing(self):
         self.init_plugin(r"""
             <configuration plugin="censor">

@@ -24,10 +24,10 @@
 
 from tests.plugins.welcome import Welcome_functional_test
 
+
 class Test_cmd_greeting(Welcome_functional_test):
 
     def setUp(self):
-
         Welcome_functional_test.setUp(self)
         self.load_config()
         # disabled event handling (spawns threads and is of no use for that test)

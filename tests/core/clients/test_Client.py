@@ -25,15 +25,15 @@
 from __future__ import print_function, absolute_import
 
 import operator
+import unittest
 
-import unittest2 as unittest
 from mock import Mock, patch, ANY
+from six.moves import map
 
 from b3 import TEAM_UNKNOWN, TEAM_RED, TEAM_BLUE
 from b3.clients import Alias, IpAlias
 from b3.clients import Client, Group
 from tests import B3TestCase
-from six.moves import map
 
 
 class Test_Client(B3TestCase):

@@ -22,9 +22,9 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-
 from mockito import when
+
+import b3
 from b3.fake import FakeClient
 from b3.plugins.admin import AdminPlugin
 from tests.plugins.spamcontrol import SpamcontrolTestCase
@@ -49,7 +49,6 @@ class Test_plugin(SpamcontrolTestCase):
         self.superadmin = FakeClient(self.console, name="Superadmin", guid="superadmin_guid", groupBits=128)
         self.superadmin.connects("2")
 
-
     def assertSpaminsPoints(self, client, points):
         actual = client.var(self.p, 'spamins', 0).value
         self.assertEqual(points, actual, "expecting %s to have %s spamins points" % (client.name, points))
@@ -59,14 +58,14 @@ class Test_plugin(SpamcontrolTestCase):
 
         self.assertSpaminsPoints(self.joe, 0)
 
-        self.joe.says("doh") # 0s
+        self.joe.says("doh")  # 0s
         self.assertSpaminsPoints(self.joe, 2)
 
-        self.joe.says("foo") # 1s
+        self.joe.says("foo")  # 1s
         self.assertSpaminsPoints(self.joe, 4)
 
-        self.joe.says("bar") # 20s
+        self.joe.says("bar")  # 20s
         self.assertSpaminsPoints(self.joe, 3)
 
-        self.joe.says("hi") # 120s
+        self.joe.says("hi")  # 120s
         self.assertSpaminsPoints(self.joe, 0)

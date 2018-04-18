@@ -22,13 +22,10 @@
 #                                                                     #
 # ################################################################### #
 
-import time
-import pytest
 from textwrap import dedent
-from textwrap import dedent
-from tests.plugins.makeroom import *
-from tests import *
 
+from tests import *
+from tests.plugins.makeroom import *
 
 t = int(time.time())
 

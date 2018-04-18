@@ -25,8 +25,9 @@
 import logging
 
 from b3.config import CfgConfigParser
-from b3.plugins.poweradminurt import PoweradminurtPlugin, __file__ as poweradminurt_file
+from b3.plugins.poweradminurt import PoweradminurtPlugin
 from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
+
 
 class mixin_conf(object):
 
@@ -38,15 +39,12 @@ class mixin_conf(object):
         logger = logging.getLogger('output')
         logger.setLevel(logging.INFO)
 
-
-
     def test_empty_config(self):
         self.conf.loadFromString("""
 [foo]
         """)
         self.p.onLoadConfig()
         # should not raise any error
-
 
     ####################################### matchmode #######################################
 

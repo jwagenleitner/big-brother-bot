@@ -22,7 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
-from mock import  call, Mock
+from mock import call, Mock
+
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
 from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
@@ -46,17 +47,14 @@ pakill-kill: 20
 
         self.moderator.connects("2")
 
-
     def tearDown(self):
         super(Test_cmd_kill, self).tearDown()
-
 
     def test_no_argument(self):
         self.moderator.message_history = []
         self.moderator.says("!kill")
         self.assertEqual(['invalid data, try !help pakill'], self.moderator.message_history)
         self.console.write.assert_has_calls([])
-
 
     def test_unknown_player(self):
         self.moderator.message_history = []
@@ -71,4 +69,3 @@ pakill-kill: 20
         self.assertEqual([], self.moderator.message_history)
         self.assertEqual([], self.joe.message_history)
         self.console.write.assert_has_calls([call('smite 3')])
-

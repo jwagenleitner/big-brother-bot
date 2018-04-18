@@ -22,10 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
-from b3 import TEAM_SPEC
-from b3 import TEAM_RED
+from mock import call, Mock
+
 from b3 import TEAM_BLUE
-from mock import  call, Mock
+from b3 import TEAM_RED
+from b3 import TEAM_SPEC
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
 from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
@@ -59,7 +60,8 @@ pasub-sub:40           ; set the given client as a substitute for its team
         self.admin.message_history = []
         self.admin.team = TEAM_SPEC
         self.admin.says("!sub")
-        self.assertListEqual(["Level-40-Admin is a spectator! - Can't set substitute status"], self.admin.message_history)
+        self.assertListEqual(["Level-40-Admin is a spectator! - Can't set substitute status"],
+                             self.admin.message_history)
 
     def test_client_with_no_parameters(self):
         self.p._matchmode = True
@@ -76,4 +78,5 @@ pasub-sub:40           ; set the given client as a substitute for its team
         self.moderator.team = TEAM_BLUE
         self.admin.says("!sub 3")
         self.console.write.assert_has_calls([call('forcesub %s' % self.moderator.cid)])
-        self.assertListEqual(["You were set as substitute for the BLUE team by the Admin"], self.moderator.message_history)
+        self.assertListEqual(["You were set as substitute for the BLUE team by the Admin"],
+                             self.moderator.message_history)

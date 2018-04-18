@@ -25,8 +25,8 @@
 from __future__ import print_function, absolute_import
 
 import os
+import unittest
 
-import unittest2 as unittest
 from mock import Mock
 from mock import patch
 from mock import sentinel

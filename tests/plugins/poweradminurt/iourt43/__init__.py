@@ -17,15 +17,17 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 import unittest
-from b3.cvar import Cvar
+
 from mockito import when
-from tests import logging_disabled
+
 from b3 import TEAM_UNKNOWN
+from b3 import __version__ as b3_version
 from b3.config import XmlConfigParser
+from b3.cvar import Cvar
+from b3.parsers.iourt43 import Iourt43Parser
 from b3.plugins.admin import AdminPlugin
 from b3.update import B3version
-from b3 import __version__ as b3_version
-from b3.parsers.iourt43 import Iourt43Parser
+from tests import logging_disabled
 
 
 class Iourt43TestCase(unittest.TestCase):

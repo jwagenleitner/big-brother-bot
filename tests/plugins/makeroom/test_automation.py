@@ -23,10 +23,11 @@
 # ################################################################### #
 
 import time
-import pytest
 from textwrap import dedent
-from tests.plugins.makeroom import *
+
 from mock import call, Mock
+
+from tests.plugins.makeroom import *
 
 
 @pytest.fixture

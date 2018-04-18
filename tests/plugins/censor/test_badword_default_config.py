@@ -22,8 +22,9 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
 from mock import Mock
+
+import b3
 from tests.plugins.censor import Detection_TestCase
 
 
@@ -37,11 +38,13 @@ class Test_Censor_badword_default_config(Detection_TestCase):
 
         def my_info(text):
             print("INFO\t%s" % text)
-        #self.p.info = my_info
+
+        # self.p.info = my_info
 
         def my_warning(text):
             print("WARNING\t%s" % text)
-        #self.p.warning = my_warning
+
+        # self.p.warning = my_warning
 
         self.p.config.load(b3.getAbsolutePath('@b3/conf/plugin_censor.xml'))
         self.p.onLoadConfig()
@@ -67,7 +70,7 @@ class Test_Censor_badword_default_config(Detection_TestCase):
         self.assertEqual(1, len(badword_objects))
         badword_object = badword_objects[0]
         self.assertEqual('warning', badword_object.penalty.type)
-        self.assertEqual(60*24, badword_object.penalty.duration)
+        self.assertEqual(60 * 24, badword_object.penalty.duration)
         self.assertEquals("^7Please don't use profanity", badword_object.penalty.reason)
         self.assertIsNone(badword_object.penalty.keyword)
 
@@ -388,9 +391,3 @@ class Test_Censor_badword_default_config(Detection_TestCase):
     def test_wypierdalac(self):
         self.assert_chat_is_penalized('wypierdalac')
         self.assert_chat_is_penalized('x wypierdalac x')
-
-
-
-
-
-

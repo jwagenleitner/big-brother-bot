@@ -22,13 +22,14 @@
 #                                                                     #
 # ################################################################### #
 
-from time import time
 from textwrap import dedent
-from tests.plugins.afk import *
+from time import time
+
 from mock import call, Mock
 
 # This test suite makes sure `check_all_clients` is called appropriately
 from b3.fake import FakeClient
+from tests.plugins.afk import *
 
 
 def a_long_time_ago():
@@ -37,6 +38,8 @@ def a_long_time_ago():
 
 def fakeclient_repr(self):
     return self.name
+
+
 FakeClient.__repr__ = fakeclient_repr
 
 

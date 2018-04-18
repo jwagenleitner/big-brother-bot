@@ -15,13 +15,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-import b3
-
 from mockito import when
-from b3.plugins.admin import AdminPlugin
-from b3.plugins.welcome import WelcomePlugin
+
+import b3
 from b3.config import CfgConfigParser
 from b3.fake import FakeClient
+from b3.plugins.admin import AdminPlugin
+from b3.plugins.welcome import WelcomePlugin
 from tests import B3TestCase, logging_disabled
 
 
@@ -43,7 +43,8 @@ class Welcome_functional_test(B3TestCase):
             self.joe = FakeClient(self.console, name="Joe", guid="joeguid", groupBits=1, team=b3.TEAM_RED)
             self.mike = FakeClient(self.console, name="Mike", guid="mikeguid", groupBits=1, team=b3.TEAM_RED)
             self.bill = FakeClient(self.console, name="Bill", guid="billguid", groupBits=1, team=b3.TEAM_RED)
-            self.superadmin = FakeClient(self.console, name="SuperAdmin", guid="superadminguid", groupBits=128, team=b3.TEAM_RED)
+            self.superadmin = FakeClient(self.console, name="SuperAdmin", guid="superadminguid", groupBits=128,
+                                         team=b3.TEAM_RED)
 
     def load_config(self, config_content=None):
         """

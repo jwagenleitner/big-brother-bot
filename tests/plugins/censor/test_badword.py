@@ -24,16 +24,17 @@
 
 from tests.plugins.censor import Detection_TestCase
 
+
 class Test_Censor_badword(Detection_TestCase):
     """
     Test that bad words are detected.
     """
 
     def test_word(self):
-
         def my_info(text):
             print("INFO\t%s" % text)
-        #self.p.info = my_info
+
+        # self.p.info = my_info
 
         self.p._badNames = []
         self.assert_chat_is_not_penalized('Joe')
@@ -45,12 +46,11 @@ class Test_Censor_badword(Detection_TestCase):
         self.assert_chat_is_penalized('what an ass')
         self.assert_chat_is_not_penalized('nice one!')
 
-
     def test_regexp(self):
-
         def my_info(text):
             print("INFO\t%s" % text)
-        #self.p.info = my_info
+
+        # self.p.info = my_info
 
         self.p._badWords = []
         self.assert_chat_is_not_penalized('Joe')

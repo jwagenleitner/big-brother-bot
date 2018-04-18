@@ -25,9 +25,9 @@
 from __future__ import print_function, absolute_import
 
 import os
+import unittest
 
 import nose
-import unittest2 as unittest
 
 from b3.functions import splitDSN
 from b3.storage.mysql import MysqlStorage

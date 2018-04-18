@@ -22,9 +22,10 @@
 #                                                                     #
 # ################################################################### #
 
-import unittest2 as unittest
+import unittest
 
 from b3.plugins.adv import MessageLoop
+
 
 class Test_MessageLoop(unittest.TestCase):
 

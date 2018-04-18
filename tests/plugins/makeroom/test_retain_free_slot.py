@@ -22,12 +22,13 @@
 #                                                                     #
 # ################################################################### #
 
-from textwrap import dedent
 import time
-from tests.plugins.makeroom import *
-from mock import Mock
-import pytest
+from textwrap import dedent
 
+import pytest
+from mock import Mock
+
+from tests.plugins.makeroom import *
 
 fake_time = int(time.time())
 
@@ -91,7 +92,8 @@ def test_dont_kick_non_member_after_retain_free_duration(plugin, superadmin, joe
     assert jack.kick.call_count == 0
 
 
-def test_non_members_can_connect_during_retain_free_duration_if_a_member_joined(plugin, superadmin, moderator, joe, jack):
+def test_non_members_can_connect_during_retain_free_duration_if_a_member_joined(plugin, superadmin, moderator, joe,
+                                                                                jack):
     global fake_time
     assert plugin._retain_free_duration == 10
     joe.kick = Mock()

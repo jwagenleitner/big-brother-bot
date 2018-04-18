@@ -22,7 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
-from mock import  call, Mock
+from mock import call, Mock
+
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
 from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
@@ -63,5 +64,3 @@ pafunstuff-funstuff: 20 ; set the use of funstuff <on/off>
     def test_off(self):
         self.moderator.says("!funstuff off")
         self.console.write.assert_has_calls([call('set g_funstuff "0"')])
-
-

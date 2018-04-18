@@ -25,12 +25,15 @@
 import sys
 
 from mock import Mock
+
 from tests.plugins.censor import CensorTestCase
+
 
 class Test_functional(CensorTestCase):
     """
     Test simulated in-game scenarios.
     """
+
     def test_joe_says_badword(self):
         self.init_plugin(r"""
             <configuration plugin="censor">

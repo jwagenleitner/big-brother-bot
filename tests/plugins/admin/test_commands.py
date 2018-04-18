@@ -22,23 +22,21 @@
 #                                                                     #
 # ################################################################### #
 
-try:
-    import thread
-except ImportError:
-    import _thread as thread
-import time
 import sys
+import time
+
+from mock import Mock, patch, call, ANY
+from mockito import when, any as whatever
 
 from b3 import TEAM_RED
-from mockito import when, any as whatever
-from mock import Mock, patch, call, ANY
-from b3.fake import FakeClient
-from b3.config import CfgConfigParser
-from b3.plugins.admin import Command
 from b3.clients import Client, Group, ClientVar, ClientBan, ClientTempBan
-from tests import InstantTimer
+from b3.config import CfgConfigParser
+from b3.fake import FakeClient
+from b3.plugins.admin import Command
+from tests import InstantTimer, InstantThread
 from tests.plugins.admin import Admin_TestCase
 from tests.plugins.admin import Admin_functional_test
+
 
 class Test_misc_cmd(Admin_TestCase):
 
@@ -154,6 +152,7 @@ class Test_misc_cmd(Admin_TestCase):
 
 class CommandTestCase(Admin_TestCase):
     """ tests from a class inherithing from CommandTestCase must call self.init() """
+
     def setUp(self):
         Admin_TestCase.setUp(self)
         self.mock_client = Mock(spec=Client, name="client")
@@ -179,7 +178,6 @@ class Test_cmd_iamgod(CommandTestCase):
     def iamgod(self, data=''):
         return self.p.cmd_iamgod(data=data, client=self.mock_client, cmd=self.mock_command)
 
-
     def test_when_there_is_already_a_superadmin(self):
         self.p._commands['iamgod'] = 'foo'
         self.p.warning = Mock()
@@ -188,7 +186,6 @@ class Test_cmd_iamgod(CommandTestCase):
         self.iamgod()
         self.assertTrue(self.p.warning.called)
         self.assertNotIn('iamgod', self.p._commands)
-
 
     def test_is_already_superadmin(self):
         mock_iamgod_cmd = Mock(spec=Command, name="iamgod command")
@@ -201,7 +198,6 @@ class Test_cmd_iamgod(CommandTestCase):
 
         self.iamgod()
         self.mock_client.message.assert_called_once_with('^7You are already a ^2superadmin')
-
 
     def test_when_there_is_no_superadmin(self):
         mock_iamgod_cmd = Mock(spec=Command, name="iamgod command")
@@ -286,7 +282,6 @@ class Test_cmd_warn(CommandTestCase):
         self.p.warnClient.assert_called_once_with(foo_player, 'thekeyword', self.mock_client)
 
 
-
 class Test_cmd_kick(CommandTestCase):
 
     def setUp(self):
@@ -332,7 +327,8 @@ class Test_cmd_kick(CommandTestCase):
         self.mock_client.maxLevel = 5
         self.p.findClientPrompt = Mock(return_value=foo_player)
         self.kick('foo')
-        self.p.getMessage.assert_called_once_with('kick_denied', foo_player.exactName, self.mock_client.exactName, foo_player.exactName)
+        self.p.getMessage.assert_called_once_with('kick_denied', foo_player.exactName, self.mock_client.exactName,
+                                                  foo_player.exactName)
         assert not self.mock_client.kick.called
 
     def test_player_is_higher_level_but_masked(self):
@@ -343,7 +339,8 @@ class Test_cmd_kick(CommandTestCase):
         self.mock_client.maxLevel = 5
         self.p.findClientPrompt = Mock(return_value=foo_player)
         self.kick('foo')
-        self.mock_client.message.assert_called_once_with('^7%s ^7is a masked higher level player, action cancelled' % foo_player.exactName)
+        self.mock_client.message.assert_called_once_with(
+            '^7%s ^7is a masked higher level player, action cancelled' % foo_player.exactName)
         assert not self.mock_client.kick.called
 
     def test_nominal_no_reason(self):
@@ -417,7 +414,8 @@ class Test_cmd_spank(CommandTestCase):
         self.mock_client.maxLevel = 5
         self.p.findClientPrompt = Mock(return_value=foo_player)
         self.spank('foo')
-        self.p.getMessage.assert_called_once_with('kick_denied', foo_player.exactName, self.mock_client.exactName, foo_player.exactName)
+        self.p.getMessage.assert_called_once_with('kick_denied', foo_player.exactName, self.mock_client.exactName,
+                                                  foo_player.exactName)
         assert not self.mock_client.kick.called
 
     def test_player_is_higher_level_but_masked(self):
@@ -428,7 +426,8 @@ class Test_cmd_spank(CommandTestCase):
         self.mock_client.maxLevel = 5
         self.p.findClientPrompt = Mock(return_value=foo_player)
         self.spank('foo')
-        self.mock_client.message.assert_called_once_with('^7%s ^7is a masked higher level player, action cancelled' % foo_player.exactName)
+        self.mock_client.message.assert_called_once_with(
+            '^7%s ^7is a masked higher level player, action cancelled' % foo_player.exactName)
         assert not self.mock_client.kick.called
 
     def test_nominal_no_reason(self):
@@ -455,7 +454,6 @@ class Test_cmd_spank(CommandTestCase):
         self.p.getReason = Mock(return_value="aReason")
         self.spank('foo theKeyword')
         foo_player.kick.assert_called_once_with('aReason', 'theKeyword', self.mock_client, silent=True)
-
 
 
 class Test_cmd_permban(CommandTestCase):
@@ -514,7 +512,8 @@ class Test_cmd_permban(CommandTestCase):
         self.mock_client.maxLevel = 5
         self.p.findClientPrompt = Mock(return_value=foo_player)
         self.permban('foo')
-        self.mock_client.message.assert_called_once_with('^7%s ^7is a masked higher level player, action cancelled' % foo_player.exactName)
+        self.mock_client.message.assert_called_once_with(
+            '^7%s ^7is a masked higher level player, action cancelled' % foo_player.exactName)
         assert not self.mock_client.ban.called
 
     def test_nominal_no_reason(self):
@@ -616,7 +615,8 @@ class Test_cmd_tempban(CommandTestCase):
         self.mock_client.maxLevel = 5
         self.p.findClientPrompt = Mock(return_value=foo_player)
         self.tempban('foo 3h')
-        self.mock_client.message.assert_called_once_with('^7%s ^7is a masked higher level player, action cancelled' % foo_player.exactName)
+        self.mock_client.message.assert_called_once_with(
+            '^7%s ^7is a masked higher level player, action cancelled' % foo_player.exactName)
         assert not self.mock_client.tempban.called
 
     def test_nominal_no_reason(self):
@@ -625,7 +625,7 @@ class Test_cmd_tempban(CommandTestCase):
         self.mock_client.maxLevel = 20
         self.p.findClientPrompt = Mock(return_value=foo_player)
         self.tempban('foo 3h')
-        foo_player.tempban.assert_called_once_with('', None, 3*60, self.mock_client)
+        foo_player.tempban.assert_called_once_with('', None, 3 * 60, self.mock_client)
 
     def test_nominal_with_reason(self):
         foo_player = Mock(spec=Client, name="foo")
@@ -633,7 +633,7 @@ class Test_cmd_tempban(CommandTestCase):
         self.mock_client.maxLevel = 20
         self.p.findClientPrompt = Mock(return_value=foo_player)
         self.tempban('foo 3h theReason')
-        foo_player.tempban.assert_called_once_with('theReason', 'theReason', 3*60, self.mock_client)
+        foo_player.tempban.assert_called_once_with('theReason', 'theReason', 3 * 60, self.mock_client)
 
     def test_nominal_with_reason_keyword(self):
         foo_player = Mock(spec=Client, name="foo")
@@ -642,7 +642,7 @@ class Test_cmd_tempban(CommandTestCase):
         self.p.findClientPrompt = Mock(return_value=foo_player)
         self.p.getReason = Mock(return_value="aReason")
         self.tempban('foo 3h theKeyword')
-        foo_player.tempban.assert_called_once_with('aReason', 'theKeyword', 3*60, self.mock_client)
+        foo_player.tempban.assert_called_once_with('aReason', 'theKeyword', 3 * 60, self.mock_client)
 
 
 class Test_cmd_mask(CommandTestCase):
@@ -700,7 +700,6 @@ rule2: this is rule #2
         self.p._sendRules(None)
         self.assertFalse(self.console.say.called)
 
-
     def test_gap_in_rules(self, sleep_mock):
         self.init(r"""[spamages]
 rule1: this is rule #1
@@ -711,7 +710,6 @@ rule4: this is rule #4
         self.p._sendRules(None)
         self.console.say.assert_has_calls([call('this is rule #1'), call('this is rule #2')])
 
-
     def test_no_rule_in_config(self, sleep_mock):
         self.init(r"""[spamages]
 foo: foo
@@ -720,7 +718,6 @@ bar: bar
         self.console.say = Mock(wraps=lambda *args: sys.stdout.write("\t\tSAY: " + str(args) + "\n"))
         self.p._sendRules(None)
         self.assertFalse(self.console.say.called)
-
 
     def test_too_many_rules(self, sleep_mock):
         self.init("""[spamages]\n""" + "\n".join(["""rule%s: this is rule #%s""" % (x, x) for x in range(1, 23)]))
@@ -775,7 +772,8 @@ class Test_cmd_lastbans(CommandTestCase):
 
         player2 = Client(console=self.console, guid='player2GUID', name="P2")
         player2.save()
-        penalty2 = ClientTempBan(clientId=player2.id, timeExpire=self.console.time() + 60*2, adminId=0, reason="test reason f00")
+        penalty2 = ClientTempBan(clientId=player2.id, timeExpire=self.console.time() + 60 * 2, adminId=0,
+                                 reason="test reason f00")
 
         when(self.console.storage).getLastPenalties(types=whatever(), num=whatever()).thenReturn([penalty1, penalty2])
         # WHEN
@@ -785,6 +783,7 @@ class Test_cmd_lastbans(CommandTestCase):
             call(self.player, u'^2@1^7 P1^7^7 (Perm) test reason'),
             call(self.player, u'^2@2^7 P2^7^7 (2 minutes remaining) test reason f00'),
         ])
+
 
 class Test_cmd_baninfo(Admin_functional_test):
 
@@ -993,7 +992,7 @@ class Test_cmd_tempban(Admin_functional_test):
         self.mike.connects(1)
         self.mike.tempban = Mock()
         self.joe.says('!tempban mike 5h')
-        self.mike.tempban.assert_called_with('', None, 5*60, self.joe)
+        self.mike.tempban.assert_called_with('', None, 5 * 60, self.joe)
 
 
 class Test_cmd_lastbans(Admin_functional_test):
@@ -1053,11 +1052,13 @@ class Test_cmd_help(Admin_functional_test):
         self.mike.message = Mock()
         self.mike.connects(0)
         self.mike.says('!help')
-        self.mike.message.assert_called_with('^7Available commands: help, iamgod, nextmap, regtest, regulars, rules, time')
+        self.mike.message.assert_called_with(
+            '^7Available commands: help, iamgod, nextmap, regtest, regulars, rules, time')
 
     def test_joker(self):
         self.joe.says('!help *ban')
-        self.joe.message.assert_called_with('^7Available commands: ban, banall, baninfo, lastbans, permban, tempban, unban')
+        self.joe.message.assert_called_with(
+            '^7Available commands: ban, banall, baninfo, lastbans, permban, tempban, unban')
 
 
 class Test_cmd_mask(Admin_functional_test):
@@ -1109,10 +1110,14 @@ class Test_cmd_mask(Admin_functional_test):
         self.assertEqual(128, self.joe.maxGroup.id)
         self.assertEqual(100, self.joe.maxGroup.level)
         self.assertIsNotNone(self.joe.maskGroup, "expecting Joe to have a masked group")
-        self.assertEqual(group_to_mask_as.id, self.joe.maskGroup.id, "expecting Joe2 to have %s for the mask group id" % group_to_mask_as.id)
-        self.assertEqual(group_to_mask_as.level, self.joe.maskGroup.level, "expecting Joe2 to have %s for the mask group level" % group_to_mask_as.level)
-        self.assertEqual(group_to_mask_as.id, self.joe.maskedGroup.id, "expecting Joe2 to have %s for the masked group id" % group_to_mask_as.id)
-        self.assertEqual(group_to_mask_as.level, self.joe.maskedGroup.level, "expecting Joe2 to have %s for the masked group level" % group_to_mask_as.level)
+        self.assertEqual(group_to_mask_as.id, self.joe.maskGroup.id,
+                         "expecting Joe2 to have %s for the mask group id" % group_to_mask_as.id)
+        self.assertEqual(group_to_mask_as.level, self.joe.maskGroup.level,
+                         "expecting Joe2 to have %s for the mask group level" % group_to_mask_as.level)
+        self.assertEqual(group_to_mask_as.id, self.joe.maskedGroup.id,
+                         "expecting Joe2 to have %s for the masked group id" % group_to_mask_as.id)
+        self.assertEqual(group_to_mask_as.level, self.joe.maskedGroup.level,
+                         "expecting Joe2 to have %s for the masked group level" % group_to_mask_as.level)
         ## WHEN joe reconnects
         self.joe.disconnects()
         client = self.console.storage.getClient(Client(id=self.joe.id))
@@ -1122,14 +1127,19 @@ class Test_cmd_mask(Admin_functional_test):
         self.assertEqual(128, joe2.maxGroup.id)
         self.assertEqual(100, joe2.maxGroup.level)
         self.assertIsNotNone(joe2.maskGroup, "expecting Joe2 to have a masked group")
-        self.assertEqual(group_to_mask_as.id, joe2.maskGroup.id, "expecting Joe2 to have %s for the mask group id" % group_to_mask_as.id)
-        self.assertEqual(group_to_mask_as.level, joe2.maskGroup.level, "expecting Joe2 to have %s for the mask group level" % group_to_mask_as.level)
-        self.assertEqual(group_to_mask_as.id, joe2.maskedGroup.id, "expecting Joe2 to have %s for the masked group id" % group_to_mask_as.id)
-        self.assertEqual(group_to_mask_as.level, joe2.maskedGroup.level, "expecting Joe2 to have %s for the masked group level" % group_to_mask_as.level)
+        self.assertEqual(group_to_mask_as.id, joe2.maskGroup.id,
+                         "expecting Joe2 to have %s for the mask group id" % group_to_mask_as.id)
+        self.assertEqual(group_to_mask_as.level, joe2.maskGroup.level,
+                         "expecting Joe2 to have %s for the mask group level" % group_to_mask_as.level)
+        self.assertEqual(group_to_mask_as.id, joe2.maskedGroup.id,
+                         "expecting Joe2 to have %s for the masked group id" % group_to_mask_as.id)
+        self.assertEqual(group_to_mask_as.level, joe2.maskedGroup.level,
+                         "expecting Joe2 to have %s for the masked group level" % group_to_mask_as.level)
         ## THEN the content of the mask_level column in the client table must be correct
         client_data = self.console.storage.getClient(Client(id=joe2.id))
         self.assertIsNotNone(client_data)
-        self.assertEqual(group_to_mask_as.level, client_data._maskLevel, "expecting %s to be the value in the mask_level column in database" % group_to_mask_as.level)
+        self.assertEqual(group_to_mask_as.level, client_data._maskLevel,
+                         "expecting %s to be the value in the mask_level column in database" % group_to_mask_as.level)
 
     def test_persistence(self):
         self._test_persistence_for_group("user")
@@ -1168,7 +1178,6 @@ class Test_cmd_makereg_unreg(Admin_functional_test):
         self.assertFalse(self.mike.inGroup(self.group_reg))
         self.joe.message.assert_called_with('^7Mike^7^7 removed from group Regular')
 
-
     def test_unreg_when_not_regular(self):
         # GIVEN
         self.assertTrue(self.mike.inGroup(self.group_user))
@@ -1179,7 +1188,6 @@ class Test_cmd_makereg_unreg(Admin_functional_test):
         self.assertTrue(self.mike.inGroup(self.group_user))
         self.assertFalse(self.mike.inGroup(self.group_reg))
         self.joe.message.assert_called_with('^7Mike^7^7 is not in group Regular')
-
 
     def test_makereg_when_already_regular(self):
         # GIVEN
@@ -1193,13 +1201,11 @@ class Test_cmd_makereg_unreg(Admin_functional_test):
         self.assertTrue(self.mike.inGroup(self.group_reg))
         self.joe.message.assert_called_with('^7Mike^7^7 is already in group Regular')
 
-
     def test_makereg_no_parameter(self):
         # WHEN
         self.joe.says("!makereg")
         # THEN
         self.joe.message.assert_called_with('^7Invalid parameters')
-
 
     def test_unreg_no_parameter(self):
         # WHEN
@@ -1207,13 +1213,11 @@ class Test_cmd_makereg_unreg(Admin_functional_test):
         # THEN
         self.joe.message.assert_called_with('^7Invalid parameters')
 
-
     def test_makereg_unknown_player(self):
         # WHEN
         self.joe.says("!makereg foo")
         # THEN
         self.joe.message.assert_called_with('^7No players found matching foo')
-
 
     def test_unreg_unknown_player(self):
         # WHEN
@@ -1222,12 +1226,8 @@ class Test_cmd_makereg_unreg(Admin_functional_test):
         self.joe.message.assert_called_with('^7No players found matching foo')
 
 
-def _start_new_thread(callable, args_list, kwargs_dict):
-    """ used to patch thread.start_new_thread so it won't create a new thread but call the callable synchronously """
-    callable(*args_list, **kwargs_dict)
-
 @patch.object(time, "sleep")
-@patch.object(thread, "start_new_thread", wraps=_start_new_thread)
+@patch("threading.Thread", new_callable=lambda: InstantThread)
 class Test_cmd_rules(Admin_functional_test):
     def setUp(self):
         Admin_functional_test.setUp(self)
@@ -1238,45 +1238,63 @@ class Test_cmd_rules(Admin_functional_test):
         self.joe.connects(0)
         self.joe.says('!rules')
         self.joe.message.assert_has_calls([call('^3Rule #1: No racism of any kind'),
-                                           call('^3Rule #2: No clan stacking, members must split evenly between the teams'),
+                                           call(
+                                               '^3Rule #2: No clan stacking, members must split evenly between the teams'),
                                            call('^3Rule #3: No arguing with admins (listen and learn or leave)'),
-                                           call('^3Rule #4: No abusive language or behavior towards admins or other players'),
-                                           call('^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names'),
-                                           call('^3Rule #6: No recruiting for your clan, your server, or anything else'),
+                                           call(
+                                               '^3Rule #4: No abusive language or behavior towards admins or other players'),
+                                           call(
+                                               '^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names'),
+                                           call(
+                                               '^3Rule #6: No recruiting for your clan, your server, or anything else'),
                                            call('^3Rule #7: No advertising or spamming of websites or servers'),
                                            call('^3Rule #8: No profanity or offensive language (in any language)'),
-                                           call('^3Rule #9: Do ^1NOT ^3fire at teammates or within 10 seconds of spawning'),
-                                           call('^3Rule #10: Offense players must play for the objective and support their team')])
+                                           call(
+                                               '^3Rule #9: Do ^1NOT ^3fire at teammates or within 10 seconds of spawning'),
+                                           call(
+                                               '^3Rule #10: Offense players must play for the objective and support their team')])
 
     def test_nominal_loud(self, start_new_thread_mock, sleep_mock):
         self.console.say = Mock(wraps=lambda x: sys.stdout.write("\t\t" + x + "\n"))
         self.joe.connects(0)
         self.joe.says('@rules')
         self.console.say.assert_has_calls([call('^3Rule #1: No racism of any kind'),
-                                           call('^3Rule #2: No clan stacking, members must split evenly between the teams'),
+                                           call(
+                                               '^3Rule #2: No clan stacking, members must split evenly between the teams'),
                                            call('^3Rule #3: No arguing with admins (listen and learn or leave)'),
-                                           call('^3Rule #4: No abusive language or behavior towards admins or other players'),
-                                           call('^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names'),
-                                           call('^3Rule #6: No recruiting for your clan, your server, or anything else'),
+                                           call(
+                                               '^3Rule #4: No abusive language or behavior towards admins or other players'),
+                                           call(
+                                               '^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names'),
+                                           call(
+                                               '^3Rule #6: No recruiting for your clan, your server, or anything else'),
                                            call('^3Rule #7: No advertising or spamming of websites or servers'),
                                            call('^3Rule #8: No profanity or offensive language (in any language)'),
-                                           call('^3Rule #9: Do ^1NOT ^3fire at teammates or within 10 seconds of spawning'),
-                                           call('^3Rule #10: Offense players must play for the objective and support their team')])
+                                           call(
+                                               '^3Rule #9: Do ^1NOT ^3fire at teammates or within 10 seconds of spawning'),
+                                           call(
+                                               '^3Rule #10: Offense players must play for the objective and support their team')])
 
     def test_nominal_bigtext(self, start_new_thread_mock, sleep_mock):
         self.console.saybig = Mock(wraps=lambda x: sys.stdout.write("\t\t" + x + "\n"))
         self.joe.connects(0)
         self.joe.says('&rules')
         self.console.saybig.assert_has_calls([call('^3Rule #1: No racism of any kind'),
-                                           call('^3Rule #2: No clan stacking, members must split evenly between the teams'),
-                                           call('^3Rule #3: No arguing with admins (listen and learn or leave)'),
-                                           call('^3Rule #4: No abusive language or behavior towards admins or other players'),
-                                           call('^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names'),
-                                           call('^3Rule #6: No recruiting for your clan, your server, or anything else'),
-                                           call('^3Rule #7: No advertising or spamming of websites or servers'),
-                                           call('^3Rule #8: No profanity or offensive language (in any language)'),
-                                           call('^3Rule #9: Do ^1NOT ^3fire at teammates or within 10 seconds of spawning'),
-                                           call('^3Rule #10: Offense players must play for the objective and support their team')])
+                                              call(
+                                                  '^3Rule #2: No clan stacking, members must split evenly between the teams'),
+                                              call('^3Rule #3: No arguing with admins (listen and learn or leave)'),
+                                              call(
+                                                  '^3Rule #4: No abusive language or behavior towards admins or other players'),
+                                              call(
+                                                  '^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names'),
+                                              call(
+                                                  '^3Rule #6: No recruiting for your clan, your server, or anything else'),
+                                              call('^3Rule #7: No advertising or spamming of websites or servers'),
+                                              call('^3Rule #8: No profanity or offensive language (in any language)'),
+                                              call(
+                                                  '^3Rule #9: Do ^1NOT ^3fire at teammates or within 10 seconds of spawning'),
+                                              call(
+                                                  '^3Rule #10: Offense players must play for the objective and support their team')])
 
     def test_nominal_to_player(self, start_new_thread_mock, sleep_mock):
         self.joe.message = Mock(wraps=lambda x: sys.stdout.write("\t\t" + x + "\n"))
@@ -1285,15 +1303,21 @@ class Test_cmd_rules(Admin_functional_test):
         self.mike.connects(1)
         self.joe.says('!rules mike')
         self.mike.message.assert_has_calls([call('^3Rule #1: No racism of any kind'),
-                                           call('^3Rule #2: No clan stacking, members must split evenly between the teams'),
-                                           call('^3Rule #3: No arguing with admins (listen and learn or leave)'),
-                                           call('^3Rule #4: No abusive language or behavior towards admins or other players'),
-                                           call('^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names'),
-                                           call('^3Rule #6: No recruiting for your clan, your server, or anything else'),
-                                           call('^3Rule #7: No advertising or spamming of websites or servers'),
-                                           call('^3Rule #8: No profanity or offensive language (in any language)'),
-                                           call('^3Rule #9: Do ^1NOT ^3fire at teammates or within 10 seconds of spawning'),
-                                           call('^3Rule #10: Offense players must play for the objective and support their team')])
+                                            call(
+                                                '^3Rule #2: No clan stacking, members must split evenly between the teams'),
+                                            call('^3Rule #3: No arguing with admins (listen and learn or leave)'),
+                                            call(
+                                                '^3Rule #4: No abusive language or behavior towards admins or other players'),
+                                            call(
+                                                '^3Rule #5: No offensive or potentially offensive names, annoying names, or in-game (double caret (^)) color in names'),
+                                            call(
+                                                '^3Rule #6: No recruiting for your clan, your server, or anything else'),
+                                            call('^3Rule #7: No advertising or spamming of websites or servers'),
+                                            call('^3Rule #8: No profanity or offensive language (in any language)'),
+                                            call(
+                                                '^3Rule #9: Do ^1NOT ^3fire at teammates or within 10 seconds of spawning'),
+                                            call(
+                                                '^3Rule #10: Offense players must play for the objective and support their team')])
 
     def test_unknown_player(self, start_new_thread_mock, sleep_mock):
         self.joe.message = Mock(wraps=lambda x: sys.stdout.write("\t\t" + x + "\n"))
@@ -1313,8 +1337,8 @@ class Test_cmd_warns(Admin_functional_test):
         self.joe.connects(0)
         self.joe.says('!warns')
         self.joe.message.assert_called_once_with('^7Warnings: adv, afk, argue, badname, camp, ci, color, cuss, fakecmd,'
-        ' jerk, lang, language, name, nocmd, obj, profanity, racism, recruit, rule1, rule10, rule2, rule3, rule4, rule5'
-        ', rule6, rule7, rule8, rule9, sfire, spam, spawnfire, spec, spectator, stack, stacking, tk')
+                                                 ' jerk, lang, language, name, nocmd, obj, profanity, racism, recruit, rule1, rule10, rule2, rule3, rule4, rule5'
+                                                 ', rule6, rule7, rule8, rule9, sfire, spam, spawnfire, spec, spectator, stack, stacking, tk')
 
 
 class Test_cmd_admins(Admin_functional_test):
@@ -1439,7 +1463,7 @@ class Test_cmd_regulars(Admin_functional_test):
 
 
 class Test_cmd_map(Admin_functional_test):
-    
+
     def setUp(self):
         Admin_functional_test.setUp(self)
         self.init()
@@ -1453,7 +1477,8 @@ class Test_cmd_map(Admin_functional_test):
     def test_suggestions(self):
         self.joe.message = Mock(wraps=lambda x: sys.stdout.write("\t\t" + x + "\n"))
         self.joe.connects(0)
-        when(self.console).changeMap('f00').thenReturn(["bar1", "bar2", "bar3", "bar4", "bar5", "bar6", "bar7", "bar8", "bar9", "bar10", "bar11", "bar"])
+        when(self.console).changeMap('f00').thenReturn(
+            ["bar1", "bar2", "bar3", "bar4", "bar5", "bar6", "bar7", "bar8", "bar9", "bar10", "bar11", "bar"])
         self.joe.says('!map f00')
         self.joe.message.assert_called_once_with('do you mean: bar1, bar2, bar3, bar4, bar5?')
 
@@ -1463,8 +1488,8 @@ class Test_cmd_map(Admin_functional_test):
         when(self.console).changeMap('f00').thenReturn(None)
         self.joe.says('!map f00')
         self.assertEqual(0, self.joe.message.call_count)
-        
-        
+
+
 class Test_cmd_register(Admin_functional_test):
     def setUp(self):
         Admin_functional_test.setUp(self)
@@ -1664,7 +1689,6 @@ message: ^1WARNING^7 [^3$warnings^7]: $reason
         self.assertListEqual([], self.joe.message_history)
         self.assertListEqual([], self.mike.message_history)
 
-
     @patch('threading.Timer', new_callable=lambda: InstantTimer)
     def test_warn_then_auto_kick_duration_divider_60(self, instant_timer, sleep_mock):
         # GIVEN
@@ -1780,7 +1804,8 @@ warn_command_abusers: no
         with patch.object(self.p, "info") as info_mock:
             self.player.says("!help")
         # THEN
-        self.assertListEqual([call('ThePlayer does not have sufficient rights to use !help. Required level: 2')], info_mock.mock_calls)
+        self.assertListEqual([call('ThePlayer does not have sufficient rights to use !help. Required level: 2')],
+                             info_mock.mock_calls)
         # message section not loaded so this will fallback on the default warn message
         self.assertListEqual(['You do not have sufficient access to use !help'], self.player.message_history)
         self.assertFalse(self.player_warn_mock.called)
@@ -1799,7 +1824,8 @@ warn_command_abusers: yes
         with patch.object(self.p, "info") as info_mock:
             self.player.says("!help")
         # THEN
-        self.assertListEqual([call('ThePlayer does not have sufficient rights to use !help. Required level: 2')], info_mock.mock_calls)
+        self.assertListEqual([call('ThePlayer does not have sufficient rights to use !help. Required level: 2')],
+                             info_mock.mock_calls)
         # message section not loaded so this will fallback on the default warn message
         self.assertListEqual(['You do not have sufficient access to use !help'], self.player.message_history)
         self.assertFalse(self.player_warn_mock.called)
@@ -1822,13 +1848,13 @@ nocmd: 90s, do not use commands you do not have access to, try using !help
             self.player.says("!help")
         # THEN
         self.assertListEqual([call('ThePlayer does not have sufficient rights to use !help. Required level: 2'),
-                              call('ThePlayer does not have sufficient rights to use !help. Required level: 2')], info_mock.mock_calls)
+                              call('ThePlayer does not have sufficient rights to use !help. Required level: 2')],
+                             info_mock.mock_calls)
         # message section not loaded so this will fallback on the default warn message
         self.assertListEqual(['You do not have sufficient access to use !help',
                               'You do not have sufficient access to use !help'], self.player.message_history)
         self.assertListEqual([call(1.5, 'do not use commands you do not have access to, try using !help',
                                    'nocmd', ANY, ANY)], self.player_warn_mock.mock_calls)
-
 
     def test_warn_no__unknown_cmd(self, sleep_mock):
         # GIVEN
@@ -1935,7 +1961,6 @@ help: 0
         self.assertListEqual(["Available commands: help, iamgod"], self.joe.message_history)
 
 
-
 class Test_cmd_kick_functional(Admin_functional_test):
 
     def setUp(self):
@@ -1982,7 +2007,8 @@ class Test_cmd_kick_functional(Admin_functional_test):
         with patch.object(self.console, "say") as say_mock:
             self.mike.says('!kick joe reason1')
         # THEN
-        self.assertListEqual([call("^7Joe^7^7 gets 1 point, Mike^7^7 gets none, Joe^7^7 wins, can't kick")], say_mock.mock_calls)
+        self.assertListEqual([call("^7Joe^7^7 gets 1 point, Mike^7^7 gets none, Joe^7^7 wins, can't kick")],
+                             say_mock.mock_calls)
         self.assertListEqual([], self.kick_mock.mock_calls)
 
     def test_kick_masked_higher_level_admin(self):
@@ -2109,4 +2135,3 @@ class Test_cmd_spam(Admin_functional_test):
             self.joe.says('&spam rule1')
         self.assertListEqual([call('^3Rule #1: No racism of any kind')], saybig_mock.mock_calls)
         self.assertListEqual([], self.joe.message_history)
-

@@ -32,6 +32,7 @@ def write(*args, **kwargs):
     print("WRITE: %s" % args[0])
     return ""
 
+
 class Iourt43_TestCase_mixin(unittest.TestCase):
     """
     Test case that makes Iourt43Parser inherits from FakeConsole
@@ -57,10 +58,13 @@ class Iourt43TestCase(Iourt43_TestCase_mixin):
     def setUp(self):
         # create a Iourt41 parser
         self.parser_conf = XmlConfigParser()
-        self.parser_conf.loadFromString("""<configuration><settings name="server"><set name="game_log"></set></settings></configuration>""")
+        self.parser_conf.loadFromString(
+            """<configuration><settings name="server"><set name="game_log"></set></settings></configuration>""")
         self.console = Iourt43Parser(self.parser_conf)
 
         when(self.console).getCvar('gamename').thenReturn(Cvar('gamename', value='q3urt43'))
+        when(self.console).getCvar('auth').thenReturn(None)
+        when(self.console).getCvar('auth_owners').thenReturn(None)
 
         self.console.write = Mock(name="write", side_effect=write)
         self.console.startup()

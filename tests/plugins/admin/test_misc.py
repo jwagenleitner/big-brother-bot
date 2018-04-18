@@ -22,9 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
-import unittest2 as unittest
-
 from mock import Mock
+
 from tests.plugins.admin import Admin_TestCase, Admin_functional_test
 
 
@@ -34,9 +33,9 @@ class Test_parseUserCmd(Admin_TestCase):
         Admin_TestCase.setUp(self)
         self.init()
 
-    @unittest.expectedFailure
     def test_clientinfo_bad_arg(self):
-        self.assertIsNone(self.p.parseUserCmd(None))
+        with self.assertRaises(Exception):
+            self.p.parseUserCmd(None)
 
     def test_clientinfo_empty_arg(self):
         self.assertIsNone(self.p.parseUserCmd(''))

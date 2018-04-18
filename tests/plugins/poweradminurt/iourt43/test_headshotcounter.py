@@ -22,10 +22,12 @@
 #                                                                     #
 # ################################################################### #
 
-from mock import  Mock
+from mock import Mock
+
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
 from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
+
 
 class Test_headshotcounter(Iourt43TestCase):
     def setUp(self):
@@ -63,10 +65,9 @@ warn_kevlar_nr: 50
         self.console.write = Mock()
 
     def test_hitlocation(self):
-
         def joe_hits_simon(hitloc):
-            #Hit: 13 10 0 8: Grover hit jacobdk92 in the Head
-            #Hit: cid acid hitloc aweap: text
+            # Hit: 13 10 0 8: Grover hit jacobdk92 in the Head
+            # Hit: cid acid hitloc aweap: text
             self.console.parseLine("Hit: 7 6 %s 8: Grover hit jacobdk92 in the Head" % hitloc)
 
         def assertCounts(head, helmet, torso):
@@ -97,6 +98,3 @@ warn_kevlar_nr: 50
         joe_hits_simon('3')
         # THEN
         assertCounts(head=1.0, helmet=1.0, torso=1.0)
-
-
-

@@ -24,11 +24,12 @@
 
 from textwrap import dedent
 from time import time
-from tests.plugins.afk import *
+
 from mock import call, Mock
 
 # This test suite makes sure clients are kicked appropriately when `kick_client` is run
 from b3 import TEAM_SPEC, TEAM_RED
+from tests.plugins.afk import *
 
 
 @pytest.yield_fixture
@@ -124,4 +125,3 @@ def test_player_moved_to_spec(plugin, joe, jack):
     plugin.kick_client(joe)
     # THEN
     assert [call(reason='AFK for too long on this server')] == joe.kick.mock_calls
-

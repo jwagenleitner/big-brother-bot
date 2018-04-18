@@ -27,21 +27,19 @@ from __future__ import print_function, absolute_import
 import logging
 import sys
 import threading
+import time
+import unittest
 from contextlib import contextmanager
 
-import six
+from mock import Mock, patch
 
 from b3.config import CfgConfigParser
 from b3.config import MainConfig
+from b3.events import Event
 
 logging.raiseExceptions = False  # get rid of 'No handlers could be found for logger output' message
 log = logging.getLogger('output')
 log.setLevel(logging.WARNING)
-
-from mock import Mock, patch
-import time
-import unittest2 as unittest
-from b3.events import Event
 
 testcase_lock = threading.Lock()  # together with flush_console_streams, helps getting logging output related to the
 
@@ -76,6 +74,10 @@ class logging_disabled(object):
 def flush_console_streams():
     sys.stderr.flush()
     sys.stdout.flush()
+
+
+def _start_daemon_thread(callable, *args, **kwargs):
+    callable(*args, **kwargs)
 
 
 class B3TestCase(unittest.TestCase):
@@ -148,19 +150,21 @@ class B3TestCase(unittest.TestCase):
             }))
 
 
-## Makes a way to patch threading.Timer so it behave synchronously and instantly
-## Usage:
-##
-## @patch('threading.Timer', new_callable=lambda: InstantTimer)
-## def test_my_code_using_threading_Timer(instant_timer):
-##     t = threading.Timer(30, print, args=['hi'])
-##     t.start()  # prints 'hi' instantly and in the same thread
-##
 class InstantTimer(object):
-    def __init__(self, interval, function, args=[], kwargs={}):
+    """Makes threading.Timer behave synchronously
+
+    Usage:
+
+        @patch('threading.Timer', new_callable=lambda: InstantTimer)
+        def test_my_code_using_threading_Timer(instant_timer):
+            t = threading.Timer(30, print, args=['hi'])
+            t.start()  # prints 'hi' instantly and in the same thread
+    """
+
+    def __init__(self, interval, function, args=None, kwargs=None):
         self.function = function
-        self.args = args
-        self.kwargs = kwargs
+        self.args = args or []
+        self.kwargs = kwargs or {}
 
     def cancel(self):
         pass
@@ -172,14 +176,16 @@ class InstantTimer(object):
         self.function(*self.args, **self.kwargs)
 
 
-## Makes a way to patch threading.Thread so it behaves synchronously and
-## instantly. Usage:
-##
-## @patch('threading.Thread', new_callable=lambda: InstantThread)
-## def test_my_code_using_threading_Timer(instant_thread):
-##     t = threading.Thread(target=some_func)
-##     t.start()
-##
 class InstantThread(threading.Thread):
+    """Makes threading.Thread behaves synchronously
+
+    Usage:
+
+        @patch("threading.Thread", new_callable=lambda: InstantThread)
+        def test_my_code_using_threading_Timer(instant_thread):
+            t = threading.Thread(target=some_func)
+            t.start()
+    """
+
     def start(self):
-        super(InstantThread, self).start()
+        self.run()

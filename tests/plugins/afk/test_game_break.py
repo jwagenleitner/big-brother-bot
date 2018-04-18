@@ -23,9 +23,10 @@
 # ################################################################### #
 
 from textwrap import dedent
-from tests.plugins.afk import *
+
 from mock import Mock
 
+from tests.plugins.afk import *
 
 
 @pytest.yield_fixture
@@ -60,4 +61,3 @@ def test_game_break(plugin, joe):
     plugin.on_game_break(None)
     # THEN
     assert joe not in plugin.kick_timers
-

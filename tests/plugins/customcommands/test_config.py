@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from mock import patch, call
+
 # ################################################################### #
 #                                                                     #
 #  BigBrotherBot(B3) (www.bigbrotherbot.net)                          #
@@ -22,10 +24,8 @@
 #                                                                     #
 # ################################################################### #
 import b3
-import os
-from mock import patch, call
-from b3.plugins.admin import Command
 from b3.config import CfgConfigParser
+from b3.plugins.admin import Command
 from b3.plugins.customcommands import CustomcommandsPlugin
 from tests import logging_disabled
 from tests.plugins.customcommands import CustomcommandsTestCase

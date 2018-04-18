@@ -25,8 +25,7 @@
 from __future__ import print_function, absolute_import
 
 import logging
-
-import unittest2 as unittest
+import unittest
 
 from b3.clients import Client
 from b3.parser import Parser

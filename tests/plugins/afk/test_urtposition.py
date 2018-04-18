@@ -22,10 +22,13 @@
 #                                                                     #
 # ################################################################### #
 
-from types import MethodType
 from textwrap import dedent
-from tests.plugins.afk import *
+from types import MethodType
+
 from mock import call, Mock
+
+from tests.plugins.afk import *
+
 
 # This test suite makes sure `check_client` is called appropriately
 

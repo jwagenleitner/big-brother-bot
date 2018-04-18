@@ -23,8 +23,10 @@
 # ################################################################### #
 
 from textwrap import dedent
-from tests.plugins.afk import *
+
 from b3 import TEAM_SPEC
+from tests.plugins.afk import *
+
 
 # This test suite makes sure `check_client` is called appropriately
 
@@ -74,4 +76,3 @@ def test_client_disconnection_clears_kick_timer(plugin, joe):
     assert 0 == len(plugin.kick_timers)
     assert joe not in plugin.kick_timers
     assert not hasattr(joe, 'last_activity_time')
-

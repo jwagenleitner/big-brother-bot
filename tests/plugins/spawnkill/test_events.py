@@ -23,15 +23,11 @@
 # ################################################################### #
 
 from textwrap import dedent
+
 from tests.plugins.spawnkill import SpawnkillTestCase
 
-class Test_events(SpawnkillTestCase):
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   MIXED TESTS                                                                                                    #
-    #                                                                                                                  #
-    ####################################################################################################################
+class Test_events(SpawnkillTestCase):
 
     def test_client_spawntime_mark(self):
         # GIVEN
@@ -44,12 +40,6 @@ class Test_events(SpawnkillTestCase):
         # THEN
         self.assertEqual(True, self.mike.isvar(self.p, 'spawntime'))
         self.assertEqual(True, self.bill.isvar(self.p, 'spawntime'))
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   TEST SPAWN HIT                                                                                                 #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_client_spawn_hit_admin_level_bypass(self):
         # GIVEN
@@ -160,12 +150,6 @@ class Test_events(SpawnkillTestCase):
         # TODO: implement test case
         pass
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   TEST SPAWN KILL                                                                                                #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def test_client_spawn_kill_admin_level_bypass(self):
         # GIVEN
         self.init(dedent(r"""
@@ -221,7 +205,8 @@ class Test_events(SpawnkillTestCase):
         self.mike.kills(self.bill)
         # THEN
         self.assertEqual(1, self.console.storage.numPenalties(self.mike, 'Warning'))
-        self.assertListEqual(['WARNING [1]: Mike,  spawnkilling is not allowed on this server!'], self.mike.message_history)
+        self.assertListEqual(['WARNING [1]: Mike,  spawnkilling is not allowed on this server!'],
+                             self.mike.message_history)
 
     def test_client_spawn_kill_kick(self):
         # GIVEN

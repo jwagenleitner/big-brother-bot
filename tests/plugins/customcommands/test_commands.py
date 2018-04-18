@@ -23,6 +23,7 @@
 # ################################################################### #
 
 from mock import patch, call
+
 from b3.config import CfgConfigParser
 from b3.plugins.customcommands import CustomcommandsPlugin
 from tests import logging_disabled
@@ -39,12 +40,17 @@ class Test_commands(CustomcommandsTestCase):
             from b3.fake import FakeClient
         self.guest = FakeClient(console=self.console, name="Guest", guid="GuestGUID", pbid="GuestPBID", group_bits=0)
         self.user = FakeClient(console=self.console, name="User", guid="UserGUID", pbid="UserPBID", group_bits=1)
-        self.regular = FakeClient(console=self.console, name="Regular", guid="RegularGUID", pbid="RegularPBID", group_bits=2)
-        self.mod = FakeClient(console=self.console, name="Moderator", guid="ModeratorGUID", pbid="ModeratorPBID", group_bits=8)
+        self.regular = FakeClient(console=self.console, name="Regular", guid="RegularGUID", pbid="RegularPBID",
+                                  group_bits=2)
+        self.mod = FakeClient(console=self.console, name="Moderator", guid="ModeratorGUID", pbid="ModeratorPBID",
+                              group_bits=8)
         self.admin = FakeClient(console=self.console, name="Admin", guid="AdminGUID", pbid="AdminPBID", group_bits=16)
-        self.fulladmin = FakeClient(console=self.console, name="FullAdmin", guid="FullAdminGUID", pbid="FullAdminPBID", group_bits=32)
-        self.senioradmin = FakeClient(console=self.console, name="SeniorAdmin", guid="SeniorAdminGUID", pbid="SeniorAdminPBID", group_bits=64)
-        self.superadmin = FakeClient(console=self.console, name="SuperAdmin", guid="SuperAdminGUID", pbid="SuperAdminPBID", group_bits=128)
+        self.fulladmin = FakeClient(console=self.console, name="FullAdmin", guid="FullAdminGUID", pbid="FullAdminPBID",
+                                    group_bits=32)
+        self.senioradmin = FakeClient(console=self.console, name="SeniorAdmin", guid="SeniorAdminGUID",
+                                      pbid="SeniorAdminPBID", group_bits=64)
+        self.superadmin = FakeClient(console=self.console, name="SuperAdmin", guid="SuperAdminGUID",
+                                     pbid="SuperAdminPBID", group_bits=128)
 
     def test_guest(self):
         # GIVEN

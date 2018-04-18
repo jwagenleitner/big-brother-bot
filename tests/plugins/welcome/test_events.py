@@ -23,9 +23,11 @@
 # ################################################################### #
 
 from mock import patch, call
-from b3.plugins.welcome import F_FIRST, F_NEWB, F_ANNOUNCE_USER, F_ANNOUNCE_FIRST, F_USER, F_CUSTOM_GREETING
+
 from b3.fake import FakeClient
+from b3.plugins.welcome import F_FIRST, F_NEWB, F_ANNOUNCE_USER, F_ANNOUNCE_FIRST, F_USER, F_CUSTOM_GREETING
 from tests.plugins.welcome import Welcome_functional_test
+
 
 class Test_welcome(Welcome_functional_test):
 
@@ -49,7 +51,6 @@ class Test_welcome(Welcome_functional_test):
         self.say_patcher.stop()
 
     def Test_get_client_info(self):
-
         self.parser_conf.add_section('b3')
         self.parser_conf.set('b3', 'time_zone', 'CET')
         self.parser_conf.set('b3', 'time_format', '%I:%M%p %Z %m/%d/%y')

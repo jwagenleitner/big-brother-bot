@@ -41,17 +41,17 @@ class Test_config(AdvTestCase):
                                self.p._cronTab.day, self.p._cronTab.month, self.p._cronTab.dow))
         self.assertEqual(10, len(self.p._msg.items))
         self.assertListEqual([
-                                 '^2Big Brother Bot is watching you... www.BigBrotherBot.net',
-                                 '@feed',
-                                 'server watched by @admins',
-                                 '^3Rule #1: No racism of any kind',
-                                 '@time',
-                                 '@admins',
-                                 '@feed',
-                                 '^2Do you like B3? Consider donating to the project at www.BigBrotherBot.net',
-                                 '@nextmap',
-                                 '@topstats'
-                             ], self.p._msg.items)
+            '^2Big Brother Bot is watching you... www.BigBrotherBot.net',
+            '@feed',
+            'server watched by @admins',
+            '^3Rule #1: No racism of any kind',
+            '@time',
+            '@admins',
+            '@feed',
+            '^2Do you like B3? Consider donating to the project at www.BigBrotherBot.net',
+            '@nextmap',
+            '@topstats'
+        ], self.p._msg.items)
 
     def test_empty(self):
         self.init_plugin("""<configuration plugin="adv" />""")
@@ -60,8 +60,8 @@ class Test_config(AdvTestCase):
         self.assertEqual(0, len(self.p._msg.items))
         self.assertIsNone(self.p._feed)
         self.assertEqual("News: ", self.p._feedpre)
-        self.assertEqual(4, self.p._feedmaxitems)   # changed to 4 since plugin configuration loading is not stopped
-        self.assertEqual('News: ', self.p._feedpre) # by empty rate anymore, so maxfeed is reduced by 1 unit
+        self.assertEqual(4, self.p._feedmaxitems)  # changed to 4 since plugin configuration loading is not stopped
+        self.assertEqual('News: ', self.p._feedpre)  # by empty rate anymore, so maxfeed is reduced by 1 unit
         self.assertIsNotNone(self.p._cronTab)
 
     def test_rate_nominal(self):

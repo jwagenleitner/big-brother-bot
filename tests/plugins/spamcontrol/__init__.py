@@ -18,6 +18,7 @@
 import logging
 
 from mock import patch
+
 from b3.config import CfgConfigParser
 from b3.plugins.spamcontrol import SpamcontrolPlugin
 from tests import B3TestCase
@@ -53,4 +54,3 @@ class SpamcontrolTestCase(B3TestCase):
         self.p.onLoadConfig()
         self.log.info("============================= Spamcontrol plugin: starting  =================================")
         self.p.onStartup()
-

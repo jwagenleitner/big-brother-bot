@@ -29,12 +29,6 @@ from tests.plugins.duel import DuelTestCase
 
 class Test_plugin(DuelTestCase):
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   DUEL COMMAND                                                                                                   #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def test_duel_propose_self(self):
         # GIVEN
         self.mike.connects("1")
@@ -76,12 +70,6 @@ class Test_plugin(DuelTestCase):
         self.assertListEqual(["Duel proposed to Bill",
                               "Bill is now duelling with you",
                               "[Duel]: Mike 0:0 Bill"], self.mike.message_history)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   DUELRESET COMMAND                                                                                              #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_duelreset_with_no_duel(self):
         # GIVEN
@@ -142,12 +130,6 @@ class Test_plugin(DuelTestCase):
         # THEN
         self.assertListEqual(['[Duel]: Mike 0:0 Anna'], self.mike.message_history)
         self.assertListEqual(['[Duel]: Anna 0:0 Mike'], self.anna.message_history)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   DUELCANCEL COMMAND                                                                                             #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_duelcancel_with_no_duel(self):
         # GIVEN
@@ -212,12 +194,6 @@ class Test_plugin(DuelTestCase):
         self.assertEqual(0, len(self.anna.var(self.p, 'duelling', {}).value))
         self.assertEqual(1, len(self.bill.var(self.p, 'duelling', {}).value))
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   DUELCANCEL ACTION                                                                                              #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def test_duelaction(self):
         # GIVEN
         self.mike.connects("1")
@@ -251,12 +227,6 @@ class Test_plugin(DuelTestCase):
         self.assertListEqual(['[Duel]: Bill 0:1 Mike',
                               '[Duel]: Bill 1:1 Mike',
                               'Duel with Mike canceled'], self.bill.message_history)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   TEST_CLIENT_DISCONNECT                                                                                         #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_event_client_disconnect_with_active_duel(self):
         original_mike_refcount = mike_refcount = sys.getrefcount(self.mike)

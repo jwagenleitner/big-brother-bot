@@ -24,7 +24,7 @@
 
 from __future__ import print_function, absolute_import
 
-import unittest2 as unittest
+import unittest
 
 from b3 import functions
 
@@ -244,11 +244,13 @@ class Test_getStuffSoundingLike(unittest.TestCase):
         self.assertListEqual(['averell'],
                              functions.getStuffSoundingLike('ere', ['bar', 'foO', 'joe', 'jack', 'averell', 'william']))
         self.assertListEqual(sorted(['joe', 'jack']),
-                             sorted(functions.getStuffSoundingLike('j', ['bar', 'foO', 'joe', 'jack', 'averell', 'william'])))
+                             sorted(functions.getStuffSoundingLike('j', ['bar', 'foO', 'joe', 'jack', 'averell',
+                                                                         'william'])))
         self.assertListEqual(sorted(['xxxfoOx1', 'xxxfoOx2', 'xxxfoOx3', 'xxxfoOx4', 'xxxfoOx5', 'xxxfoOx6']),
                              sorted(functions.getStuffSoundingLike('foO',
-                                                            ['xxxfoOx1', 'xxxfoOx2', 'xxxfoOx3', 'xxxfoOx4', 'xxxfoOx5',
-                                                             'xxxfoOx6', 'bar'])))
+                                                                   ['xxxfoOx1', 'xxxfoOx2', 'xxxfoOx3', 'xxxfoOx4',
+                                                                    'xxxfoOx5',
+                                                                    'xxxfoOx6', 'bar'])))
 
     def test_soundex_match(self):
         self.assertListEqual(['jack'],
@@ -256,7 +258,8 @@ class Test_getStuffSoundingLike(unittest.TestCase):
 
     def test_fallback(self):
         self.assertListEqual(sorted(['bar', 'william', 'joe', 'averell', 'foO', 'jack']),
-                             sorted(functions.getStuffSoundingLike('xxx', ['bar', 'foO', 'joe', 'jack', 'averell', 'william'])))
+                             sorted(functions.getStuffSoundingLike('xxx', ['bar', 'foO', 'joe', 'jack', 'averell',
+                                                                           'william'])))
 
 
 class Test_topologicalSort(unittest.TestCase):

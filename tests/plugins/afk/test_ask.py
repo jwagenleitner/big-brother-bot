@@ -22,13 +22,13 @@
 #                                                                     #
 # ################################################################### #
 
-import pytest
-
 from textwrap import dedent
 from time import sleep
 
-from tests.plugins.afk import *
 from mock import call, Mock
+
+from tests.plugins.afk import *
+
 
 # This test suite makes sure `kick_client` is called appropriately when `ask_client` is run
 

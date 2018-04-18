@@ -25,13 +25,14 @@
 
 import logging
 import os
+
 import pytest
 from mockito import when
+
 from b3 import TEAM_UNKNOWN
 from b3.config import XmlConfigParser, CfgConfigParser
 from b3.plugins.admin import AdminPlugin
 from b3.plugins.makeroom import MakeroomPlugin
-
 
 DEFAULT_PLUGIN_CONFIG_FILE = os.path.join(os.path.dirname(__file__), '../../../b3/conf/plugin_makeroom.ini')
 

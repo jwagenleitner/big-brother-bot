@@ -22,7 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
-from mock import  call, Mock
+from mock import call, Mock
+
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
 from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
@@ -67,5 +68,3 @@ pastamina-stamina: 20   ; set the stamina behavior <default/regain/infinite>
     def test_infinite(self):
         self.moderator.says("!stamina infinite")
         self.console.write.assert_has_calls([call('set g_stamina "2"')])
-
-

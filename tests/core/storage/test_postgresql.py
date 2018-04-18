@@ -25,9 +25,9 @@
 from __future__ import print_function, absolute_import
 
 import os
+import unittest
 
 import nose
-import unittest2 as unittest
 
 from b3.functions import splitDSN
 from b3.storage.postgresql import PostgresqlStorage
@@ -95,7 +95,7 @@ class Test_PostgreSQL(B3TestCase, StorageAPITest):
 
         try:
             dsn = "postgresql://%s:%s@%s/%s" % (
-            POSTGRESQL_TEST_USER, POSTGRESQL_TEST_PASSWORD, POSTGRESQL_TEST_HOST, POSTGRESQL_TEST_DB)
+                POSTGRESQL_TEST_USER, POSTGRESQL_TEST_PASSWORD, POSTGRESQL_TEST_HOST, POSTGRESQL_TEST_DB)
             self.storage = self.console.storage = PostgresqlStorage(dsn, splitDSN(dsn), self.console)
             self.storage.connect()
 

@@ -17,13 +17,15 @@
 
 
 from textwrap import dedent
+
 from mockito import when
+
 from b3 import TEAM_RED
+from b3.config import CfgConfigParser
 from b3.fake import FakeClient
 from b3.plugins.admin import AdminPlugin
-from tests import B3TestCase, logging_disabled
 from b3.plugins.stats import StatsPlugin
-from b3.config import CfgConfigParser
+from tests import B3TestCase, logging_disabled
 
 
 class StatPluginTestCase(B3TestCase):

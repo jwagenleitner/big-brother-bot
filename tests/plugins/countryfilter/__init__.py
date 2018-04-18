@@ -23,16 +23,16 @@
 # ################################################################### #
 
 import time
-import unittest2
+import unittest
 
 from mock import Mock
 from mockito import when, unstub
-from b3.config import MainConfig
+
 from b3.config import CfgConfigParser
+from b3.config import MainConfig
 from b3.plugins.admin import AdminPlugin
 from b3.plugins.countryfilter import CountryfilterPlugin
 from tests import logging_disabled
-
 
 LOCATION_MIKE = Mock()
 LOCATION_MIKE.country = 'Italy'
@@ -59,7 +59,7 @@ LOCATION_BILL.lon = -122.0838
 LOCATION_BILL.zipcode = "94035"
 
 
-class CountryFilterTestCase(unittest2.TestCase):
+class CountryFilterTestCase(unittest.TestCase):
 
     def setUp(self):
         # create a FakeConsole parser

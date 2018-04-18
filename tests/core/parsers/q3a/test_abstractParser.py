@@ -24,7 +24,8 @@
 
 from __future__ import print_function, absolute_import
 
-import unittest2 as unittest
+import unittest
+
 from mock import Mock
 
 from b3.parsers.q3a.abstractParser import AbstractParser

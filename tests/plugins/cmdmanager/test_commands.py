@@ -22,17 +22,12 @@
 #                                                                     #
 # ################################################################### #
 
-from b3.plugins.cmdmanager import GRANT_SET_ATTR
 from b3.fake import FakeClient
+from b3.plugins.cmdmanager import GRANT_SET_ATTR
 from tests.plugins.cmdmanager import Cmdmanager_TestCase
 
-class Test_commands(Cmdmanager_TestCase):
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CMD LEVEL NO PARAMETER                                                                                         #
-    #                                                                                                                  #
-    ####################################################################################################################
+class Test_commands(Cmdmanager_TestCase):
 
     def test_cmdlevel_no_parameter(self):
         # GIVEN
@@ -64,12 +59,6 @@ class Test_commands(Cmdmanager_TestCase):
         # THEN
         self.assertListEqual(['could not find command fakecommand'], superadmin.message_history)
 
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CMD LEVEL SINGLE PARAMETER                                                                                     #
-    #                                                                                                                  #
-    ####################################################################################################################
-
     def test_cmdlevel_single_valid_minlevel(self):
         # GIVEN
         superadmin = FakeClient(self.console, name="superadmin", guid="superadminguid", groupBits=128)
@@ -93,12 +82,6 @@ class Test_commands(Cmdmanager_TestCase):
         # THEN
         self.assertListEqual(['invalid level specified: fakegroup'], superadmin.message_history)
         self.assert_cmd_groups("help", "^2guest")
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CMD LEVEL DOUBLE PARAMETER                                                                                     #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_cmdlevel_double_valid_minlevel_maxlevel(self):
         # GIVEN
@@ -135,12 +118,6 @@ class Test_commands(Cmdmanager_TestCase):
         # THEN
         self.assertListEqual(['invalid level: fulladmin is greater than admin'], superadmin.message_history)
         self.assert_cmd_groups("help", "^2guest")
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CMD ALIAS NO PARAMETER                                                                                         #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_cmdalias_invalid_command(self):
         # GIVEN
@@ -181,12 +158,6 @@ class Test_commands(Cmdmanager_TestCase):
         mike.says("!cmdalias die")
         # THEN
         self.assertListEqual(['no sufficient access to die command'], mike.message_history)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CMD ALIAS WITH PARAMETER                                                                                       #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_cmdalias_invalid_alias_specified(self):
         # GIVEN
@@ -235,12 +206,6 @@ class Test_commands(Cmdmanager_TestCase):
         # THEN
         self.assertListEqual(['updated alias for command help: newhelp'], superadmin.message_history)
         self.assert_cmd_alias("help", "newhelp")
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CMD GRANT                                                                                                      #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_cmdgrant_with_invalid_command(self):
         # GIVEN
@@ -299,7 +264,7 @@ class Test_commands(Cmdmanager_TestCase):
         superadmin.clearMessageHistory()
         superadmin.says("!cmdgrant mike cmdlevel")
         mike.disconnects()
-        del mike # totally destroy the object
+        del mike  # totally destroy the object
         mike = FakeClient(self.console, id="10", name="mike", guid="mikeguid", groupBits=1)
         mike.connects("2")
         # THEN
@@ -307,12 +272,6 @@ class Test_commands(Cmdmanager_TestCase):
         self.assertIsNotNone(grantlist)
         self.assertIsInstance(grantlist, set)
         self.assertEqual(1, len(grantlist))
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CMD REVOKE                                                                                                     #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_cmdrevoke_with_no_grant_given(self):
         # GIVEN
@@ -347,8 +306,8 @@ class Test_commands(Cmdmanager_TestCase):
         mike.connects("2")
         # WHEN
         superadmin.says("!cmdgrant mike cmdlevel")
-        mike.groupBits = 64     # this 2 lines simulate mike being added as senioradmin
-        mike._maxLevel = 80     # after he obtained a grant for command !cmdlevel he couldn't access before
+        mike.groupBits = 64  # this 2 lines simulate mike being added as senioradmin
+        mike._maxLevel = 80  # after he obtained a grant for command !cmdlevel he couldn't access before
         superadmin.clearMessageHistory()
         superadmin.says("!cmdrevoke mike cmdlevel")
         # THEN
@@ -366,7 +325,7 @@ class Test_commands(Cmdmanager_TestCase):
         superadmin.says("!cmdgrant mike cmdlevel")
         superadmin.says("!cmdrevoke mike cmdlevel")
         mike.disconnects()
-        del mike # totally destroy the object
+        del mike  # totally destroy the object
         mike = FakeClient(self.console, id="10", name="mike", guid="mikeguid", groupBits=1)
         mike.connects("2")
         # THEN
@@ -374,12 +333,6 @@ class Test_commands(Cmdmanager_TestCase):
         self.assertIsNotNone(grantlist)
         self.assertIsInstance(grantlist, set)
         self.assertEqual(0, len(grantlist))
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   CMD USE                                                                                                        #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def test_cmduse_no_access(self):
         # GIVEN

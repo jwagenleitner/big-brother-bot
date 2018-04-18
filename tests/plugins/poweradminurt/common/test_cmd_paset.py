@@ -23,7 +23,9 @@
 # ################################################################### #
 
 import time
-from mock import patch, Mock, call
+
+from mock import patch, call
+
 from b3.config import CfgConfigParser
 from b3.plugins.poweradminurt import PoweradminurtPlugin
 from tests.plugins.poweradminurt.iourt43 import Iourt43TestCase
@@ -56,7 +58,6 @@ paset: 20
         super(mixin_cmd_paset, self).tearDown()
         self.sleep_patcher.stop()
         self.setCvar_patcher.stop()
-
 
     def test_nominal(self):
         # WHEN

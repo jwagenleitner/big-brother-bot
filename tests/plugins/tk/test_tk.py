@@ -22,9 +22,9 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-
 from mock import Mock, patch
+
+import b3
 from tests.plugins.tk import Tk_functional_test
 
 
@@ -96,7 +96,8 @@ class Test_tk_detected(Tk_functional_test):
             self.assertEquals(1, len(self.mike.getAllMessageHistoryLike("^7type ^3!fp ^7 to forgive")))
 
             self.joe.kills(self.mike)
-            self.assertEqual(1, len([call_args[0][0] for call_args in patched_say.call_args_list if "auto-kick if not forgiven" in call_args[0][0]]))
+            self.assertEqual(1, len([call_args[0][0] for call_args in patched_say.call_args_list if
+                                     "auto-kick if not forgiven" in call_args[0][0]]))
 
             self.joe.kills(self.mike)
             self.assertEqual(1, self.joe.tempban.call_count)

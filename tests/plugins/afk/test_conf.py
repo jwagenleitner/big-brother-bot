@@ -23,12 +23,14 @@
 # ################################################################### #
 
 from textwrap import dedent
+
 from tests.plugins.afk import *
 
 DEFAULT_SUSPICION_ANNOUNCEMENT = "{name} suspected of being AFK, kicking in {last_chance_delay}s if no answer"
 
 
-@pytest.mark.skipif(not os.path.exists(DEFAULT_PLUGIN_CONFIG_FILE), reason="Could not find default plugin config file %r" % DEFAULT_PLUGIN_CONFIG_FILE)
+@pytest.mark.skipif(not os.path.exists(DEFAULT_PLUGIN_CONFIG_FILE),
+                    reason="Could not find default plugin config file %r" % DEFAULT_PLUGIN_CONFIG_FILE)
 def test_default_conf(console):
     plugin = plugin_maker(console, DEFAULT_PLUGIN_CONFIG_FILE)
     plugin.onLoadConfig()
@@ -42,7 +44,7 @@ def test_default_conf(console):
 
 
 def test_empty_conf(console):
-    plugin = plugin_maker_ini(console,  dedent(""""""))
+    plugin = plugin_maker_ini(console, dedent(""""""))
     plugin.onLoadConfig()
     assert 1 == plugin.min_ingame_humans
     assert 3 == plugin.consecutive_deaths_threshold

@@ -23,7 +23,9 @@
 # ################################################################### #
 
 from mock import Mock, patch
+
 from tests.plugins.tk import Tk_functional_test
+
 
 @patch("threading.Timer")
 class Test_commands(Tk_functional_test):
@@ -53,7 +55,8 @@ class Test_commands(Tk_functional_test):
 
         self.superadmin.clearMessageHistory()
         self.superadmin.says("!forgiveinfo joe")
-        self.assertEqual(['Joe has 206 TK points, Attacked: Mike (200), Bill (6), Attacked By: Mike [27]'], self.superadmin.message_history)
+        self.assertEqual(['Joe has 206 TK points, Attacked: Mike (200), Bill (6), Attacked By: Mike [27]'],
+                         self.superadmin.message_history)
 
     def test_forgive(self, timer_patch):
         self.superadmin.connects(99)
@@ -112,7 +115,6 @@ class Test_commands(Tk_functional_test):
         self.joe.says("!forgivelist")
         self.assertEqual(['Forgive who? [1] Mike [14]'], self.joe.message_history)
 
-
         self.bill.damages(self.joe, points=84)
         self.joe.clearMessageHistory()
         self.joe.says("!forgivelist")
@@ -156,4 +158,3 @@ class Test_commands(Tk_functional_test):
         self.joe.clearMessageHistory()
         self.joe.says("!forgivelist")
         self.assertEqual(['Forgive who? [1] Mike [14]'], self.joe.message_history)
-

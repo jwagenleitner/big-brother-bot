@@ -22,15 +22,16 @@
 #                                                                     #
 # ################################################################### #
 
-import b3
-
-from b3.fake import FakeClient
-from b3.plugins.tk import TkPlugin
-from b3.plugins.admin import AdminPlugin
-from b3.config import CfgConfigParser
-from mockito import when
-from tests import B3TestCase
 from textwrap import dedent
+
+from mockito import when
+
+import b3
+from b3.config import CfgConfigParser
+from b3.fake import FakeClient
+from b3.plugins.admin import AdminPlugin
+from b3.plugins.tk import TkPlugin
+from tests import B3TestCase
 
 
 class Test_Tk_plugin(B3TestCase):
@@ -115,4 +116,5 @@ class Tk_functional_test(B3TestCase):
         self.joe = FakeClient(self.console, name="Joe", guid="joeguid", groupBits=1, team=b3.TEAM_RED)
         self.mike = FakeClient(self.console, name="Mike", guid="mikeguid", groupBits=1, team=b3.TEAM_RED)
         self.bill = FakeClient(self.console, name="Bill", guid="billguid", groupBits=1, team=b3.TEAM_RED)
-        self.superadmin = FakeClient(self.console, name="superadmin", guid="superadminguid", groupBits=128, team=b3.TEAM_RED)
+        self.superadmin = FakeClient(self.console, name="superadmin", guid="superadminguid", groupBits=128,
+                                     team=b3.TEAM_RED)

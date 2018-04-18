@@ -24,8 +24,8 @@
 
 from __future__ import absolute_import
 
-from tests import B3TestCase
 import b3
+from tests import B3TestCase
 
 
 class Test_getConfPath(B3TestCase):

@@ -1,5 +1,4 @@
 # Python modules needed to run the B3 test suite
-unittest2
 mockito
 nose
 nose-cov

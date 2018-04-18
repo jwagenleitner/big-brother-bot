@@ -25,13 +25,13 @@
 from __future__ import print_function, absolute_import
 
 import time
+import unittest
 
-import unittest2 as unittest
 from mock import sentinel, Mock
+from six.moves import range
 
 from b3.cron import CronTab, OneTimeCronTab, PluginCronTab, Cron
 from tests import B3TestCase
-from six.moves import range
 
 
 class Test_Crontab(unittest.TestCase):

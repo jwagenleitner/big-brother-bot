@@ -26,8 +26,8 @@ import logging
 import os
 
 from b3.config import CfgConfigParser
-from tests.plugins.urtserversidedemo import PluginTestCase
 from b3.plugins.urtserversidedemo import UrtserversidedemoPlugin
+from tests.plugins.urtserversidedemo import PluginTestCase
 
 
 class ConfTestCase(PluginTestCase):
@@ -46,7 +46,6 @@ class Test_default_conf(ConfTestCase):
         self.conf.load(os.path.join(os.path.dirname(__file__), '../../../b3/conf/plugin_urtserversidedemo.ini'))
         self.p.onLoadConfig()
 
-
     def test_command_startserverdemo(self):
         self.assertEqual('mod', self.p.config.get('commands', 'startserverdemo-startdemo'))
         self.p.onStartup()
@@ -54,7 +53,6 @@ class Test_default_conf(ConfTestCase):
         cmd = self.adminPlugin._commands['startserverdemo']
         self.assertTupleEqual((20, 100), cmd.level)
         self.assertEqual('startdemo', cmd.alias)
-
 
     def test_command_stopserverdemo(self):
         self.assertEqual('mod', self.p.config.get('commands', 'stopserverdemo-stopdemo'))
@@ -64,12 +62,10 @@ class Test_default_conf(ConfTestCase):
         self.assertTupleEqual((20, 100), cmd.level)
         self.assertEqual('stopdemo', cmd.alias)
 
-
     def test_haxbusterurt_demo_duration(self):
         self.assertEqual(4, self.p.config.getint('haxbusterurt', 'demo_duration'))
         self.p.onStartup()
         self.assertEqual(4, self.p._haxbusterurt_demo_duration)
-
 
 
 class Test_commands(ConfTestCase):
@@ -79,7 +75,6 @@ class Test_commands(ConfTestCase):
         cmd = self.adminPlugin._commands[cmd_name]
         self.assertTupleEqual((min_level, 100), cmd.level)
 
-
     def test_startserverdemo(self):
         self.conf.loadFromString("""
 [commands]
@@ -88,7 +83,6 @@ startserverdemo: 40
         self.p.onStartup()
         self.assertCmdMinLevel('startserverdemo', 40)
 
-
     def test_stopserverdemo(self):
         self.conf.loadFromString("""
 [commands]
@@ -96,7 +90,6 @@ stopserverdemo: 40
 """)
         self.p.onStartup()
         self.assertCmdMinLevel('stopserverdemo', 40)
-
 
 
 class Test_haxbusterurt(ConfTestCase):
@@ -109,7 +102,6 @@ demo_duration: 3
         self.p.onLoadConfig()
         self.assertEqual(3, self.p._haxbusterurt_demo_duration)
 
-
     def test_demo_duration_bad(self):
         self.conf.loadFromString("""
 [haxbusterurt]
@@ -117,7 +109,6 @@ demo_duration: f00
 """)
         self.p.onLoadConfig()
         self.assertEqual(0, self.p._haxbusterurt_demo_duration)
-
 
 
 class Test_follow(ConfTestCase):
@@ -129,7 +120,6 @@ demo_duration: 3
 """)
         self.p.onLoadConfig()
         self.assertEqual(3, self.p._follow_demo_duration)
-
 
     def test_demo_duration_bad(self):
         self.conf.loadFromString("""
