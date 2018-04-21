@@ -190,7 +190,7 @@ class Rcon(object):
             elif len(writeables) > 0:
                 try:
                     payload = self.rconsendstring % (self.password, data)
-                    if six.PY3:
+                    if not six.PY2:
                         payload = payload.encode(encoding="latin-1")
                     writeables[0].send(payload)
                 except Exception as msg:

@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'ThorN, xlr8or, Courgette'
 __version__ = '1.8.2'
 

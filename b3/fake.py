@@ -28,8 +28,6 @@ with fakeConsole and joe which can be used to say commands
 as if it where a player.
 """
 
-from __future__ import print_function, absolute_import
-
 __version__ = '1.18'
 
 import logging

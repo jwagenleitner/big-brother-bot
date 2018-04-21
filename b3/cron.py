@@ -21,9 +21,6 @@
 #  02110-1301, USA.                                                   #
 #                                                                     #
 # ################################################################### #
-#
-
-from __future__ import print_function, absolute_import
 
 __author__ = 'ThorN, Courgette'
 __version__ = '1.5'

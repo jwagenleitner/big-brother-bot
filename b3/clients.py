@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 import re
 import sys
 import threading
@@ -205,14 +203,10 @@ class Client(object):
 
     aliases = property(getAliases)
 
-    # -----------------------
-
     def getBans(self):
         return self.console.storage.getClientPenalties(self, type=('Ban', 'TempBan'))
 
     bans = property(getBans)
-
-    # -----------------------
 
     def _set_data(self, data):
         for k, v in six.iteritems(data):
@@ -223,16 +217,12 @@ class Client(object):
 
     data = property(_get_data, _set_data)
 
-    # -----------------------
-
     def _get_firstWarn(self):
         if not self.id:
             return None
         return self.console.storage.getClientFirstPenalty(self, 'Warning')
 
     firstWarning = property(_get_firstWarn)
-
-    # -----------------------
 
     def getGroups(self):
         if not self._groups:
@@ -250,14 +240,10 @@ class Client(object):
 
     groups = property(getGroups)
 
-    # -----------------------
-
     def getIpAddresses(self):
         return self.console.storage.getClientIpAddresses(self)
 
     ip_addresses = property(getIpAddresses)
-
-    # -----------------------
 
     def _get_last_visit(self):
         return self._lastVisit
@@ -267,8 +253,6 @@ class Client(object):
 
     lastVisit = property(_get_last_visit, _set_last_visit)
 
-    # -----------------------
-
     def _get_lastBan(self):
         if not self.id:
             return None
@@ -276,16 +260,12 @@ class Client(object):
 
     lastBan = property(_get_lastBan)
 
-    # -----------------------
-
     def _get_lastWarn(self):
         if not self.id:
             return None
         return self.console.storage.getClientLastPenalty(self, 'Warning')
 
     lastWarning = property(_get_lastWarn)
-
-    # -----------------------
 
     def _get_maxLevel(self):
         if self._maxLevel is None:
@@ -307,15 +287,11 @@ class Client(object):
 
     maxLevel = property(_get_maxLevel)
 
-    # -----------------------
-
     def _get_maxGroup(self):
         self._get_maxLevel()
         return self._maxGroup
 
     maxGroup = property(_get_maxGroup)
-
-    # -----------------------
 
     def _get_numBans(self):
         if not self.id:
@@ -324,16 +300,12 @@ class Client(object):
 
     numBans = property(_get_numBans)
 
-    # -----------------------
-
     def _get_numWarns(self):
         if not self.id:
             return 0
         return self.console.storage.numPenalties(self, 'Warning')
 
     numWarnings = property(_get_numWarns)
-
-    # -----------------------
 
     def _set_team(self, team):
         if self._team != team:
@@ -349,14 +321,10 @@ class Client(object):
 
     team = property(_get_team, _set_team)
 
-    # -----------------------
-
     def getWarnings(self):
         return self.console.storage.getClientPenalties(self, type='Warning')
 
     warnings = property(getWarnings)
-
-    # -----------------------
 
     def getattr(self, name, default=None):
         return getattr(self, name, default)
@@ -369,8 +337,6 @@ class Client(object):
 
     autoLogin = property(_get_auto_login, _set_auto_login)
 
-    # -----------------------
-
     _connections = 0
 
     def _set_connections(self, v):
@@ -381,8 +347,6 @@ class Client(object):
 
     connections = property(_get_connections, _set_connections)
 
-    # -----------------------
-
     def _set_greeting(self, greeting):
         self._greeting = greeting
 
@@ -390,8 +354,6 @@ class Client(object):
         return self._greeting
 
     greeting = property(_get_greeting, _set_greeting)
-
-    # -----------------------
 
     def _set_groupBits(self, bits):
         self._groupBits = int(bits)
@@ -414,8 +376,6 @@ class Client(object):
     def inGroup(self, group):
         return self.groupBits & group.id
 
-    # -----------------------
-
     def _set_guid(self, guid):
         if guid and len(guid) > 2:
             if self._guid and self._guid != guid:
@@ -432,8 +392,6 @@ class Client(object):
 
     guid = property(_get_guid, _set_guid)
 
-    # -----------------------
-
     def _set_id(self, v):
         if not v:
             self._id = 0
@@ -444,8 +402,6 @@ class Client(object):
         return self._id
 
     id = property(_get_id, _set_id)
-
-    # -----------------------
 
     def _set_ip(self, ip):
         if ':' in ip:
@@ -459,8 +415,6 @@ class Client(object):
 
     ip = property(_get_ip, _set_ip)
 
-    # -----------------------
-
     def _set_login(self, login):
         self._login = login
 
@@ -468,8 +422,6 @@ class Client(object):
         return self._login
 
     login = property(_get_login, _set_login)
-
-    # -----------------------
 
     def _set_maskGroup(self, g):
         self.maskLevel = g.level
@@ -491,15 +443,11 @@ class Client(object):
 
     maskGroup = property(_get_maskGroup, _set_maskGroup)
 
-    # -----------------------
-
     def _get_maskedGroup(self):
         group = self.maskGroup
         return group if group else self.maxGroup
 
     maskedGroup = property(_get_maskedGroup)
-
-    # -----------------------
 
     def _set_maskLevel(self, v):
         self._maskLevel = int(v)
@@ -510,8 +458,6 @@ class Client(object):
 
     maskLevel = property(_get_maskLevel, _set_maskLevel)
 
-    # -----------------------
-
     def _get_maskedLevel(self):
         group = self.maskedGroup
         if group:
@@ -520,8 +466,6 @@ class Client(object):
             return 0
 
     maskedLevel = property(_get_maskedLevel)
-
-    # -----------------------
 
     def _set_name(self, name):
         if self.console:
@@ -554,8 +498,6 @@ class Client(object):
     name = property(_get_name, _set_name)  # cleaned
     exactName = property(_get_exactName, _set_name)  # with color codes
 
-    # -----------------------
-
     def _set_password(self, password):
         self._password = password
 
@@ -563,8 +505,6 @@ class Client(object):
         return self._password
 
     password = property(_get_password, _set_password)
-
-    # -----------------------
 
     def _set_pbid(self, pbid):
         self._pbid = pbid
@@ -574,8 +514,6 @@ class Client(object):
 
     pbid = property(_get_pbid, _set_pbid)
 
-    # -----------------------
-
     def _set_timeAdd(self, timeAdd):
         self._timeAdd = int(timeAdd)
 
@@ -584,8 +522,6 @@ class Client(object):
 
     timeAdd = property(_get_timeAdd, _set_timeAdd)
 
-    # -----------------------
-
     def _set_timeEdit(self, timeEdit):
         self._timeEdit = int(timeEdit)
 
@@ -593,12 +529,6 @@ class Client(object):
         return self._timeEdit
 
     timeEdit = property(_get_timeEdit, _set_timeEdit)
-
-    ####################################################################################################################
-    #                                                                                                                  #
-    #   OTHER METHODS                                                                                                  #
-    #                                                                                                                  #
-    ####################################################################################################################
 
     def refreshLevel(self):
         """
