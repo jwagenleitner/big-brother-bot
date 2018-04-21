@@ -22,12 +22,8 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 import os
 import unittest
-
-import nose
 
 from b3.functions import splitDSN
 from b3.storage.postgresql import PostgresqlStorage
@@ -114,4 +110,4 @@ class Test_PostgreSQL(B3TestCase, StorageAPITest):
 
 
 if __name__ == '__main__':
-    nose.main()
+    unittest.main()
