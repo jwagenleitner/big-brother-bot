@@ -44,6 +44,7 @@ class FollowPlugin():
         self.working = True
 
 
+@unittest.skip("no Follow plugin")
 class Test_with_follow(PluginTestCase):
     CONF = """\
 [commands]
@@ -64,11 +65,9 @@ demo_duration: 2
     def tearDown(self):
         PluginTestCase.tearDown(self)
 
-    @unittest.skip("fixme")
     def test_register_events(self):
         self.assertIn(EVT_FOLLOW_CONNECTED, self.p.events)
 
-    @unittest.skip("fixme")
     def test_event_EVT_FOLLOW_CONNECTED(self):
         # GIVEN
         self.p._follow_demo_duration = (1.0 / 60) / 8  # will make the auto-stop timer end after 125ms

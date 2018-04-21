@@ -570,30 +570,6 @@ class Test_OnClientuserinfo(Iourt43TestCase):
         self.assertEqual('00000000011111111122222223333333', client.guid)
         self.assertEqual(self.console.queryClientFrozenSandAccount.call_count, 0)
 
-    @unittest.skip("need to validate rcon responses from real 4.2 gameserver")
-    def test_bot(self):
-        infoline = r"0 \gear\GMIORAA\team\blue\skill\5.000000\characterfile\bots/ut_chicken_c.c\color\4\sex\male\race\2\snaps\20\rate\25000\name\InviteYourFriends!"
-        self.assertFalse('0' in self.console.clients)
-        self.console.OnClientuserinfo(action=None, data=infoline)
-        self.assertTrue('0' in self.console.clients)
-        client = self.console.clients['0']
-        self.assertEqual('0.0.0.0', client.ip)
-        self.assertEqual('InviteYourFriends!^7', client.exactName)
-        self.assertEqual('InviteYourFriends!', client.name)
-        self.assertEqual('BOT0', client.guid)
-
-    @unittest.skip("will there still be Q3 mod ?")
-    def test_quake3_client(self):
-        infoline = r"2 \ip\145.99.135.227:27960\challenge\-232198920\qport\2781\protocol\68\battleye\1\name\[SNT]^1XLR^78or\rate\8000\cg_predictitems\0\snaps\20\model\sarge\headmodel\sarge\team_model\james\team_headmodel\*james\color1\4\color2\5\handicap\100\sex\male\cl_anonymous\0\teamtask\0"
-        self.assertFalse('2' in self.console.clients)
-        self.console.OnClientuserinfo(action=None, data=infoline)
-        self.assertTrue('2' in self.console.clients)
-        client = self.console.clients['2']
-        self.assertEqual('145.99.135.227', client.ip)
-        self.assertEqual('[SNT]^1XLR^78or^7', client.exactName)
-        self.assertEqual('[SNT]XLR8or', client.name)
-        self.assertEqual('145.99.135.227', client.guid)
-
     def test_client_with_password_gamepassword(self):
         """
         Case where a player saved the password to join the game in its UrT config. As a result, we find a 'password'

@@ -40,9 +40,6 @@
 		<badword name="dick" lang="en">
 			<regexp>\sd[i!1*]ck\s</regexp>
 		</badword>
-		<badword name="bitch" lang="en">
-			<regexp>b[i!1*]tch</regexp>
-		</badword>
 		<badword name="biatch" lang="en">
 			<regexp>b[i!1*].tch</regexp>
 		</badword>
@@ -50,7 +47,7 @@
 			<regexp>\sf[a@]g\s</regexp>
 		</badword>
 		<badword name="nigger" lang="en">
-            <penalty type="ban" reasonkeyword="racism" />
+            <penalty type="tempban" reasonkeyword="racism" duration="1d"/>
 			<regexp>n[i!1]gger</regexp>
 		</badword>
 		<badword name="pussy" lang="en">
@@ -239,9 +236,6 @@
 		</badname>
 		<badname name="shit">
 			<regexp>sh[i1!.]+t</regexp>
-		</badname>
-		<badname name="bitch">
-			<regexp>b[i1!*.]+tch</regexp>
 		</badname>
 		<badname name="pussy">
 			<regexp>pu[s$][s$]+y</regexp>
