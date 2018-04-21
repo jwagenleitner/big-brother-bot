@@ -410,7 +410,7 @@ def getStuffSoundingLike(stuff, expected_stuff):
     clean_stuff = clean(stuff)
     soundex1 = soundex(stuff)
 
-    clean_expected_stuff = dict()
+    clean_expected_stuff = collections.OrderedDict()
     for i in expected_stuff:
         clean_expected_stuff[clean(i)] = i
 
