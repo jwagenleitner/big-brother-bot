@@ -570,6 +570,10 @@ class Iourt43Parser(AbstractParser):
         UT_MOD_MAGNUM: [100, 82, 66, 50, 33, 33, 57, 52, 40, 33, 25, 25],
     }
 
+    # {"A": "0", "B": "1", "C": "2"...., "Y": "24", "Z": "25"}
+    letters2slots = {chr(i): str(i - ord("A"))
+                     for i in range(ord("A"), ord("Z") + 1)}
+
     def __new__(cls, *args, **kwargs):
         Iourt43Parser.patch_Clients()
         return AbstractParser.__new__(cls)
@@ -2178,11 +2182,7 @@ class Iourt43Parser(AbstractParser):
         NOTE: this won't work fully if the server has private slots.
         see http://forums.urbanterror.net/index.php/topic,9356.0.html
         """
-        player_teams = dict()
-        letters2slots = dict(A='0', C='2', B='1', E='4', D='3', G='6', F='5', I='8', H='7', K='10', J='9', M='12',
-                             L='11', O='14', N='13', Q='16', P='15', S='18', R='17', U='20', T='19', W='22',
-                             V='21', Y='24', X='23', Z='25')
-
+        player_teams = {}
         players_data = self.write('players')
         for line in players_data.split('\n')[3:]:
             self.debug(line.strip())
@@ -2196,12 +2196,12 @@ class Iourt43Parser(AbstractParser):
         g_blueteamlist = cvars.get('g_blueteamlist')
         if g_blueteamlist:
             for letter in g_blueteamlist:
-                player_teams[letters2slots[letter]] = b3.TEAM_BLUE
+                player_teams[self.letters2slots[letter]] = b3.TEAM_BLUE
 
         g_redteamlist = cvars.get('g_redteamlist')
         if g_redteamlist:
             for letter in g_redteamlist:
-                player_teams[letters2slots[letter]] = b3.TEAM_RED
+                player_teams[self.letters2slots[letter]] = b3.TEAM_RED
         return player_teams
 
     def _getDamagePoints(self, weapon, hitloc):
