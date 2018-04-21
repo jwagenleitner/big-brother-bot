@@ -2316,9 +2316,9 @@ class Poweradminurt43Plugin(b3.plugin.Plugin):
         if not data:
             self.printgear(client=client, cmd=cmd)
             # display help text
-            client.message('^7Usage: ^3!^7pagear [+/-][%s]' % '|'.join(self._weapons.keys()))
-            client.message('^7Load weapon groups: ^3!^7pagear [+/-][%s]' % '|'.join(self._weapon_groups.keys()))
-            client.message('^7Load defaults: ^3!^7pagear [%s]' % '|'.join(self._gears.keys()))
+            client.message('^7Usage: ^3!^7pagear [+/-][%s]' % '|'.join(sorted(self._weapons.keys())))
+            client.message('^7Load weapon groups: ^3!^7pagear [+/-][%s]' % '|'.join(sorted(self._weapon_groups.keys())))
+            client.message('^7Load defaults: ^3!^7pagear [%s]' % '|'.join(sorted(self._gears.keys())))
             return
 
         def update_gear(gear_set, param_data):
@@ -2474,7 +2474,7 @@ class Poweradminurt43Plugin(b3.plugin.Plugin):
         for key in self._weapons:
             lines.append('%s:%s' % (key, '^2ON' if self._weapons[key] not in gearstr else '^1OFF'))
 
-        cmd.sayLoudOrPM(client, '^3current gear: ^7%s' % '^7, '.join(lines))
+        cmd.sayLoudOrPM(client, '^3current gear: ^7%s' % '^7, '.join(sorted(lines)))
 
     def getTime(self):
         """ just to ease automated tests """

@@ -557,11 +557,11 @@ class JumperPlugin(b3.plugin.Plugin):
         """
         Return a time string given it's value expressed in milliseconds [H:mm:ss:ms]
         """
-        secs = msec / 1000
+        secs = msec // 1000
         msec -= secs * 1000
-        mins = secs / 60
+        mins = secs // 60
         secs -= mins * 60
-        hour = mins / 60
+        hour = mins // 60
         mins -= hour * 60
         return "%01d:%02d:%02d.%03d" % (hour, mins, secs, msec)
 
@@ -641,8 +641,9 @@ class JumperPlugin(b3.plugin.Plugin):
 
         cleaned_wanted_map = re.sub("^ut4?_", '', wanted_map, count=1)
 
+        cleaned_supported_maps_keys = list(cleaned_supported_maps.keys())
         matches = [cleaned_supported_maps[match] for match in getStuffSoundingLike(cleaned_wanted_map,
-                                                                                   list(cleaned_supported_maps.keys()))]
+                                                                                   cleaned_supported_maps_keys)]
         if len(matches) == 1:
             # one match, get the map id
             return matches[0]

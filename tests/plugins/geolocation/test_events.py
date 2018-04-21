@@ -22,36 +22,36 @@
 #                                                                     #
 # ################################################################### #
 
-import sys
-import time
+import mock
 
 from b3.plugins.geolocation.location import Location
 from tests.plugins.geolocation import GeolocationTestCase
-
+from tests import InstantThread
 
 class Test_events(GeolocationTestCase):
 
-    def test_event_client_geolocation_success(self):
+    @mock.patch("threading.Thread", new_callable=lambda: InstantThread)
+    def test_event_client_geolocation_success(self, instant_thread):
         # GIVEN
         self.mike.ip = '8.8.8.8'
         # WHEN
         self.mike.connects("1")
-        time.sleep(6)  # give a chance to the thread to do its job, so retrieve data and create the event
         # THEN
         self.assertEqual(True, hasattr(self.mike, 'location'))
         self.assertIsNotNone(self.mike.location)
         self.assertIsInstance(self.mike.location, Location)
 
-    def test_event_client_geolocation_failure(self):
+    @mock.patch("threading.Thread", new_callable=lambda: InstantThread)
+    def test_event_client_geolocation_failure(self, instant_thread):
         # GIVEN
         self.mike.ip = '--'
         # WHEN
         self.mike.connects("1")
-        time.sleep(6)  # give a chance to the thread to do its job, so retrieve data and create the event
         # THEN
         self.assertIsNone(self.mike.location)
 
-    def test_event_client_geolocation_success_maxmind(self):
+    @mock.patch("threading.Thread", new_callable=lambda: InstantThread)
+    def test_event_client_geolocation_success_maxmind(self, instant_thread):
         # GIVEN
         self.p._geolocators.pop(0)
         self.p._geolocators.pop(0)
@@ -59,13 +59,13 @@ class Test_events(GeolocationTestCase):
         self.mike.ip = '8.8.8.8'
         # WHEN
         self.mike.connects("1")
-        time.sleep(2)  # give a chance to the thread to do its job, so retrieve data and create the event
         # THEN
         self.assertGreaterEqual(len(self.p._geolocators), 1)
         self.assertIsNotNone(self.mike.location)
         self.assertIsNone(self.mike.location.isp)
 
-    def test_event_client_geolocation_success_maxmind_using_event_client_update(self):
+    @mock.patch("threading.Thread", new_callable=lambda: InstantThread)
+    def test_event_client_geolocation_success_maxmind_using_event_client_update(self, instant_thread):
         # GIVEN
         self.p._geolocators.pop(0)
         self.p._geolocators.pop(0)
@@ -75,7 +75,6 @@ class Test_events(GeolocationTestCase):
         # WHEN
         self.mike.ip = '8.8.8.8'
         self.mike.save(self.console)
-        time.sleep(4)  # give a chance to the thread to do its job, so retrieve data and create the event
         # THEN
         self.assertGreaterEqual(len(self.p._geolocators), 1)
         self.assertEqual(True, hasattr(self.mike, 'location'))

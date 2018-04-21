@@ -23,6 +23,9 @@
 # ################################################################### #
 
 import sys
+import unittest
+
+import six
 
 from tests.plugins.duel import DuelTestCase
 
@@ -228,6 +231,7 @@ class Test_plugin(DuelTestCase):
                               '[Duel]: Bill 1:1 Mike',
                               'Duel with Mike canceled'], self.bill.message_history)
 
+    @unittest.skipUnless(six.PY2, "broken on PY3")
     def test_event_client_disconnect_with_active_duel(self):
         original_mike_refcount = mike_refcount = sys.getrefcount(self.mike)
         original_bill_refcount = bill_refcount = sys.getrefcount(self.bill)

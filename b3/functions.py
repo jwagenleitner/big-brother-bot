@@ -434,10 +434,13 @@ def getStuffSoundingLike(stuff, expected_stuff):
                 if s == soundex1:
                     match.append(clean_expected_stuff[m])
 
-    if not len(match):
+    if not match:
         match = sorted(list(expected_stuff))
         match.sort(key=lambda _map: levenshteinDistance(clean_stuff, _map.strip()))
-    return list(set(match))
+
+    # create a set and keep the order
+    match_set = collections.OrderedDict.fromkeys(match)
+    return list(match_set.keys())
 
 
 def hash_password(password):
