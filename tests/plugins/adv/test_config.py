@@ -29,27 +29,29 @@ class Test_config(AdvTestCase):
 
     def test_default_config(self):
         self.init_plugin()
-        self.assertEqual('2', self.p._rate)
+        self.assertEqual('3', self.p._rate)
         self.assertIsNone(self.p._fileName)
         self.assertIsNone(self.p._feed)
         self.assertEqual("News: ", self.p._feedpre)
         self.assertEqual(4, self.p._feedmaxitems)
         self.assertEqual('News: ', self.p._feedpre)
         self.assertIsNotNone(self.p._cronTab)
-        self.assertTupleEqual((0, range(0, 59, 2), -1, -1, -1, -1),
+        self.assertTupleEqual((0, range(0, 59, 3), -1, -1, -1, -1),
                               (self.p._cronTab.second, self.p._cronTab.minute, self.p._cronTab.hour,
                                self.p._cronTab.day, self.p._cronTab.month, self.p._cronTab.dow))
-        self.assertEqual(10, len(self.p._msg.items))
+        self.assertEqual(12, len(self.p._msg.items))
         self.assertListEqual([
-            '^2Big Brother Bot is watching you... www.BigBrotherBot.net',
-            '@feed',
-            'server watched by @admins',
-            '^3Rule #1: No racism of any kind',
+            '^2Yes, we are watching.',
+            '^2Visit us at www.urt-30plus.org.',
+            '^2Public Teamspeak 3 server: ts3.urt-30plus.org.',
+            '^2Type !register to register as a user.',
+            '^2Type !fa in chat to forgive team damage!',
+            '^2Send demos to ltstriker@urt-30plus.org',
+            '^3Rule #8: No profanity or offensive language (in any language)',
             '@time',
-            '@admins',
-            '@feed',
-            '^2Do you like B3? Consider donating to the project at www.BigBrotherBot.net',
             '@nextmap',
+            '^2Type !help for commands.',
+            '^2Type !xlrstats for statistics.',
             '@topstats'
         ], self.p._msg.items)
 

@@ -46,6 +46,8 @@ class Test_Censor_badname_default_config(Detection_TestCase):
 
         self.p.config.load(b3.getAbsolutePath('@b3/conf/plugin_censor.xml'))
         self.p.onLoadConfig()
+
+    def test_bad_names_count(self):
         self.assertEqual(17, len(self.p._badNames))
 
     def test_default_penalty(self):

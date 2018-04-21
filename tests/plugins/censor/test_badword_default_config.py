@@ -48,6 +48,8 @@ class Test_Censor_badword_default_config(Detection_TestCase):
 
         self.p.config.load(b3.getAbsolutePath('@b3/conf/plugin_censor.xml'))
         self.p.onLoadConfig()
+
+    def test_bad_words_count(self):
         self.assertEqual(68, len(self.p._badWords))
 
     def test_default_penalty(self):
