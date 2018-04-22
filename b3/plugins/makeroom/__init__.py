@@ -21,9 +21,6 @@
 #  02110-1301, USA.                                                   #
 #                                                                     #
 # ################################################################### #
-#
-
-from __future__ import print_function, absolute_import
 
 __version__ = '1.8'
 __author__ = 'Thomas LÉVEIL'
@@ -31,9 +28,9 @@ __author__ = 'Thomas LÉVEIL'
 import time
 import threading
 
-from b3.functions import getCmd
-from b3.plugin import Plugin
 from six.moves.configparser import NoOptionError
+
+from b3.plugin import Plugin
 
 
 class MakeroomPlugin(Plugin):
@@ -149,19 +146,7 @@ class MakeroomPlugin(Plugin):
         """
         Initialize plugin.
         """
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-
-                func = getCmd(self, cmd)
-                if func:
-                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
-
+        self.register_commands_from_config()
         self.registerEvent('EVT_CLIENT_AUTH', self.onClientAuth)
 
     def onClientAuth(self, event):

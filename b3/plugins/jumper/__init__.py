@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'Fenix'
 __version__ = '2.31'
 
@@ -363,18 +361,7 @@ class JumperPlugin(b3.plugin.Plugin):
                 self.warning("automatic demo recording is enabled in configuration file but plugin 'urtserversidedemo' "
                              "has not been loaded in B3 main configuration file: automatic demo recording will be disabled")
 
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-
-                func = getCmd(self, cmd)
-                if func:
-                    self.adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
         for cmd in ('map', 'maps', 'pasetnextmap'):
 

@@ -22,18 +22,15 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'ThorN'
 __version__ = '1.4'
+
+from six.moves.configparser import NoOptionError
 
 import b3
 import b3.events
 import b3.plugin
 import b3.cron
-
-from b3.functions import getCmd
-from six.moves.configparser import NoOptionError
 
 
 class PingwatchPlugin(b3.plugin.Plugin):
@@ -89,18 +86,7 @@ class PingwatchPlugin(b3.plugin.Plugin):
         self.registerEvent('EVT_GAME_EXIT', self.onGameExit)
         self._ignoreTill = self.console.time() + 120  # dont check pings on startup
 
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-
-                func = getCmd(self, cmd)
-                if func:
-                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
         # remove existing crontab
         if self._cronTab:

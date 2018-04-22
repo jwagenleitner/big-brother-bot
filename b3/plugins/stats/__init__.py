@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'ThorN, GrosBedo'
 __version__ = '1.5.1'
 
@@ -31,7 +29,6 @@ import b3
 import b3.events
 import b3.plugin
 
-from b3.functions import getCmd
 from six.moves.configparser import NoOptionError
 
 
@@ -171,17 +168,7 @@ class StatsPlugin(b3.plugin.Plugin):
         """
         self._adminPlugin = self.console.getPlugin('admin')
 
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-                func = getCmd(self, cmd)
-                if func:
-                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
         self.registerEvent('EVT_CLIENT_DAMAGE_TEAM', self.onDamageTeam)
         self.registerEvent('EVT_CLIENT_KILL_TEAM', self.onTeamKill)

@@ -22,16 +22,12 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'PtitBigorneau - www.ptitbigorneau.fr'
 __version__ = '1.5.2'
 
 import b3
 import b3.plugin
 import b3.events
-
-from b3.functions import getCmd
 
 
 class FirstkillPlugin(b3.plugin.Plugin):
@@ -68,18 +64,7 @@ class FirstkillPlugin(b3.plugin.Plugin):
         if not self._adminPlugin:
             raise AttributeError('could not find admin plugin')
 
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-
-                func = getCmd(self, cmd)
-                if func:
-                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
         if self.console.gameName not in ('iourt41', 'iourt42', 'iourt43'):
             self.info('NOTE: !firsths command is available only in UrbanTerror 4.x game serie')

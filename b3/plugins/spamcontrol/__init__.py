@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'ThorN, Courgette'
 __version__ = '1.4.4'
 
@@ -32,7 +30,6 @@ import b3.events
 import b3.plugin
 import re
 
-from b3.functions import getCmd
 from b3.functions import clamp
 
 
@@ -63,18 +60,7 @@ class SpamcontrolPlugin(b3.plugin.Plugin):
 
         self._adminPlugin = self.console.getPlugin('admin')
 
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-
-                func = getCmd(self, cmd)
-                if func:
-                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
     def getTime(self):
         """

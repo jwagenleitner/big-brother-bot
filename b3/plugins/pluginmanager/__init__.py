@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'Fenix'
 __version__ = '1.2'
 
@@ -39,7 +37,6 @@ import sys
 
 from b3 import __version__ as currentVersion
 from b3.exceptions import MissingRequirement
-from b3.functions import getCmd
 from b3.functions import topological_sort
 from b3.plugin import PluginData
 from b3.update import B3version
@@ -58,18 +55,7 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
         """
         self._adminPlugin = self.console.getPlugin('admin')
 
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-
-                func = getCmd(self, cmd)
-                if func:
-                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
         # notice plugin started
         self.debug('plugin started')

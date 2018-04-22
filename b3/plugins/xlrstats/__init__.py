@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'xlr8or & ttlogic'
 __version__ = '3.0.0-beta.17'
 
@@ -34,6 +32,7 @@ import threading
 import time
 
 import six
+from six.moves.configparser import NoOptionError
 
 import b3
 import b3.cron
@@ -42,9 +41,7 @@ import b3.plugin
 import b3.timezones
 
 from b3.functions import escape
-from b3.functions import getCmd
 from b3.functions import right_cut
-from six.moves.configparser import NoOptionError
 
 KILLER = "killer"
 VICTIM = "victim"
@@ -163,18 +160,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
         # build database schema if needed
         self.build_database_schema()
 
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-
-                func = getCmd(self, cmd)
-                if func:
-                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
         # define a shortcut to the storage.query function
         self.query = self.console.storage.query

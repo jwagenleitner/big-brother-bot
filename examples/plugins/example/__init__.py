@@ -17,8 +17,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-from __future__ import print_function, absolute_import
-
 import b3
 import b3.config
 import b3.cron
@@ -198,24 +196,7 @@ class ExamplePlugin(b3.plugin.Plugin):
         Initialize the plugin.
         This is the place where you perform initialization steps, such as registering new commands and events.
         """
-        # in the snippet here below we parse the [commands] section of the plugin configuration file
-        # extracting command name, alias and level: the command will then be registered and mapped
-        # over the plugin method implementing the command. Note that the method implementing the command must
-        # be named accordignly to the command name, i.e: the command !hello, whose name is 'hello' is implemented
-        # by the method cmd_hello(self, data, client, cmd=None) defined here below.
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    # this will split the command name and the alias
-                    cmd, alias = sp
-                # retrieve the method implementing the command
-                func = b3.functions.getCmd(self, cmd)
-                if func:
-                    # register the command is a valid method is found
-                    self.adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
         # Here below we register our plugin as event listener for EVT_CLIENT_CONNECT event:
         # when this event is handed over our plugin, the function self.onConnect is executed. You

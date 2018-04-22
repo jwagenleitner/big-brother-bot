@@ -22,16 +22,12 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'Fenix'
 __version__ = '1.5.1'
 
 import b3
 import b3.plugin
 import b3.events
-
-from b3.functions import getCmd
 
 
 class SpawnkillPlugin(b3.plugin.Plugin):
@@ -86,18 +82,7 @@ class SpawnkillPlugin(b3.plugin.Plugin):
         # get the admin plugin
         self.adminPlugin = self.console.getPlugin('admin')
 
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-
-                func = getCmd(self, cmd)
-                if func:
-                    self.adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
         # register the events needed
         self.registerEvent('EVT_CLIENT_SPAWN', self.onSpawn)

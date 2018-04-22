@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __version__ = '2.2'
 __author__ = 'Courgette'
 
@@ -34,7 +32,6 @@ from threading import Thread
 from threading import Event as TEvent
 from b3.plugin import Plugin
 from b3.functions import minutesStr
-from b3.functions import getCmd
 
 
 class UrtserversidedemoPlugin(Plugin):
@@ -76,18 +73,7 @@ class UrtserversidedemoPlugin(Plugin):
         else:
             self.debug("server has startserverdemo command")
 
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-
-                func = getCmd(self, cmd)
-                if func:
-                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
         self.demo_manager = DemoManager(self)
 

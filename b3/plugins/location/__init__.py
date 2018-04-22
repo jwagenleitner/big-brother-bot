@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'Fenix, Courgette'
 __version__ = '2.3'
 
@@ -31,8 +29,6 @@ import b3
 import b3.plugin
 import b3.events
 import math
-
-from b3.functions import getCmd
 
 
 class LocationPlugin(b3.plugin.Plugin):
@@ -66,17 +62,7 @@ class LocationPlugin(b3.plugin.Plugin):
         # get the admin plugin
         self._adminPlugin = self.console.getPlugin('admin')
 
-        if 'commands' in self.config.sections():
-            # parse the commands section looking for valid commands
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-                func = getCmd(self, cmd)
-                if func:
-                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
         # register events needed
         self.registerEvent(self.console.getEventID('EVT_CLIENT_GEOLOCATION_SUCCESS'), self.onGeolocalization)

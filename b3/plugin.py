@@ -448,6 +448,37 @@ class Plugin(object):
         if event.type == self.console.getEventID('EVT_EXIT') or event.type == self.console.getEventID('EVT_STOP'):
             self.working = False
 
+    def register_commands_from_config(self):
+        """Registers the commands for this plugin as defined in its config
+
+        Given a config as follows:
+            [commands]
+            command1-cmd1: senioradmin
+            command2-cmd2: moderator
+            command3: regular
+            ....
+
+        Will look for instance methods named `cmd_command1`, `cmd_command2`,
+        `cmd_command3` and register them as commands with the specified level.
+        If the config key contains a hyphen, the word after the hyphen will
+        be registered as that command's alias. So in the above config,
+        `command1` will have an alias of `cmd1` and `command2` will have
+        and alias of `cmd2`. The command, `command3`, will not have an
+        alias registered.
+        """
+        if "commands" not in self.config.sections():
+            return
+        admin_plugin = self.console.getPlugin("admin")
+        for cmd in self.config.options("commands"):
+            level = self.config.get("commands", cmd)
+            sp = cmd.split("-")
+            alias = None
+            if len(sp) == 2:
+                cmd, alias = sp
+            func = b3.functions.getCmd(self, cmd)
+            if func:
+                admin_plugin.registerCommand(self, cmd, level, func, alias)
+
     ####################################################################################################################
     #                                                                                                                  #
     #   LOGGING METHODS                                                                                                #

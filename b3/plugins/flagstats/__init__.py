@@ -17,15 +17,12 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
-from __future__ import print_function, absolute_import
-
 __version__ = '0.6.9'
 __author__ = 'Beber888, GrosBedo'
 
 import b3, time
 import b3.events
 import b3.plugin
-from b3.functions import getCmd
 
 
 class TeamData():
@@ -117,17 +114,7 @@ class FlagstatsPlugin(b3.plugin.Plugin):
             self.error('Could not find admin plugin')
             return False
 
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-                func = getCmd(self, cmd)
-                if func:
-                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
+        self.register_commands_from_config()
 
     def onEvent(self, event):
         """\

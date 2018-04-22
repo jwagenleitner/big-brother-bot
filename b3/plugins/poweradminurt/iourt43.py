@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 import random
 import re
 import os
@@ -40,7 +38,6 @@ import b3.cron
 import b3.events
 import b3.plugin
 from b3.functions import clamp
-from b3.functions import getCmd
 from b3.functions import start_daemon_thread
 from . import __author__
 from . import __version__
@@ -214,19 +211,7 @@ class Poweradminurt43Plugin(b3.plugin.Plugin):
         self.debug("HL_HELMET is %s", self._hitlocations['HL_HELMET'])
         self.debug("HL_TORSO is %s", self._hitlocations['HL_TORSO'])
 
-        # register our commands
-        if 'commands' in self.config.sections():
-            for cmd in self.config.options('commands'):
-                level = self.config.get('commands', cmd)
-                sp = cmd.split('-')
-                alias = None
-                if len(sp) == 2:
-                    cmd, alias = sp
-
-                func = getCmd(self, cmd)
-                if func:
-                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
-
+        self.register_commands_from_config()
         self._adminPlugin.registerCommand(self, 'paversion', 0, self.cmd_paversion, 'paver')
 
         # register our events
