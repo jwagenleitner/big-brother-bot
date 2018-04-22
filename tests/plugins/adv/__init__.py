@@ -41,26 +41,6 @@ ADV_CONFIG_CONTENT = None
 
 timer_patcher = None
 
-RSS_FEED_CONTENT = """\
-<?xml version="1.0" encoding="UTF-8"?>
-<rss version="0.92" xml:lang="en-US">
-    <channel>
-        <title>Big Brother Bot Forum - News (Read Only)</title>
-        <link>http://forum.bigbrotherbot.net/index.php</link>
-        <description><![CDATA[Live information from Big Brother Bot Forum]]></description>
-        <item>
-            <title>f00 bar item title</title>
-            <link>http://forum.bigbrotherbot.net/news-2/f00-item-link</link>
-            <description>
-                <![CDATA[f00 bar item description]]>
-            </description>
-            <pubDate>Sun, 08 Feb 2015 08:53:37 GMT</pubDate>
-            <guid>http://forum.bigbrotherbot.net/news-2/123456798</guid>
-        </item>
-    </channel>
-</rss>
-"""
-
 
 class AdvTestCase(B3TestCase):
     """

@@ -31,10 +31,6 @@ class Test_config(AdvTestCase):
         self.init_plugin()
         self.assertEqual('3', self.p._rate)
         self.assertIsNone(self.p._fileName)
-        self.assertIsNone(self.p._feed)
-        self.assertEqual("News: ", self.p._feedpre)
-        self.assertEqual(4, self.p._feedmaxitems)
-        self.assertEqual('News: ', self.p._feedpre)
         self.assertIsNotNone(self.p._cronTab)
         self.assertTupleEqual((0, list(range(0, 59, 3)), -1, -1, -1, -1),
                               (self.p._cronTab.second, self.p._cronTab.minute, self.p._cronTab.hour,
@@ -60,10 +56,6 @@ class Test_config(AdvTestCase):
         self.assertEqual(self.p._rate, '2')
         self.assertIsNone(self.p._fileName)
         self.assertEqual(0, len(self.p._msg.items))
-        self.assertIsNone(self.p._feed)
-        self.assertEqual("News: ", self.p._feedpre)
-        self.assertEqual(4, self.p._feedmaxitems)  # changed to 4 since plugin configuration loading is not stopped
-        self.assertEqual('News: ', self.p._feedpre)  # by empty rate anymore, so maxfeed is reduced by 1 unit
         self.assertIsNotNone(self.p._cronTab)
 
     def test_rate_nominal(self):
