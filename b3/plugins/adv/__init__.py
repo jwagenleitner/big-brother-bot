@@ -30,7 +30,6 @@ __version__ = '1.6.1'
 import os
 import time
 
-import feedparser
 from six.moves.configparser import NoOptionError
 
 import b3
@@ -107,10 +106,6 @@ class AdvPlugin(b3.plugin.Plugin):
     _msg = None
     _fileName = None
     _rate = '2'
-    _feed = B3_RSS
-    _feedpre = u'News: '
-    _feedmaxitems = 5
-    _feeditemnr = 0
     _replay = 0
 
     def onStartup(self):
@@ -151,36 +146,6 @@ class AdvPlugin(b3.plugin.Plugin):
         else:
             self._fileName = None
             self.load_from_config()
-
-        try:
-            self._feed = self.config.get('newsfeed', 'url')
-        except NoOptionError:
-            pass
-
-        try:
-            self._feedmaxitems = self.config.getint('newsfeed', 'items')
-        except (NoOptionError, ValueError):
-            pass
-
-        # reduce feedmaxitems 1 point, since we're starting at item 0, this makes counting easier...
-        self._feedmaxitems -= 1
-        self.verbose('self._feedmaxitems: %s' % self._feedmaxitems)
-
-        try:
-            self._feedpre = self.config.get('newsfeed', 'pretext')
-        except NoOptionError:
-            pass
-
-        # test if we have a proper feed
-        if self._feed is not None:
-            if self._feed.strip() == '':
-                self._feed = None
-            else:
-                f = feedparser.parse(self._feed)
-                if not f or f['bozo'] == 1:
-                    self._feed = None
-                    self.warning('error reading feed at %s' % self._feed)
-                    self.debug(f['bozo_exception'])
 
         if self._cronTab:
             # remove existing crontab
@@ -255,18 +220,6 @@ class AdvPlugin(b3.plugin.Plugin):
                     ad = None
             elif ad == "@time":
                 ad = "^2Time: ^3" + self.console.formatTime(time.time())
-            elif ad[:5] == "@feed" and self._feed:
-                ad = self.get_feed(ad)
-                if not ad or ad == self._feedpre:
-                    # we didn't get an item from the feedreader, move on to the next ad
-                    self._replay += 1
-                    # prevent endless loop if only feeditems are used as adds
-                    if self._replay < 10:
-                        self.adv()
-                    else:
-                        self.debug('something wrong with the newsfeed: disabling it. Fix the feed and do !advload')
-                        self._feed = None
-                    return
             elif ad == "@topstats":
                 if self._xlrstatsPlugin:
                     self._xlrstatsPlugin.cmd_xlrtopstats(data='3', client=None, cmd=None, ext=True)
@@ -309,33 +262,6 @@ class AdvPlugin(b3.plugin.Plugin):
             if ad:
                 self.console.say(ad)
             self._replay = 0
-
-    def get_feed(self, ad):
-        """
-        Get a feed item to display.
-        """
-        i = ad.split()
-        if len(i) == 2 and isinstance(i, list):
-            i = i[1]
-            self._feeditemnr = i
-        else:
-            if self._feeditemnr > self._feedmaxitems:
-                self._feeditemnr = 0
-            i = self._feeditemnr
-
-        try:
-            f = feedparser.parse(self._feed)
-        except Exception:
-            self.debug('not able to retrieve feed')
-            return None
-        try:
-            _item = f['entries'][i]['title']
-            self._feeditemnr += 1
-            return self._feedpre + _item
-        except Exception:
-            self.debug('feeditem %s out of range' % i)
-            self._feeditemnr = 0
-            return None
 
     def _get_rate_minsec(self, rate):
         """
