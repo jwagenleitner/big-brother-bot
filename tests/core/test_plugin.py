@@ -22,17 +22,15 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
-import imp
 import logging
+import imp
 import os
 from textwrap import dedent
 
+import mockito
 from mock import ANY
 from mock import call
 from mock import patch
-from mockito import when
 
 import b3
 from b3.config import CfgConfigParser, NoOptionError
@@ -390,7 +388,7 @@ class Test_Plugin_requiresParser(B3TestCase):
 
     def setUp(self):
         B3TestCase.setUp(self)
-        when(self.console.config).get_external_plugins_dir().thenReturn(external_plugins_dir)
+        mockito.when(self.console.config).get_external_plugins_dir().thenReturn(external_plugins_dir)
         self.conf = CfgConfigParser(testplugin_config_file)
 
         self.plugin_list = [
@@ -414,34 +412,36 @@ class Test_Plugin_requiresParser(B3TestCase):
         if fp:
             fp.close()
 
-        when(self.console.config).get_plugins().thenReturn(self.plugin_list)
-        when(self.console).pluginImport('admin', ANY).thenReturn(adminModule)
-        when(self.console).pluginImport('testplugin1', ANY).thenReturn(pluginModule1)
-        when(self.console).pluginImport('testplugin2', ANY).thenReturn(pluginModule2)
+        mockito.when(self.console.config).get_plugins().thenReturn(self.plugin_list)
+        mockito.when(self.console).pluginImport('admin', mockito.ANY).thenReturn(adminModule)
+        mockito.when(self.console).pluginImport('testplugin1', mockito.ANY).thenReturn(pluginModule1)
+        mockito.when(self.console).pluginImport('testplugin2', mockito.ANY).thenReturn(pluginModule2)
 
-    # TODO: fixme
-    # def test_nominal(self):
-    #     # GIVEN
-    #     self.plugin_list.append(
-    #         {'name': 'testplugin1', 'conf': None, 'path': external_plugins_dir, 'disabled': False}
-    #     )
-    #     # WHEN
-    #     with patch.object(self.console, 'error') as error_mock:
-    #         self.console.loadPlugins()
-    #     # THEN
-    #     self.assertListEqual([], error_mock.mock_calls)
+    def tearDown(self):
+        B3TestCase.tearDown(self)
+        mockito.unstub()
 
-    # TODO: fixme
-    # def test_wrong_game(self):
-    #     # GIVEN
-    #     self.plugin_list.append(
-    #         {'name': 'testplugin2', 'conf': None, 'path': external_plugins_dir, 'disabled': False}
-    #     )
-    #     # WHEN
-    #     with patch.object(self.console, 'error') as error_mock:
-    #         self.console.loadPlugins()
-    #     # THEN
-    #     self.assertListEqual([call('Could not load plugin testplugin2', exc_info=ANY)], error_mock.mock_calls)
+    def test_nominal(self):
+        # GIVEN
+        self.plugin_list.append(
+            {'name': 'testplugin1', 'conf': None, 'path': external_plugins_dir, 'disabled': False}
+        )
+        # WHEN
+        with patch.object(self.console, 'error') as error_mock:
+            self.console.loadPlugins()
+        # THEN
+        self.assertListEqual([], error_mock.mock_calls)
+
+    def test_wrong_game(self):
+        # GIVEN
+        self.plugin_list.append(
+            {'name': 'testplugin2', 'conf': None, 'path': external_plugins_dir, 'disabled': False}
+        )
+        # WHEN
+        with patch.object(self.console, 'error') as error_mock:
+            self.console.loadPlugins()
+        # THEN
+        self.assertListEqual([call('Could not load plugin testplugin2', exc_info=ANY)], error_mock.mock_calls)
 
 
 class Test_Plugin_getSetting(B3TestCase):
@@ -518,7 +518,7 @@ class Test_Plugin_requiresStorage(B3TestCase):
 
     def setUp(self):
         B3TestCase.setUp(self)
-        when(self.console.config).get_external_plugins_dir().thenReturn(external_plugins_dir)
+        mockito.when(self.console.config).get_external_plugins_dir().thenReturn(external_plugins_dir)
         self.conf = CfgConfigParser(testplugin_config_file)
 
         self.plugin_list = [
@@ -542,45 +542,46 @@ class Test_Plugin_requiresStorage(B3TestCase):
         if fp:
             fp.close()
 
-        when(self.console.config).get_plugins().thenReturn(self.plugin_list)
-        when(self.console).pluginImport('admin', ANY).thenReturn(adminModule)
-        when(self.console).pluginImport('testplugin1', ANY).thenReturn(pluginModule1)
-        when(self.console).pluginImport('testplugin3', ANY).thenReturn(pluginModule3)
+        mockito.when(self.console.config).get_plugins().thenReturn(self.plugin_list)
+        mockito.when(self.console).pluginImport('admin', mockito.ANY).thenReturn(adminModule)
+        mockito.when(self.console).pluginImport('testplugin1', mockito.ANY).thenReturn(pluginModule1)
+        mockito.when(self.console).pluginImport('testplugin3', mockito.ANY).thenReturn(pluginModule3)
 
-    # TODO: fixme
-    # def test_nominal(self):
-    #     # GIVEN
-    #     self.plugin_list.append(
-    #         {'name': 'testplugin1', 'conf': None, 'path': external_plugins_dir, 'disabled': False}
-    #     )
-    #     # WHEN
-    #     with patch.object(self.console, 'error') as error_mock:
-    #         self.console.loadPlugins()
-    #     # THEN
-    #     self.assertListEqual([], error_mock.mock_calls)
+    def tearDown(self):
+        B3TestCase.tearDown(self)
+        mockito.unstub()
 
-    # TODO: fixme
-    # def test_correct_storage(self):
-    #     # GIVEN
-    #     self.console.storage.protocol = 'postgresql'
-    #     self.plugin_list.append(
-    #         {'name': 'testplugin3', 'conf': None, 'path': external_plugins_dir, 'disabled': False}
-    #     )
-    #     # WHEN
-    #     with patch.object(self.console, 'error') as error_mock:
-    #         self.console.loadPlugins()
-    #     # THEN
-    #     self.assertListEqual([], error_mock.mock_calls)
+    def test_nominal(self):
+        # GIVEN
+        self.plugin_list.append(
+            {'name': 'testplugin1', 'conf': None, 'path': external_plugins_dir, 'disabled': False}
+        )
+        # WHEN
+        with patch.object(self.console, 'error') as error_mock:
+            self.console.loadPlugins()
+        # THEN
+        self.assertListEqual([], error_mock.mock_calls)
 
-    # TODO: fixme
-    # def test_wrong_storage(self):
-    #     # GIVEN
-    #     self.console.storage.protocol = 'mysql'
-    #     self.plugin_list.append(
-    #         {'name': 'testplugin3', 'conf': None, 'path': external_plugins_dir, 'disabled': False}
-    #     )
-    #     # WHEN
-    #     with patch.object(self.console, 'error') as error_mock:
-    #         self.console.loadPlugins()
-    #     # THEN
-    #     self.assertListEqual([call('Could not load plugin testplugin3', exc_info=ANY)], error_mock.mock_calls)
+    def test_correct_storage(self):
+        # GIVEN
+        self.console.storage.protocol = 'postgresql'
+        self.plugin_list.append(
+            {'name': 'testplugin3', 'conf': None, 'path': external_plugins_dir, 'disabled': False}
+        )
+        # WHEN
+        with patch.object(self.console, 'error') as error_mock:
+            self.console.loadPlugins()
+        # THEN
+        self.assertListEqual([], error_mock.mock_calls)
+
+    def test_wrong_storage(self):
+        # GIVEN
+        self.console.storage.protocol = 'mysql'
+        self.plugin_list.append(
+            {'name': 'testplugin3', 'conf': None, 'path': external_plugins_dir, 'disabled': False}
+        )
+        # WHEN
+        with patch.object(self.console, 'error') as error_mock:
+            self.console.loadPlugins()
+        # THEN
+        self.assertListEqual([call('Could not load plugin testplugin3', exc_info=ANY)], error_mock.mock_calls)

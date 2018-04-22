@@ -199,6 +199,24 @@ class Iourt43Parser(AbstractParser):
     gameName = 'iourt43'
     spamcontrolPlugin = None
 
+    """
+    Translate the gametype to a readable format (also for teamkill plugin!)
+    """
+    game_types = {
+        "0": "ffa",
+        "1": "lms",
+        "2": "dm",
+        "3": "tdm",
+        "4": "ts",
+        "5": "ftl",
+        "6": "cah",
+        "7": "ctf",
+        "8": "bm",
+        "9": "jump",
+        "10": "freeze",
+        "11": "gungame",
+    }
+
     _logSync = 2
 
     _permban_with_frozensand = False
@@ -1712,37 +1730,8 @@ class Iourt43Parser(AbstractParser):
             return False
 
     def defineGameType(self, gametype_int):
-        """
-        Translate the gametype to a readable format (also for teamkill plugin!)
-        """
         gametype = str(gametype_int)
-        # TODO: should it `gametype == ?`
-        if gametype_int == '0':
-            gametype = 'ffa'
-        elif gametype_int == '1':  # Last Man Standing
-            gametype = 'lms'
-        elif gametype_int == '2':  # Quake 3 Arena single player
-            gametype = 'dm'
-        elif gametype_int == '3':
-            gametype = 'tdm'
-        elif gametype_int == '4':
-            gametype = 'ts'
-        elif gametype_int == '5':
-            gametype = 'ftl'
-        elif gametype_int == '6':
-            gametype = 'cah'
-        elif gametype_int == '7':
-            gametype = 'ctf'
-        elif gametype_int == '8':
-            gametype = 'bm'
-        elif gametype_int == '9':
-            gametype = 'jump'
-        elif gametype_int == '10':
-            gametype = 'freeze'
-        elif gametype_int == '11':
-            gametype = 'gungame'
-
-        return gametype
+        return self.game_types.get(gametype, gametype)
 
     def patch_spamcontrolPlugin(self):
         """

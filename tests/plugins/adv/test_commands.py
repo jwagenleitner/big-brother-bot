@@ -21,6 +21,7 @@
 #  02110-1301, USA.                                                   #
 #                                                                     #
 # ################################################################### #
+
 from b3.fake import FakeClient
 from tests.plugins.adv import AdvTestCase
 
@@ -30,9 +31,6 @@ class Test_commands(AdvTestCase):
     def setUp(self):
         AdvTestCase.setUp(self)
         self.joe = FakeClient(self.console, name="Joe", guid="joeguid", groupBits=128)
-
-    def tearDown(self):
-        AdvTestCase.tearDown(self)
 
     def test_advlist_empty(self):
         self.init_plugin("""

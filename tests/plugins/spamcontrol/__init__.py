@@ -18,6 +18,7 @@
 import logging
 
 from mock import patch
+from mockito import unstub
 
 from b3.config import CfgConfigParser
 from b3.plugins.spamcontrol import SpamcontrolPlugin
@@ -43,6 +44,7 @@ class SpamcontrolTestCase(B3TestCase):
     def tearDown(self):
         B3TestCase.tearDown(self)
         self.timer_patcher.stop()
+        unstub()
 
     def init_plugin(self, config_content):
         self.conf = CfgConfigParser()

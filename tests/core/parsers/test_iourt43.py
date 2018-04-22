@@ -22,13 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 import logging
 import unittest
 
 from mock import Mock, call, patch
-from mockito import mock, when, any as anything
+from mockito import mock, when, unstub, any as anything
 from six.moves import map
 
 import b3
@@ -110,6 +108,7 @@ class Iourt43TestCase(unittest.TestCase):
         if hasattr(self, "parser"):
             del self.parser.clients
             self.parser.working = False
+        unstub()
 
 
 class Test_log_lines_parsing(Iourt43TestCase):

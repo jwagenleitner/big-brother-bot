@@ -22,7 +22,7 @@
 #                                                                     #
 # ################################################################### #
 
-from mockito import when
+from mockito import when, unstub
 
 import b3
 from b3.fake import FakeClient

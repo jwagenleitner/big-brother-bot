@@ -9,7 +9,7 @@
         <set name="time_zone">MDT</set>
         <!-- How much detail in the b3 logfile: 9 = verbose, 10 = debug, 21 = bot, 22 = console -->
         <set name="log_level">9</set>
-        <set name="logfile">@conf/../b3.log</set>
+        <set name="logfile">@conf/0_b3.log</set>
     </settings>
     <settings name="server">
         <set name="rcon_password">password</set>
@@ -24,7 +24,7 @@
     <settings name="autodoc">
         <set name="type">html</set>
         <set name="maxlevel">100</set>
-        <set name="destination">@conf/../b3_doc.htm</set>
+        <set name="destination">@conf/0_b3_doc.htm</set>
     </settings>
     <settings name="update">
         <set name="channel">skip</set>

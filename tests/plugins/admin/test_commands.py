@@ -963,7 +963,7 @@ group_beyond_reach: You can't assign players to group %(group_name)s
         self.assertListEqual(['Mike put in group Admin'], jack.message_history)
 
 
-class Test_cmd_tempban(Admin_functional_test):
+class Test_cmd_tempban_functional(Admin_functional_test):
 
     def setUp(self):
         Admin_functional_test.setUp(self)
@@ -995,7 +995,7 @@ class Test_cmd_tempban(Admin_functional_test):
         self.mike.tempban.assert_called_with('', None, 5 * 60, self.joe)
 
 
-class Test_cmd_lastbans(Admin_functional_test):
+class Test_cmd_lastbans_functional(Admin_functional_test):
 
     def setUp(self):
         Admin_functional_test.setUp(self)
@@ -1061,7 +1061,7 @@ class Test_cmd_help(Admin_functional_test):
             '^7Available commands: ban, banall, baninfo, lastbans, permban, tempban, unban')
 
 
-class Test_cmd_mask(Admin_functional_test):
+class Test_cmd_mask_functional(Admin_functional_test):
 
     def setUp(self):
         Admin_functional_test.setUp(self)

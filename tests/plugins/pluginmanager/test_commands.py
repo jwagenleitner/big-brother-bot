@@ -23,7 +23,7 @@
 # ################################################################### #
 
 from mock import Mock
-from mockito import when
+from mockito import when, unstub
 
 import b3
 import b3.cron

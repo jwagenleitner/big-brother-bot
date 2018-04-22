@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 import logging
 import sys
 import threading
@@ -32,6 +30,7 @@ import unittest
 from contextlib import contextmanager
 
 from mock import Mock, patch
+from mockito import when, unstub
 
 from b3.config import CfgConfigParser
 from b3.config import MainConfig
@@ -106,6 +105,7 @@ class B3TestCase(unittest.TestCase):
 
     def tearDown(self):
         flush_console_streams()
+        unstub()
         testcase_lock.release()
 
     @contextmanager

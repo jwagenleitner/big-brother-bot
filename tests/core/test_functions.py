@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 import unittest
 
 from b3 import functions
@@ -272,3 +270,17 @@ class Test_topologicalSort(unittest.TestCase):
                     ('myplugin5', {'myplugin1', 'myplugin3', 'myplugin4'})]
         sorted_list = [x for x in functions.topological_sort(dep_list)]
         self.assertListEqual(sorted_list, ['myplugin3', 'myplugin1', 'myplugin2', 'myplugin4', 'myplugin5'])
+
+
+class Test_utils(unittest.TestCase):
+
+    def cmd_foo(self):
+        pass
+
+    def cmd_bar(self):
+        pass
+
+    def test_get_cmd(self):
+        self.assertEqual(functions.getCmd(self, "foo"), self.cmd_foo)
+        self.assertEqual(functions.getCmd(self, "bar"), self.cmd_bar)
+        self.assertIsNone(functions.getCmd(self, "baz"))

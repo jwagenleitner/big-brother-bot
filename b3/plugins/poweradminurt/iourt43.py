@@ -22,6 +22,7 @@
 #                                                                     #
 # ################################################################### #
 
+import functools
 import random
 import re
 import os
@@ -2680,11 +2681,10 @@ class Poweradminurt43Plugin(b3.plugin.Plugin):
         self.debug('recent: %s' % str(recentcontrib))
 
         def contribcmp(a, b):
-            # TODO: PY3 compat
-            return cmp(recentcontrib[b.id], recentcontrib[a.id])
+            return b3.functions.cmp(recentcontrib[b.id], recentcontrib[a.id])
 
-        blue = sorted(blue, cmp=contribcmp)
-        red = sorted(red, cmp=contribcmp)
+        blue = sorted(blue, key=functools.cmp_to_key(contribcmp))
+        red = sorted(red, key=functools.cmp_to_key(contribcmp))
         n = min(len(blue), len(red))
         if n > 3:
             n = 3 + int((n - 3) / 2)

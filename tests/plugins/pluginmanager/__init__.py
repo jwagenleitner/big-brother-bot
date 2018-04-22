@@ -24,7 +24,7 @@
 
 from textwrap import dedent
 
-from mockito import when
+from mockito import when, unstub
 
 import b3
 import b3.cron
@@ -66,3 +66,4 @@ class PluginmanagerTestCase(B3TestCase):
     def tearDown(self):
         self.console._plugins.clear()
         B3TestCase.tearDown(self)
+        unstub()

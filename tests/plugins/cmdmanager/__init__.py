@@ -24,7 +24,7 @@
 
 from textwrap import dedent
 
-from mockito import when
+from mockito import when, unstub
 
 from b3.config import CfgConfigParser
 from b3.plugins.admin import AdminPlugin
@@ -59,6 +59,10 @@ class Cmdmanager_TestCase(B3TestCase):
         self.p = CmdmanagerPlugin(self.console, self.conf)
         self.p.onLoadConfig()
         self.p.onStartup()
+
+    def tearDown(self):
+        B3TestCase.tearDown(self)
+        unstub()
 
     def assert_cmd_groups(self, cmd_name, groups):
         """

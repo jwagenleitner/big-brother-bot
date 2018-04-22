@@ -25,7 +25,7 @@
 import unittest
 from textwrap import dedent
 
-from mockito import when
+from mockito import when, unstub
 
 from b3 import TEAM_BLUE, TEAM_RED
 from b3.config import CfgConfigParser
@@ -111,6 +111,7 @@ class SpawnkillTestCase(unittest.TestCase):
         self.mike.disconnects()
         self.bill.disconnects()
         self.mark.disconnects()
+        unstub()
 
     def init(self, config_content=None):
         if config_content:
