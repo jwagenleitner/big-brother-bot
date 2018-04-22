@@ -26,11 +26,7 @@ import logging
 import os
 from textwrap import dedent
 
-import unittest
-
-from mock import Mock
-from mock import patch
-from mockito import mock
+from mock import Mock, patch
 from mockito import when
 
 from b3 import TEAM_BLUE
@@ -60,33 +56,28 @@ class XlrstatsTestCase(B3TestCase):
         This method is called before each test.
         It is meant to set up the SUT (System Under Test) in a manner that will ease the testing of its features.
         """
+        B3TestCase.setUp(self)
+
+        # set additional B3 console stuff that will be used by the XLRstats plugin
+        self.console.gameName = "MyGame"
+        self.parser_conf.add_section('b3')
+        self.parser_conf.set('b3', 'time_zone', 'GMT')
+
         with logging_disabled():
-            # The B3TestCase class provides us a working B3 environment that does not require any database connexion.
-            # The B3 console is then accessible with self.console
-            B3TestCase.setUp(self)
-
-            # set additional B3 console stuff that will be used by the XLRstats plugin
-            self.console.gameName = "MyGame"
-            self.parser_conf.add_section('b3')
-            self.parser_conf.set('b3', 'time_zone', 'GMT')
-
             # we make our own AdminPlugin and make sure it is the one return in any case
             self.adminPlugin = AdminPlugin(self.console, DEFAULT_ADMIN_CONFIG_FILE)
-            when(self.console).getPlugin("admin").thenReturn(self.adminPlugin)
             self.adminPlugin.onLoadConfig()
             self.adminPlugin.onStartup()
 
-            # We need a config for the Xlrstats plugin
             self.conf = CfgConfigParser()  # It is an empty config but we can fill it up later
-
-            # Now we create an instance of the SUT (System Under Test) which is the XlrstatsPlugin
             self.p = XlrstatsPlugin(self.console, self.conf)
-            when(self.console).getPlugin("xlrstats").thenReturn(self.p)
 
-            # create a client object to represent the game server
-            with patch("b3.clients.Clients.authorizeClients"):  # we patch authorizeClients or it will spawn a thread
-                # with a 5 second timer
-                self.console.clients.newClient(-1, name="WORLD", guid="WORLD", hide=True)
+        with patch("b3.clients.Clients.authorizeClients"):  # we patch authorizeClients or it will spawn a thread
+            self.console.queryClientFrozenSandAccount = Mock(return_value={})
+            self.console.clients.newClient(-1, name="WORLD", guid="WORLD", hide=True)
+
+        when(self.console).getPlugin("admin").thenReturn(self.adminPlugin)
+        when(self.console).getPlugin("xlrstats").thenReturn(self.p)
 
     def init(self, config_content=None):
         """
@@ -105,7 +96,6 @@ class XlrstatsTestCase(B3TestCase):
         self.p.onStartup()
 
 
-@unittest.skip("hangs tests")
 class Test_get_PlayerAnon(XlrstatsTestCase):
 
     def setUp(self):
@@ -134,7 +124,6 @@ class Test_get_PlayerAnon(XlrstatsTestCase):
         self.assertEqual(0, s.hide)
 
 
-@unittest.skip("hangs tests")
 class Test_get_PlayerStats(XlrstatsTestCase):
 
     def setUp(self):
@@ -205,7 +194,6 @@ class Test_get_PlayerStats(XlrstatsTestCase):
         self.assertEqual("", s2.id_token)
 
 
-@unittest.skip("hangs tests")
 class Test_cmd_xlrstats(XlrstatsTestCase):
 
     def setUp(self):
@@ -264,7 +252,6 @@ class Test_cmd_xlrstats(XlrstatsTestCase):
         self.assertEqual(['XLR Stats: P2 : K 0 D 0 TK 0 Ratio 0.00 Skill 1000.00'], self.p1.message_history)
 
 
-@unittest.skip("hangs tests")
 class Test_cmd_xlrid(XlrstatsTestCase):
 
     def setUp(self):
@@ -288,7 +275,6 @@ class Test_cmd_xlrid(XlrstatsTestCase):
         self.assertEqual(['Token saved!'], self.p1.message_history)
 
 
-@unittest.skip("hangs tests")
 class Test_kill(XlrstatsTestCase):
     """
     Validates that the stats get updated as expected upon kill events
@@ -359,7 +345,6 @@ class Test_kill(XlrstatsTestCase):
         self.console.verbose.assert_called_with("XlrstatsPlugin: bot involved: do not process!")
 
 
-@unittest.skip("hangs tests")
 class Test_storage(XlrstatsTestCase):
 
     def setUp(self):
@@ -368,7 +353,7 @@ class Test_storage(XlrstatsTestCase):
 
     def test_PlayerStats(self):
         # GIVEN
-        client = mock()
+        client = Mock()
         client.id = 43
         client.maxLevel = 100
 
@@ -652,7 +637,6 @@ class Test_storage(XlrstatsTestCase):
         self.assertEqual(s.count, s2.count)
 
 
-@unittest.skip("hangs tests")
 class Test_events(XlrstatsTestCase):
 
     def setUp(self):
