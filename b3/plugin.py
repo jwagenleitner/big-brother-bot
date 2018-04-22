@@ -27,7 +27,6 @@ __version__ = '1.30.1'
 
 import re
 
-from six.moves.configparser import NoOptionError
 from six.moves import map
 
 import b3.clients
@@ -347,7 +346,7 @@ class Plugin(object):
         except KeyError:
             try:
                 self._messages[msg] = self.config.getTextTemplate('messages', msg)
-            except NoOptionError:
+            except b3.config.NoOptionError:
                 self.warning("config file is missing %r in section 'messages'" % msg)
                 if msg in self._default_messages:
                     self._messages[msg] = b3.functions.vars2printf(self._default_messages[msg]).strip()

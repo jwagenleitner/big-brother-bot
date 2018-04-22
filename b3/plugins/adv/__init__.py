@@ -22,20 +22,16 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'ThorN'
 __version__ = '1.6.1'
 
 import os
 import time
 
-from six.moves.configparser import NoOptionError
-
 import b3
 import b3.cron
 import b3.plugin
-from b3 import B3_RSS
+from b3.config import NoOptionError
 
 
 class MessageLoop(object):

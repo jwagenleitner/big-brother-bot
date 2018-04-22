@@ -170,8 +170,7 @@ class DBUpdate(object):
             # use the specified configuration file
             config = b3.getAbsolutePath(config, True)
             if not os.path.isfile(config):
-                console_exit('ERROR: configuration file not found (%s).\n'
-                             'Please visit %s to create one.' % (config, B3_CONFIG_GENERATOR))
+                console_exit('ERROR: configuration file not found (%s).' % config)
         else:
             # search a configuration file
             for p in ('b3.%s', 'conf/b3.%s', 'b3/conf/b3.%s',
@@ -186,15 +185,13 @@ class DBUpdate(object):
                         break
 
             if not config:
-                console_exit('ERROR: could not find any valid configuration file.\n'
-                             'Please visit %s to create one.' % B3_CONFIG_GENERATOR)
+                console_exit('ERROR: could not find any valid configuration file.')
         try:
             self.config = b3.config.MainConfig(b3.config.load(config))
             if self.config.analyze():
                 raise b3.config.ConfigFileNotValid
         except b3.config.ConfigFileNotValid:
-            console_exit('ERROR: configuration file not valid (%s).\n'
-                         'Please visit %s to generate a new one.' % (config, B3_CONFIG_GENERATOR))
+            console_exit('ERROR: configuration file not valid (%s)' % config)
 
     def run(self):
         """
@@ -246,6 +243,6 @@ class DBUpdate(object):
         console_exit('B3 database update completed!')
 
 
-from b3 import B3_CONFIG_GENERATOR, HOMEDIR
+from b3 import HOMEDIR
 from b3.functions import console_exit, splitDSN, clearscreen
 from b3.storage import getStorage

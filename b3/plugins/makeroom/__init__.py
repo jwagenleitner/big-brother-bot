@@ -28,8 +28,7 @@ __author__ = 'Thomas LÉVEIL'
 import time
 import threading
 
-from six.moves.configparser import NoOptionError
-
+from b3.config import NoOptionError
 from b3.plugin import Plugin
 
 

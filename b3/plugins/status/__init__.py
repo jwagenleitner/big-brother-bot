@@ -27,21 +27,22 @@ from __future__ import print_function, absolute_import
 __author__ = 'ThorN'
 __version__ = '1.6.5'
 
-import b3
-import b3.cron
-import b3.plugin
-import b3.events
-import os
 import re
-import six
-from six import StringIO
+import os
 import time
-
-from b3 import functions
-from b3.functions import sanitizeMe
-from six.moves.configparser import NoOptionError
 from ftplib import FTP
 from xml.dom.minidom import Document
+
+import six
+from six import StringIO
+
+import b3
+import b3.cron
+import b3.events
+import b3.plugin
+from b3 import functions
+from b3.config import NoOptionError
+from b3.functions import sanitizeMe
 
 
 class StatusPlugin(b3.plugin.Plugin):

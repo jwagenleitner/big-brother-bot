@@ -25,17 +25,17 @@
 from __future__ import print_function, absolute_import
 
 import logging
-import sys
 import unittest
 from unittest import TestCase
 
 from six.moves import configparser as ConfigParser
 
+import b3
 from b3.config import XmlConfigParser, CfgConfigParser, ConfigFileNotValid
 from tests import B3TestCase
 
 
-@unittest.skipUnless(sys.platform.startswith("win"), "requires Windows")
+@unittest.skipUnless(b3.getPlatform() == "nt", "requires Windows")
 class Test_XmlConfigParser_windows(B3TestCase):
 
     def setUp(self):

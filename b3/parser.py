@@ -38,11 +38,10 @@ import time
 from collections import OrderedDict
 from textwrap import TextWrapper
 from traceback import extract_tb
-import six
-from six.moves import queue
-from six.moves.configparser import NoOptionError
 
 import dateutil.tz
+import six
+from six.moves import queue
 
 import b3
 import b3.config
@@ -57,7 +56,7 @@ from b3 import __version__ as currentVersion
 from b3.clients import Clients
 from b3.clients import Group
 from b3.decorators import Memoize
-from b3.exceptions import MissingRequirement
+from b3.exceptions import MissingRequirement, NoOptionError
 from b3.functions import getModule
 from b3.functions import right_cut
 from b3.functions import splitDSN
@@ -180,7 +179,7 @@ class Parser(object):
 
     def __new__(cls, *args, **kwargs):
         cls.__read = cls.__read_input
-        if sys.platform == 'darwin':
+        if b3.getPlatform() == 'darwin':
             cls.__read = cls.___read_input_darwin
         return object.__new__(cls)
 

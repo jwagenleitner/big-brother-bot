@@ -22,23 +22,21 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'ThorN, xlr8or, Bravo17, Courgette'
 __version__ = '3.3'
 
-import b3
 import re
-import traceback
 import sys
 import threading
+import traceback
+
+import six
+
+import b3
 import b3.events
 import b3.plugin
-
-from b3.config import XmlConfigParser
+from b3.config import XmlConfigParser, NoOptionError
 from b3 import functions
-import six
-from six.moves.configparser import NoOptionError
 
 
 class PenaltyData:

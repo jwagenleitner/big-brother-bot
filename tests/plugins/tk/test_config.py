@@ -26,10 +26,9 @@ from textwrap import dedent
 
 import six
 from mock import patch, call
-from six.moves.configparser import NoOptionError
 
 import b3
-from b3.config import CfgConfigParser
+from b3.config import CfgConfigParser, NoOptionError
 from b3.plugins.tk import TkPlugin
 from tests import B3TestCase
 from tests.plugins.tk import Test_Tk_plugin

@@ -29,10 +29,10 @@ import re
 import threading
 import time
 
-from six.moves.configparser import NoOptionError
 from six.moves import zip
 
 import b3.plugin
+from b3.config import NoOptionError
 
 F_FIRST = 4
 F_NEWB = 1

@@ -33,10 +33,9 @@ from mock import ANY
 from mock import call
 from mock import patch
 from mockito import when
-from six.moves.configparser import NoOptionError
 
 import b3
-from b3.config import CfgConfigParser
+from b3.config import CfgConfigParser, NoOptionError
 from b3.events import Event
 from b3.plugin import Plugin
 from tests import B3TestCase

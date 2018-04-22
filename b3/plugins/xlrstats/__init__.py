@@ -32,7 +32,6 @@ import threading
 import time
 
 import six
-from six.moves.configparser import NoOptionError
 
 import b3
 import b3.cron
@@ -40,6 +39,7 @@ import b3.events
 import b3.plugin
 import b3.timezones
 
+from b3.config import NoOptionError
 from b3.functions import escape
 from b3.functions import right_cut
 

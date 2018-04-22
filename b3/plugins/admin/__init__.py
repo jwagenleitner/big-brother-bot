@@ -34,7 +34,6 @@ import time
 import traceback
 
 import six
-from six.moves.configparser import NoOptionError
 from six.moves import map
 from six.moves import range
 
@@ -43,6 +42,7 @@ import b3.plugin
 from b3 import functions
 from b3.clients import Client
 from b3.clients import Group
+from b3.config import NoOptionError
 from b3.functions import getCmd
 from b3.functions import minutesStr
 

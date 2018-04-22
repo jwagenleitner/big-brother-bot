@@ -36,7 +36,7 @@ from six.moves import input
 import b3
 import b3.config
 import b3.pkg_handler
-from b3 import HOMEDIR, B3_CONFIG_GENERATOR
+from b3 import HOMEDIR
 from b3.functions import console_exit
 from b3.update import DBUpdate
 
@@ -64,8 +64,7 @@ def run(options):
         if options.config:
             config = b3.getAbsolutePath(options.config, True)
             if not os.path.isfile(config):
-                console_exit('ERROR: configuration file not found (%s).\n'
-                             'Please visit %s to create one.' % (config, B3_CONFIG_GENERATOR))
+                console_exit('ERROR: configuration file not found (%s).' % config)
         else:
             config = None
             for p in ('b3.%s', 'conf/b3.%s', 'b3/conf/b3.%s',
@@ -80,8 +79,7 @@ def run(options):
                         break
 
             if not config:
-                console_exit('ERROR: could not find any valid configuration file.\n'
-                             'Please visit %s to create one.' % B3_CONFIG_GENERATOR)
+                console_exit('ERROR: could not find any valid configuration file.')
 
         main_config = b3.config.MainConfig(b3.config.load(config))
         analysis = main_config.analyze()

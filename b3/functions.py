@@ -37,6 +37,7 @@ from hashlib import md5
 import six
 from six.moves import range
 
+from b3 import getPlatform
 from b3.exceptions import ProgrammingError
 
 
@@ -269,7 +270,7 @@ def clearscreen():
     """
     Clear the current shell screen according to the OS being used.
     """
-    if sys.platform == 'win32':
+    if getPlatform() == 'win':
         os.system('cls')
     else:
         os.system('clear')

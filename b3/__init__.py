@@ -48,15 +48,9 @@ B3_TITLE = 'BigBrotherBot (B3) %s' % versionId
 B3_TITLE_SHORT = 'B3 %s' % versionId
 B3_COPYRIGHT = 'Copyright © 2005 Michael "ThorN" Thornton'
 B3_LICENSE = 'GNU General Public License v2'
-B3_FORUM = 'http://forum.bigbrotherbot.net/'
 B3_WEBSITE = 'http://www.bigbrotherbot.net'
 B3_WIKI = 'http://wiki.bigbrotherbot.net/'
-B3_CONFIG_GENERATOR = 'http://config.bigbrotherbot.net/'
-B3_DOCUMENTATION = 'http://doc.bigbrotherbot.net/'
-B3_DONATE = 'http://www.bigbrotherbot.net/donate'
 B3_XLRSTATS = 'http://www.xlrstats.com/'
-B3_PLUGIN_REPOSITORY = 'http://forum.bigbrotherbot.net/downloads/?cat=4'
-B3_RSS = 'http://forum.bigbrotherbot.net/news-2/?type=rss;action=.xml'
 
 # TEAMS
 TEAM_UNKNOWN = -1
@@ -71,15 +65,15 @@ STATE_ALIVE = 2
 STATE_UNKNOWN = 3
 
 # CUSTOM TYPES FOR DYNAMIC CASTING
-STRING = STR = 1                        ## built-in string
-INTEGER = INT = 2                       ## built-in integer
-BOOLEAN = BOOL = 3                      ## built-in boolean
-FLOAT = 4                               ## built-in float
-LEVEL = 5                               ## b3.clients.Group level
-DURATION = 6                            ## b3.functions.time2minutes conversion
-PATH = 7                                ## b3.getAbsolutePath path conversion
-TEMPLATE = 8                            ## b3.functions.vars2printf conversion
-LIST = 9                                ## string split into list of tokens
+STRING = STR = 1  ## built-in string
+INTEGER = INT = 2  ## built-in integer
+BOOLEAN = BOOL = 3  ## built-in boolean
+FLOAT = 4  ## built-in float
+LEVEL = 5  ## b3.clients.Group level
+DURATION = 6  ## b3.functions.time2minutes conversion
+PATH = 7  ## b3.getAbsolutePath path conversion
+TEMPLATE = 8  ## b3.functions.vars2printf conversion
+LIST = 9  ## string split into list of tokens
 
 
 def getHomePath():
@@ -119,7 +113,9 @@ def getConfPath(decode=False, conf=None):
         elif isinstance(conf, XmlConfigParser) or isinstance(conf, CfgConfigParser) or isinstance(conf, MainConfig):
             path = os.path.dirname(conf.fileName)
         else:
-            raise TypeError('invalid configuration type specified: expected str|XmlConfigParser|CfgConfigParser|MainConfig, got %s instead' % type(conf))
+            raise TypeError(
+                'invalid configuration type specified: expected str|XmlConfigParser|CfgConfigParser|MainConfig, got %s instead' % type(
+                    conf))
     else:
         path = confdir or os.path.dirname(console.config.fileName)
 

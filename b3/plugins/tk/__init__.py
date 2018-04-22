@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __version__ = '1.5'
 __author__ = 'ThorN, mindriot, Courgette, xlr8or, SGT, 82ndab-Bravo17, ozon, Fenix'
 
@@ -32,13 +30,13 @@ import threading
 import time
 
 import six
-from six.moves.configparser import NoOptionError
 from six.moves import map
 
 import b3
+import b3.cron
 import b3.events
 import b3.plugin
-import b3.cron
+from b3.config import NoOptionError
 
 
 class TkInfo(object):

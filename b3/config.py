@@ -179,7 +179,7 @@ class XmlConfigParser(B3ConfigParserMixin):
                 else:
                     return data
             except KeyError:
-                raise configparser.NoOptionError(setting, section)
+                raise NoOptionError(setting, section)
 
     def getint(self, section, setting):
         """
@@ -318,7 +318,7 @@ class CfgConfigParser(B3ConfigParserMixin, configparser.ConfigParser):
             try:
                 sectdict = self._sections[section]
             except KeyError:
-                raise configparser.NoSectionError(section)
+                raise NoSectionError(section)
         sectdict['; %s' % (comment,)] = None
 
     def get(self, section, option, *args, **kwargs):
@@ -340,9 +340,9 @@ class CfgConfigParser(B3ConfigParserMixin, configparser.ConfigParser):
             if value is None:
                 return ""
             return value
-        except configparser.NoSectionError:
+        except NoSectionError:
             # plugins are used to only catch NoOptionError
-            raise configparser.NoOptionError(option, section)
+            raise NoOptionError(option, section)
 
     def load(self, filename):
         """
@@ -460,7 +460,7 @@ class MainConfig(B3ConfigParserMixin):
         ## Load the list of disabled plugins
         try:
             disabled_plugins_raw = self._config_parser.get('b3', 'disabled_plugins')
-        except configparser.NoOptionError:
+        except NoOptionError:
             disabled_plugins = []
         else:
             disabled_plugins = re.split('\W+', disabled_plugins_raw.lower())
@@ -468,7 +468,7 @@ class MainConfig(B3ConfigParserMixin):
         def get_custom_plugin_path(plugin_name):
             try:
                 return self._config_parser.get('plugins_custom_path', plugin_name)
-            except configparser.NoOptionError:
+            except NoOptionError:
                 return None
 
         self._plugins = []

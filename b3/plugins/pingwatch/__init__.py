@@ -25,12 +25,11 @@
 __author__ = 'ThorN'
 __version__ = '1.4'
 
-from six.moves.configparser import NoOptionError
-
 import b3
+import b3.cron
 import b3.events
 import b3.plugin
-import b3.cron
+from b3.config import NoOptionError
 
 
 class PingwatchPlugin(b3.plugin.Plugin):

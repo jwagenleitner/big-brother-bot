@@ -28,8 +28,7 @@ __version__ = '1.5.1'
 import b3
 import b3.events
 import b3.plugin
-
-from six.moves.configparser import NoOptionError
+from b3.config import NoOptionError
 
 
 class StatsPlugin(b3.plugin.Plugin):

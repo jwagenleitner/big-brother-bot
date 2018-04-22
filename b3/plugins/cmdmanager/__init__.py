@@ -25,20 +25,19 @@
 __author__ = 'Fenix'
 __version__ = '1.4'
 
+import re
+import os
+from types import MethodType
+from xml.dom import minidom
+
+import six
+
 import b3
+import b3.events
 import b3.plugin
 import b3.plugins.admin
-import b3.events
-import os
-import re
-
-from types import MethodType
-
-from six.moves import configparser as ConfigParser
-from six.moves.configparser import NoSectionError
-from b3.config import XmlConfigParser
+from b3.config import XmlConfigParser, NoSectionError
 from b3.querybuilder import QueryBuilder
-from xml.dom import minidom
 
 GRANT_SET_JOIN = ','
 GRANT_SET_ATTR = 'cmdgrantset'
@@ -143,7 +142,7 @@ class CmdmanagerPlugin(b3.plugin.Plugin):
         Write the new command configuration in the plugin configuration file
         """
         # read the config file
-        config = ConfigParser()
+        config = six.moves.configparser.ConfigParser()
         config.read(command.plugin.config.fileName)
 
         # if there is no commands section
