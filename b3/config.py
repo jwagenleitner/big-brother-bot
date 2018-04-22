@@ -48,7 +48,7 @@ NoOptionError = b3.exceptions.NoOptionError
 NoSectionError = b3.exceptions.NoSectionError
 
 # list of plugins that cannot be loaded as disabled from configuration file
-MUST_HAVE_PLUGINS = ('admin', 'publist', 'ftpytail', 'sftpytail', 'httpytail')
+MUST_HAVE_PLUGINS = ('admin',)
 
 
 class B3ConfigParserMixin(object):

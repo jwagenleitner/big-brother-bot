@@ -22,16 +22,14 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'Fenix'
 __version__ = '1.5'
 
 import b3
 import b3.clients
-import b3.plugin
 import b3.events
-import threading
+import b3.functions
+import b3.plugin
 
 from .exceptions import GeolocalizationError
 from .geolocators import FreeGeoIpGeolocator
@@ -61,14 +59,8 @@ class GeolocationPlugin(b3.plugin.Plugin):
         """
         Initialize plugin.
         """
-        # register events needed
-        if self.console.isFrostbiteGame():
-            self.registerEvent('EVT_PUNKBUSTER_NEW_CONNECTION', self.geolocate)
-        else:
-            self.registerEvent('EVT_CLIENT_AUTH', self.geolocate)
-
+        self.registerEvent('EVT_CLIENT_AUTH', self.geolocate)
         self.registerEvent('EVT_CLIENT_UPDATE', self.geolocate)
-
         # create our custom events so other plugins can react when clients are geolocated
         self.console.createEvent('EVT_CLIENT_GEOLOCATION_SUCCESS', 'Event client geolocation success')
         self.console.createEvent('EVT_CLIENT_GEOLOCATION_FAILURE', 'Event client geolocation failure')
@@ -110,6 +102,4 @@ class GeolocationPlugin(b3.plugin.Plugin):
         # and we ended up with NoneType object in client.location (so we have an attribute but it's not useful).
         # also make sure to launch geolocation only if we have a valid ip address.
         if not getattr(event.client, 'location', None) and event.client.ip:
-            t = threading.Thread(target=_threaded_geolocate, args=(event.client,))
-            t.daemon = True  # won't prevent B3 from exiting
-            t.start()
+            b3.functions.start_daemon_thread(_threaded_geolocate, args=(event.client,))

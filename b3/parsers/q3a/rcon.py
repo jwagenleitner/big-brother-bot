@@ -23,8 +23,6 @@
 # ################################################################### #
 #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'ThorN'
 __version__ = '1.11'
 
@@ -36,6 +34,8 @@ import time
 
 import six
 from six.moves import queue as Queue
+
+import b3.functions
 
 
 class Rcon(object):
@@ -88,10 +88,7 @@ class Rcon(object):
         self.socket.connect(self.host)
 
         self._stopEvent = threading.Event()
-        t = threading.Thread(target=self._writelines, args=())
-        t.setName("b3_rcon")
-        t.setDaemon(True)
-        t.start()
+        b3.functions.start_daemon_thread(self._writelines)
 
     def encode_data(self, data, source):
         """

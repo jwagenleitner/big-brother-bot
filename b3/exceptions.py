@@ -24,6 +24,9 @@
 
 from six.moves import configparser
 
+NoOptionError = configparser.NoOptionError
+NoSectionError = configparser.NoSectionError
+
 
 class ConfigFileNotFound(Exception):
     """
@@ -101,7 +104,3 @@ class UpdateError(Exception):
         if self.throwable:
             return '%s - %r' % (self.args[0], repr(self.throwable))
         return repr(self.args[0])
-
-
-NoOptionError = configparser.NoOptionError
-NoSectionError = configparser.NoSectionError

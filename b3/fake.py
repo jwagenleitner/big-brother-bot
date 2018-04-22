@@ -382,9 +382,6 @@ class FakeClient(b3.clients.Client):
         self.console.queueEvent(b3.events.Event(type, data, self, target))
 
 
-#####################################################################################
-
-
 print("creating fakeConsole with @b3/conf/b3.distribution.ini")
 fakeConsole = FakeConsole('@b3/conf/b3.distribution.ini')
 

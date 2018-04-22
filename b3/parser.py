@@ -139,8 +139,6 @@ class Parser(object):
         "unbanned": "$clientname^7 was un-banned $reason",
     }
 
-    _frostBiteGameNames = ['bfbc2', 'moh', 'bf3', 'bf4']
-
     # === Exiting ===
     #
     # The parser runs two threads: main and handler.  The main thread is
@@ -195,73 +193,51 @@ class Parser(object):
             print('CRITICAL ERROR : COULD NOT LOAD CONFIG')
             raise SystemExit(220)
 
-        # set game server encoding
+        self.__init_encoding()
+        self.__init_logging()
+        self.__init_ipaddress()
+        self.__init_print_startmessage()
+        self.__init_events()
+        self.__init_bot()
+        self.__init_serverconfig()
+        self.__init_storage()
+        self.__init_gamelog()
+        self.__init_rcon()
+        self.loadEvents()
+        self.screen.write('Loading events   : %s events loaded\n' % len(self._events))
+        self.clients = Clients(self)
+        self.loadPlugins()
+        self.loadArbPlugins()
+        self.game = b3.game.Game(self, self.gameName)
+        self.__init_eventqueue()
+        atexit.register(self.shutdown)
+
+    def __init_encoding(self):
         if self.config.has_option('server', 'encoding'):
             self.encoding = self.config.get('server', 'encoding')
 
-        # set up logging
+    def __init_logging(self):
         logfile = self.config.getpath('b3', 'logfile')
         log2console = self.config.has_option('devmode', 'log2console') and \
                       self.config.getboolean('devmode', 'log2console')
-
-        # make sure the logfile is writable
         logfile = b3.getWritableFilePath(logfile, True)
-
         try:
             logsize = b3.functions.getBytes(self.config.get('b3', 'logsize'))
         except (TypeError, NoOptionError):
             logsize = b3.functions.getBytes('10MB')
-
-        # create the main logger instance
         self.log = b3.output.getInstance(logfile, self.config.getint('b3', 'log_level'), logsize, log2console)
-
-        # save screen output to self.screen
         self.screen = sys.stdout
         self.screen.write(
             'Activating log   : %s\n' % b3.getShortPath(os.path.abspath(b3.getAbsolutePath(logfile, True))))
         self.screen.flush()
-
         sys.stdout = b3.output.STDOutLogger(self.log)
         sys.stderr = b3.output.STDErrLogger(self.log)
 
-        # setup ip addresses
-        if self.gameName in 'bf3':
-            self._publicIp = ''
-            if self.config.has_option('server', 'public_ip'):
-                self._publicIp = self.config.get('server', 'public_ip')
-            self._port = ''
-            if self.config.has_option('server', 'port'):
-                self._port = self.config.getint('server', 'port')
-        else:
-            self._publicIp = self.config.get('server', 'public_ip')
-            self._port = self.config.getint('server', 'port')
+    def __init_events(self):
+        self.Events = b3.events.eventManager
+        self._eventsStats = b3.events.EventsStats(self)
 
-        self._rconPort = self._port  # if rcon port is the same as the game port, rcon_port can be ommited
-        self._rconIp = self._publicIp  # if rcon ip is the same as the game port, rcon_ip can be ommited
-
-        if self.config.has_option('server', 'rcon_ip'):
-            self._rconIp = self.config.get('server', 'rcon_ip')
-        if self.config.has_option('server', 'rcon_port'):
-            self._rconPort = self.config.getint('server', 'rcon_port')
-        if self.config.has_option('server', 'rcon_password'):
-            self._rconPassword = self.config.get('server', 'rcon_password')
-
-        if self._publicIp and self._publicIp[0:1] in ('~', '/'):
-            # load ip from a file
-            with open(b3.getAbsolutePath(self._publicIp, decode=True)) as f:
-                self._publicIp = f.read().strip()
-
-        if self._rconIp[0:1] in ('~', '/'):
-            # load ip from a file
-            with open(b3.getAbsolutePath(self._rconIp, decode=True)) as f:
-                self._rconIp = f.read().strip()
-
-        try:
-            # resolve domain names
-            self._rconIp = socket.gethostbyname(self._rconIp)
-        except socket.gaierror:
-            pass
-
+    def __init_print_startmessage(self):
         self.bot('%s', b3.getB3versionString())
         self.bot('Python: %s', sys.version.replace('\n', ''))
         self.bot('Default encoding: %s', sys.getdefaultencoding())
@@ -269,85 +245,80 @@ class Parser(object):
                  getattr(getModule(self.__module__), '__version__', ' Unknown'),
                  self._rconIp, self._port)
 
-        # get events
-        self.Events = b3.events.eventManager
-        self._eventsStats = b3.events.EventsStats(self)
+    def __init_ipaddress(self):
+        self._publicIp = self.config.get('server', 'public_ip')
+        self._port = self.config.getint('server', 'port')
+        self._rconPort = self._port  # if rcon port is the same as the game port, rcon_port can be ommited
+        self._rconIp = self._publicIp  # if rcon ip is the same as the game port, rcon_ip can be ommited
+        if self.config.has_option('server', 'rcon_ip'):
+            self._rconIp = self.config.get('server', 'rcon_ip')
+        if self.config.has_option('server', 'rcon_port'):
+            self._rconPort = self.config.getint('server', 'rcon_port')
+        if self.config.has_option('server', 'rcon_password'):
+            self._rconPassword = self.config.get('server', 'rcon_password')
+        if self._publicIp and self._publicIp[0:1] in ('~', '/'):
+            with open(b3.getAbsolutePath(self._publicIp, decode=True)) as f:
+                self._publicIp = f.read().strip()
+        if self._rconIp[0:1] in ('~', '/'):
+            with open(b3.getAbsolutePath(self._rconIp, decode=True)) as f:
+                self._rconIp = f.read().strip()
+        try:
+            self._rconIp = socket.gethostbyname(self._rconIp)
+        except socket.gaierror:
+            pass
 
+    def __init_bot(self):
         self.bot('--------------------------------------------')
-
-        # setup bot
         bot_name = self.config.get('b3', 'bot_name')
         if bot_name:
             self.name = bot_name
-
         bot_prefix = self.config.get('b3', 'bot_prefix')
         if bot_prefix:
             self.prefix = bot_prefix
         else:
             self.prefix = ''
-
         self.msgPrefix = self.prefix
 
-        # delay between log reads
+    def __init_serverconfig(self):
         if self.config.has_option('server', 'delay'):
             delay = self.config.getfloat('server', 'delay')
             if self.delay > 0:
                 self.delay = delay
-
-        # delay between each log's line processing
         if self.config.has_option('server', 'lines_per_second'):
             delay2 = self.config.getfloat('server', 'lines_per_second')
             if delay2 > 0:
                 self.delay2 = 1 / delay2
+        if self.config.has_option('server', 'max_line_length'):
+            self._line_length = self.config.getint('server', 'max_line_length')
+            self.bot('Setting line_length to: %s', self._line_length)
 
+        if self.config.has_option('server', 'line_color_prefix'):
+            self._line_color_prefix = self.config.get('server', 'line_color_prefix')
+            self.bot('Setting line_color_prefix to: "%s"', self._line_color_prefix)
+
+        if self.config.has_option('server', 'multiline'):
+            self._multiline = self.config.getboolean('server', 'multiline')
+            self.bot('Setting multiline to: %s', self._multiline)
+
+        if self.config.has_option('server', 'multiline_noprefix'):
+            self._multiline_noprefix = self.config.getboolean('server', 'multiline_noprefix')
+            self.bot('Setting multiline_noprefix to: %s', self._multiline_noprefix)
+
+    def __init_storage(self):
         try:
-            # setup storage module
             dsn = self.config.get('b3', 'database')
             self.storage = b3.storage.getStorage(dsn=dsn, dsnDict=splitDSN(dsn), console=self)
         except (AttributeError, ImportError) as e:
-            # exit if we don't manage to setup the storage module: B3 will stop working upon Admin
-            # Plugin loading so it makes no sense to keep going with the console initialization
             self.critical('Could not setup storage module: %s', e)
-
-        # establish a connection with the database
         self.storage.connect()
 
+    def __init_gamelog(self):
         if self.config.has_option('server', 'game_log'):
-            # open log file
             game_log = self.config.get('server', 'game_log')
-            if game_log[0:6] == 'ftp://' or game_log[0:7] == 'sftp://' or game_log[0:7] == 'http://':
-                self.remoteLog = True
-                self.bot('Working in remote-log mode: %s', game_log)
-
-                if self.config.has_option('server', 'local_game_log'):
-                    f = self.config.getpath('server', 'local_game_log')
-                else:
-                    logext = str(self._rconIp.replace('.', '_'))
-                    logext = 'games_mp_' + logext + '_' + str(self._port) + '.log'
-                    f = os.path.normpath(os.path.expanduser(logext))
-
-                # make sure game log file can be written
-                f = b3.getWritableFilePath(f, True)
-
-                if self.config.has_option('server', 'log_append'):
-                    if not (self.config.getboolean('server', 'log_append') and os.path.isfile(f)):
-                        self.screen.write('Creating gamelog : %s\n' % b3.getShortPath(os.path.abspath(f)))
-                        ftptempfile = open(f, "w")
-                        ftptempfile.close()
-                    else:
-                        self.screen.write('Append to gamelog: %s\n' % b3.getShortPath(os.path.abspath(f)))
-                else:
-                    self.screen.write('Creating gamelog : %s\n' % b3.getShortPath(os.path.abspath(f)))
-                    ftptempfile = open(f, "w")
-                    ftptempfile.close()
-
-            else:
-                self.bot('Game log is: %s', game_log)
-                f = self.config.getpath('server', 'game_log')
-
+            self.bot('Game log is: %s', game_log)
+            f = self.config.getpath('server', 'game_log')
             self.bot('Starting bot reading file: %s', os.path.abspath(f))
             self.screen.write('Using gamelog    : %s\n' % b3.getShortPath(os.path.abspath(f)))
-
             if os.path.isfile(f):
                 self.input = open(f, 'r')
                 if self.config.has_option('server', 'seek'):
@@ -361,8 +332,8 @@ class Parser(object):
                 self.screen.flush()
                 self.critical("Cannot read file: %s", os.path.abspath(f))
 
+    def __init_rcon(self):
         try:
-            # setup rcon
             self.output = self.OutputClass(self, (self._rconIp, self._rconPort), self._rconPassword)
         except Exception as err:
             self.screen.write(">>> Cannot setup RCON: %s\n" % err)
@@ -374,27 +345,7 @@ class Parser(object):
             self.output.socket_timeout = custom_socket_timeout
             self.bot('Setting rcon socket timeout to: %0.3f sec', custom_socket_timeout)
 
-        # allow configurable max line length
-        if self.config.has_option('server', 'max_line_length'):
-            self._line_length = self.config.getint('server', 'max_line_length')
-            self.bot('Setting line_length to: %s', self._line_length)
-
-        # allow configurable line color prefix
-        if self.config.has_option('server', 'line_color_prefix'):
-            self._line_color_prefix = self.config.get('server', 'line_color_prefix')
-            self.bot('Setting line_color_prefix to: "%s"', self._line_color_prefix)
-
-        # allow configurable multiline (manual line breaks)
-        if self.config.has_option('server', 'multiline'):
-            self._multiline = self.config.getboolean('server', 'multiline')
-            self.bot('Setting multiline to: %s', self._multiline)
-
-        # allow configurable multiline (manual line breaks)
-        if self.config.has_option('server', 'multiline_noprefix'):
-            self._multiline_noprefix = self.config.getboolean('server', 'multiline_noprefix')
-            self.bot('Setting multiline_noprefix to: %s', self._multiline_noprefix)
-
-        # testing rcon
+    def __init_rcon_test(self):
         if self.rconTest:
             res = self.output.write('status')
             self.output.flush()
@@ -416,15 +367,7 @@ class Parser(object):
             else:
                 self.screen.write('OK\n')
 
-        self.loadEvents()
-        self.screen.write('Loading events   : %s events loaded\n' % len(self._events))
-        self.clients = Clients(self)
-
-        self.loadPlugins()
-        self.loadArbPlugins()
-
-        self.game = b3.game.Game(self, self.gameName)
-
+    def __init_eventqueue(self):
         try:
             queuesize = self.config.getint('b3', 'event_queue_size')
         except NoOptionError:
@@ -432,11 +375,8 @@ class Parser(object):
         except ValueError as err:
             queuesize = 50
             self.warning(err)
-
         self.debug("Creating the event queue with size %s", queuesize)
         self.queue = queue.Queue(queuesize)
-
-        atexit.register(self.shutdown)
 
     def getAbsolutePath(self, path, decode=False):
         """
@@ -850,9 +790,6 @@ class Parser(object):
         """
         Load must have plugins.
         """
-        # if we fail to load one of those plugins, B3 will exit
-        _mandatory_plugins = ['ftpytail', 'sftpytail', 'httpytail']
-
         def _load_plugin(console, plugin_name):
             """
             Helper which takes care of loading a single plugin.
@@ -867,31 +804,12 @@ class Parser(object):
                 author = getattr(plugin_module, '__author__', 'Unknown Author')
             except Exception as e:
                 console.screen.write('x')
-                if plugin_name in _mandatory_plugins:
-                    # critical will stop B3 from running
-                    console.screen.write('\n')
-                    console.screen.write('>>> CRITICAL: missing mandatory plugin: %s\n' % plugin_name)
-                    console.critical('Could not start B3 without %s plugin' % plugin_name, exc_info=e)
-                else:
-                    console.error('Could not load plugin %s' % plugin_name, exc_info=e)
+                console.error('Could not load plugin %s' % plugin_name, exc_info=e)
             else:
                 console.screen.write('.')
                 console.bot('Plugin %s (%s - %s) loaded', plugin_name, version, author)
             finally:
                 console.screen.flush()
-
-        if self.config.has_option('server', 'game_log'):
-            game_log = self.config.get('server', 'game_log')
-            remote_log_plugin = None
-            if game_log.startswith('ftp://'):
-                remote_log_plugin = 'ftpytail'
-            elif game_log.startswith('sftp://'):
-                remote_log_plugin = 'sftpytail'
-            elif game_log.startswith('http://'):
-                remote_log_plugin = 'httpytail'
-
-            if remote_log_plugin and remote_log_plugin not in self._plugins:
-                _load_plugin(self, remote_log_plugin)
 
         self.screen.write(' (%s)\n' % len(self._plugins))
         self.screen.flush()
@@ -1513,15 +1431,6 @@ class Parser(object):
         :return: str
         """
         return re.sub(self._reColor, '', text).strip()
-
-    def isFrostbiteGame(self, gamename=None):
-        """
-        Tells whether we are running a Frostbite based game.
-        :return: True if we are running a Frostbite game, False otherwise
-        """
-        if not gamename:
-            gamename = self.gameName
-        return gamename in self._frostBiteGameNames
 
     def updateDocumentation(self):
         """

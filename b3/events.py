@@ -40,9 +40,6 @@ from b3.output import VERBOSE
 class Events:
 
     def __init__(self):
-        """
-        Object constructor.
-        """
         self._events = {}
         self._eventNames = {}
 
@@ -132,7 +129,7 @@ class Events:
         :param event_id: The event ID
         """
         matching_keys = [k for k, v in six.iteritems(self._events) if v == event_id]
-        if not len(matching_keys):
+        if not matching_keys:
             raise KeyError('could not find any B3 event with ID %s' % event_id)
         assert len(matching_keys) == 1, 'expecting only one event key per event ID: %r' % matching_keys
         return matching_keys[0]

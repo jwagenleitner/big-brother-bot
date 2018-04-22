@@ -31,7 +31,10 @@ import threading
 import time
 import traceback
 
+import six
 from six.moves import range
+
+import b3.functions
 
 
 class ReMatcher(object):
@@ -140,7 +143,7 @@ class CronTab(object):
         Traceback (most recent call last):
         ValueError: */90 cannot be over every 59
         """
-        if isinstance(rate, str):
+        if isinstance(rate, six.string_types):
             if ',' in rate:
                 # 10,20,30 = [10, 20, 30]
                 # 5,6,7,20,30 = [5-7, 20, 30]
@@ -318,10 +321,7 @@ class Cron(object):
         Start the cron scheduler in a separate thread.
         """
         # thread.start_new_thread(self.run, ())
-        t = threading.Thread(target=self.run, args=())
-        t.setName("b3_cron")
-        t.setDaemon(True)
-        t.start()
+        b3.functions.start_daemon_thread(self.run)
 
     @staticmethod
     def time():

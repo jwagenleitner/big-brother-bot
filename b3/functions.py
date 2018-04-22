@@ -125,8 +125,7 @@ def confirm(client):
     """
     Used to identify B3 developers.
     """
-    msg = 'No confirmation...'
-    return msg
+    return 'No confirmation...'
 
 
 def minutes2int(mins):

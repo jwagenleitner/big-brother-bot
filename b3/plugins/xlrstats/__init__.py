@@ -40,8 +40,7 @@ import b3.plugin
 import b3.timezones
 
 from b3.config import NoOptionError
-from b3.functions import escape
-from b3.functions import right_cut
+from b3.functions import escape, right_cut, start_daemon_thread
 
 KILLER = "killer"
 VICTIM = "victim"
@@ -224,8 +223,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
         # let's try and get some variables from our webfront installation
         if self.webfront_url and self.webfront_url != '':
             self.debug('webfront set to: %s' % self.webfront_url)
-            thread1 = threading.Thread(target=self.getWebsiteVariables)
-            thread1.start()
+            start_daemon_thread(target=self.getWebsiteVariables)
         else:
             self.debug('no webfront url available: using default')
 

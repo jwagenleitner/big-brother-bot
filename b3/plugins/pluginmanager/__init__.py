@@ -47,7 +47,7 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
     _adminPlugin = None
     _reSplit = re.compile(r'''\w+''')
     _reParse = re.compile(r'''^(?P<command>\w+)\s*(?P<data>.*)$''')
-    _protected = ('admin', 'publist', 'ftpytail', 'sftpytail', 'httpytail', 'cod7http', 'pluginmanager')
+    _protected = ('admin', 'pluginmanager')
 
     def onStartup(self):
         """

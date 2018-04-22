@@ -154,22 +154,11 @@ class Task(object):
             raise TaskConfigError('no action found for task %s' % self.name)
 
     def _init_rcon_commands(self):
-        if self.plugin.console.isFrostbiteGame():
-            frostbitecommands = self.config.findall("frostbite") + self.config.findall("bfbc2")
-            for cmd in frostbitecommands:
-                if not 'command' in cmd.attrib:
-                    raise TaskConfigError('cannot find \'command\' attribute for a frostbite element')
-                text = cmd.attrib['command']
-                for arg in cmd.findall('arg'):
-                    text += " %s" % arg.text
-                self.plugin.debug("frostbite : %s", text)
-                return len(frostbitecommands)
-        else:
-            ## classical Q3 rcon command
-            rconcommands = self.config.findall("rcon")
-            for cmd in rconcommands:
-                self.plugin.debug("rcon : %s", cmd.text)
-            return len(rconcommands)
+        ## classical Q3 rcon command
+        rconcommands = self.config.findall("rcon")
+        for cmd in rconcommands:
+            self.plugin.debug("rcon : %s", cmd.text)
+        return len(rconcommands)
 
     def _init_enable_plugin_commands(self):
         commands = self.config.findall("enable_plugin")
@@ -198,27 +187,12 @@ class Task(object):
         self._run_disable_plugin_commands()
 
     def _run_rcon_commands(self):
-        if self.plugin.console.isFrostbiteGame():
-            # send frostbite commands
-            nodes = self.config.findall("frostbite") + self.config.findall("bfbc2")
-            for frostbitenode in nodes:
-                try:
-                    commandName = frostbitenode.attrib['command']
-                    cmdlist = [commandName]
-                    for arg in frostbitenode.findall('arg'):
-                        cmdlist.append(arg.text)
-                    result = self.plugin.console.write(tuple(cmdlist))
-                    self.plugin.info("frostbite command result : %s", result)
-                except Exception as e:
-                    self.plugin.error("task %s : %s", self.name, e)
-        else:
-            # send rcon commands
-            for cmd in self.config.findall("rcon"):
-                try:
-                    result = self.plugin.console.write("%s" % cmd.text)
-                    self.plugin.info("rcon command result : %s", result)
-                except Exception as e:
-                    self.plugin.error("task %s : %s", self.name, e)
+        for cmd in self.config.findall("rcon"):
+            try:
+                result = self.plugin.console.write("%s" % cmd.text)
+                self.plugin.info("rcon command result : %s", result)
+            except Exception as e:
+                self.plugin.error("task %s : %s", self.name, e)
 
     def _run_enable_plugin_commands(self):
         for cmd in self.config.findall("enable_plugin"):
