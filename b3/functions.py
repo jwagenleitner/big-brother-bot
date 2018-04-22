@@ -126,21 +126,6 @@ def confirm(client):
     Used to identify B3 developers.
     """
     msg = 'No confirmation...'
-    try:
-        # First test again known guids
-        f = six.moves.urllib.request.urlopen('http://www.bigbrotherbot.net/confirm.php?uid=%s' % client.guid)
-        response = f.read()
-        if not response == 'Error' and not response == 'False':
-            msg = '%s is confirmed to be %s!' % (client.name, response)
-        else:
-            # If it fails, try ip (must be static)
-            f = six.moves.urllib.request.urlopen('http://www.bigbrotherbot.net/confirm.php?ip=%s' % client.ip)
-            response = f.read()
-            if not response == 'Error' and not response == 'False':
-                msg = '%s is confirmed to be %s!' % (client.name, response)
-    except:
-        pass
-
     return msg
 
 
