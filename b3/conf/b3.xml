@@ -1,7 +1,7 @@
 <configuration>
     <settings name="b3">
         <set name="parser">iourt43</set>
-        <set name="database">mysql://b3:password@localhost/b3</set>
+        <set name="database">mysql://b3test:test@localhost/b3_test</set>
         <!--<set name="database">sqlite://b3.database.sqlite/</set>-->
         <set name="bot_name">30+Bot</set>
         <set name="bot_prefix">^0(^230+Bot^0)^7:</set>
