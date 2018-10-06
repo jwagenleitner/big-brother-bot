@@ -14,7 +14,7 @@
     <settings name="server">
         <set name="rcon_password">password</set>
         <set name="port">27960</set>
-        <set name="game_log">~/games/urt433-server/q3ut4/games.log</set>
+        <set name="game_log">~/games/UrbanTerror43/q3ut4/games.log</set>
         <set name="public_ip">127.0.0.1</set>
         <set name="rcon_ip">127.0.0.1</set>
         <set name="punkbuster">off</set>
