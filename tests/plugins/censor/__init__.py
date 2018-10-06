@@ -96,7 +96,7 @@ class Detection_TestCase(CensorTestCase):
         mock_client.exactName = name
 
         self.p.checkBadName(mock_client)
-        self.assertEquals(count, self.p.penalizeClientBadname.call_count,
+        self.assertEqual(count, self.p.penalizeClientBadname.call_count,
                           "name '%s' should have been penalized %s time" % (name, count))
 
     def assert_name_is_penalized(self, name):
@@ -114,7 +114,7 @@ class Detection_TestCase(CensorTestCase):
             self.p.checkBadWord(text, mock_client)
             self.fail("text [%s] should have raised a VetoEvent" % text)
         except b3.events.VetoEvent as e:
-            self.assertEquals(1, self.p.penalizeClient.call_count, "text [%s] should have been penalized" % text)
+            self.assertEqual(1, self.p.penalizeClient.call_count, "text [%s] should have been penalized" % text)
             return self.p.penalizeClient.call_args[0] if len(self.p.penalizeClient.call_args) else None
 
     def assert_chat_is_not_penalized(self, text):
@@ -128,4 +128,4 @@ class Detection_TestCase(CensorTestCase):
         except b3.events.VetoEvent as e:
             self.fail("text [%s] should not have raised a VetoEvent" % text)
         else:
-            self.assertEquals(0, self.p.penalizeClient.call_count, "text [%s] should not have been penalized" % text)
+            self.assertEqual(0, self.p.penalizeClient.call_count, "text [%s] should not have been penalized" % text)

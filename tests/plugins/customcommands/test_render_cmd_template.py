@@ -29,6 +29,8 @@ from b3.plugins.customcommands import CustomcommandsPlugin
 from tests import logging_disabled
 from tests.plugins.customcommands import CustomcommandsTestCase
 
+import six
+
 with logging_disabled():
     from b3.fake import FakeClient
 
@@ -36,6 +38,8 @@ with logging_disabled():
 class Test_render_cmd_template(CustomcommandsTestCase):
 
     def setUp(self):
+        if six.PY2:
+            self.assertRaisesRegex = self.assertRaisesRegexp
         CustomcommandsTestCase.setUp(self)
         self.conf = CfgConfigParser()
         self.p = CustomcommandsPlugin(self.console, self.conf)
@@ -65,7 +69,7 @@ class Test_render_cmd_template(CustomcommandsTestCase):
         when(self.p.console).getMaps().thenReturn(["map1", "map2", "map3", "ut4_turnpike", "ut4_casa"])
         # THEN
         self.assertRaises(ValueError, self.p._render_cmd_template, "map <ARG:FIND_MAP>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "do you mean : map1, map2, map3 ?",
+        self.assertRaisesRegex(ValueError, "do you mean : map1, map2, map3 ?",
                                 self.p._render_cmd_template, "map <ARG:FIND_MAP>", data="map", client=self.player1)
 
     def test_ARG_FIND_MAP_nominal(self):
@@ -111,17 +115,17 @@ class Test_render_cmd_template(CustomcommandsTestCase):
         self.assertEqual("f00 @1", self.p._render_cmd_template("f00 <PLAYER:B3ID>", data="", client=self.player1))
 
     def test_LAST_KILLER(self):
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last killer is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_KILLER:PID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last killer is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_KILLER:PBID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last killer is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_KILLER:GUID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last killer is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_KILLER:NAME>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last killer is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_KILLER:EXACTNAME>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last killer is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last killer is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_KILLER:B3ID>", data="", client=self.player1)
         # WHEN
         self.player2.kills(self.player1)
@@ -139,17 +143,17 @@ class Test_render_cmd_template(CustomcommandsTestCase):
         self.assertEqual("f00 @2", self.p._render_cmd_template("f00 <LAST_KILLER:B3ID>", data="", client=self.player1))
 
     def test_LAST_VICTIM(self):
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last victim is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_VICTIM:PID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last victim is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_VICTIM:PBID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last victim is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_VICTIM:GUID>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last victim is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_VICTIM:NAME>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last victim is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_VICTIM:EXACTNAME>", data="", client=self.player1)
-        self.assertRaisesRegexp(ValueError, "your last victim is unknown", self.p._render_cmd_template,
+        self.assertRaisesRegex(ValueError, "your last victim is unknown", self.p._render_cmd_template,
                                 "f00 <LAST_VICTIM:B3ID>", data="", client=self.player1)
         # WHEN
         self.player1.kills(self.player2)

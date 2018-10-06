@@ -53,7 +53,7 @@ class Test_Censor_badword_default_config(Detection_TestCase):
         self.assertEqual('tempban', badword_object.penalty.type)
         self.assertEqual(2, badword_object.penalty.duration)
         self.assertIsNone(badword_object.penalty.reason)
-        self.assertEquals("cuss", badword_object.penalty.keyword)
+        self.assertEqual("cuss", badword_object.penalty.keyword)
 
     def test_shit_has_custom_penalty(self):
         badword_objects = [x for x in self.p._badWords if x.name == 'shit']
@@ -61,7 +61,7 @@ class Test_Censor_badword_default_config(Detection_TestCase):
         badword_object = badword_objects[0]
         self.assertEqual('warning', badword_object.penalty.type)
         self.assertEqual(60 * 24, badword_object.penalty.duration)
-        self.assertEquals("^7Please don't use profanity", badword_object.penalty.reason)
+        self.assertEqual("^7Please don't use profanity", badword_object.penalty.reason)
         self.assertIsNone(badword_object.penalty.keyword)
 
     def test_asshole_has_default_penalty(self):
