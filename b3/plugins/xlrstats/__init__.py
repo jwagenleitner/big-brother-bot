@@ -1804,8 +1804,8 @@ class XlrstatsPlugin(b3.plugin.Plugin):
 
         # truncate database tables
         for table in xlr_tables:
-            if table in current_tables:
-                self.info('inizializing table: %s', table)
+            if table.startswith('xlr_') and table in current_tables:
+                self.info('initializing table: %s', table)
                 self.console.storage.truncateTable(table)
 
         # eventually rebuild missing tables
