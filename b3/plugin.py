@@ -27,8 +27,6 @@ __version__ = '1.30.1'
 
 import re
 
-from six.moves import map
-
 import b3.clients
 import b3.config
 import b3.events

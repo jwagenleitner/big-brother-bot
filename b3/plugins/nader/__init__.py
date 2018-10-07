@@ -22,12 +22,9 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'SvaRoX'
 __version__ = '0.3'
 
-import six
 import threading
 
 import b3
@@ -233,7 +230,7 @@ class NaderPlugin(b3.plugin.Plugin):
         """\
         [<player>] Displays the total nade kills for you/someone from xlrstats
         """
-        if self._xlrstatsPlugin == None:
+        if self._xlrstatsPlugin is None:
             client.message('Command unavailable, please try later"')
             return
 
@@ -290,7 +287,7 @@ class NaderPlugin(b3.plugin.Plugin):
         # From stats plugin
         listKills = []
         he = self._nadeKillers
-        for cid, c in six.iteritems(he):
+        for cid, c in he.items():
             listKills.append((c, he[cid].var(self, 'hegrenadeKills', 0).value))
 
         if len(listKills):
@@ -406,7 +403,7 @@ class NaderPlugin(b3.plugin.Plugin):
         # Find the best nade player
         listKills = []
         he = nadeKillers
-        for cid, c in six.iteritems(he):
+        for cid, c in he.items():
             listKills.append((c, he[cid].var(self, 'hegrenadeKills', 0).value))
 
         if len(listKills):

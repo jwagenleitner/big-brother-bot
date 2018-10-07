@@ -29,9 +29,6 @@ import re
 import threading
 import time
 
-import six
-from six.moves import map
-
 import b3
 import b3.cron
 import b3.events
@@ -468,7 +465,7 @@ class TkPlugin(b3.plugin.Plugin):
 
     def getMultipliers(self, client):
         level = ()
-        for lev, mult in six.iteritems(self._levels):
+        for lev, mult in self._levels.items():
             if lev <= client.maxLevel:
                 level = mult
 

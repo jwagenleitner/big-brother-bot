@@ -25,12 +25,11 @@
 __author__ = 'Fenix'
 __version__ = '1.4'
 
+import configparser
 import re
 import os
 from types import MethodType
 from xml.dom import minidom
-
-import six
 
 import b3
 import b3.events
@@ -142,7 +141,7 @@ class CmdmanagerPlugin(b3.plugin.Plugin):
         Write the new command configuration in the plugin configuration file
         """
         # read the config file
-        config = six.moves.configparser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(command.plugin.config.fileName)
 
         # if there is no commands section

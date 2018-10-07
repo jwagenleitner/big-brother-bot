@@ -31,9 +31,6 @@ import threading
 import time
 import traceback
 
-import six
-from six.moves import range
-
 import b3.functions
 
 
@@ -143,7 +140,7 @@ class CronTab(object):
         Traceback (most recent call last):
         ValueError: */90 cannot be over every 59
         """
-        if isinstance(rate, six.string_types):
+        if isinstance(rate, str):
             if ',' in rate:
                 # 10,20,30 = [10, 20, 30]
                 # 5,6,7,20,30 = [5-7, 20, 30]

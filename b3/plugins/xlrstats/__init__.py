@@ -28,10 +28,8 @@ __version__ = '3.0.0-beta.17'
 import datetime
 import re
 import os
-import threading
 import time
-
-import six
+import urllib
 
 import b3
 import b3.cron
@@ -451,7 +449,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
         else:
             req = str(self.webfront_url.rstrip('/')) + '/' + str(self.webfront_config_nr) + '/pluginreq/index'
         try:
-            f = six.moves.urllib.request.urlopen(req)
+            f = urllib.request.urlopen(req)
             res = f.readline().split(',')
             # Our webfront will present us 3 values ie.: 200,20,30 -> minKills,minRounds,maxDays
             if len(res) == 3:
@@ -763,7 +761,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
             target._attackers = {}
             ainfo = target._attackers
 
-        for k, v in six.iteritems(ainfo):
+        for k, v in ainfo.items():
             if k == client.cid:
                 # don't award the killer for the assist aswell
                 continue
@@ -1458,7 +1456,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
     def optimizeTables(self, t=None):
         if not t:
             t = self.showTables()
-        if isinstance(t, six.string_types):
+        if isinstance(t, str):
             _tables = str(t)
         else:
             _tables = ', '.join(t)
@@ -1473,7 +1471,7 @@ class XlrstatsPlugin(b3.plugin.Plugin):
     def repairTables(self, t=None):
         if not t:
             t = self.showTables()
-        if isinstance(t, six.string_types):
+        if isinstance(t, str):
             _tables = str(t)
         else:
             _tables = ', '.join(t)

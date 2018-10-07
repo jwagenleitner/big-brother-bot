@@ -28,8 +28,6 @@ __version__ = '1.3'
 import functools
 import re
 
-import six
-
 from b3.exceptions import ProgrammingError
 
 
@@ -143,7 +141,7 @@ class GameEventRouter(object):
             for param in decorator_param:
                 if isinstance(param, type(re.compile(''))):
                     self._gameevents_mapping.append((param, func))
-                elif isinstance(param, six.string_types):
+                elif isinstance(param, str):
                     self._gameevents_mapping.append((re.compile(str(param)), func))
             return func
 

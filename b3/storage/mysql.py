@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 import sys
 from time import time
 from traceback import extract_tb

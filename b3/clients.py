@@ -28,9 +28,6 @@ import threading
 import time
 import traceback
 
-import six
-from six.moves import range
-
 import b3
 import b3.events
 from b3 import functions
@@ -128,7 +125,7 @@ class Client(object):
         if 'console' in kwargs:
             self.console = kwargs['console']
 
-        for k, v in six.iteritems(kwargs):
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
     def isvar(self, plugin, key):
@@ -209,7 +206,7 @@ class Client(object):
     bans = property(getBans)
 
     def _set_data(self, data):
-        for k, v in six.iteritems(data):
+        for k, v in data.items():
             self._data[k] = v
 
     def _get_data(self):
@@ -847,7 +844,7 @@ class Struct(object):
         """
         Object constructor.
         """
-        for k, v in six.iteritems(kwargs):
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
     def _set_id(self, v):
@@ -1201,7 +1198,7 @@ class Clients(dict):
         self._guidIndex = {}
         self._nameIndex = {}
 
-        self.escape_table = [six.unichr(x) for x in range(128)]
+        self.escape_table = [chr(x) for x in range(128)]
         self.escape_table[0] = u'\\0'
         self.escape_table[ord('\\')] = u'\\\\'
         self.escape_table[ord('\n')] = u'\\n'
@@ -1413,14 +1410,12 @@ class Clients(dict):
         Value should be bytes or unicode.
         Source - https://github.com/PyMySQL/PyMySQL/blob/40f6a706144a9b65baa123e6d5d89d23558646ac/pymysql/converters.py
         """
-        if six.PY2:
-            return self.__escape_string_py2(value, mapping)
-        else:
-            # TODO: fix me
-            return value
+        # TODO: fix me
+        # return self.__escape_string_py2(value, mapping)
+        return value
 
     def __escape_string_py2(self, value, mapping=None):
-        if isinstance(value, six.text_type):
+        if isinstance(value, str):
             return value.translate(self.escape_table)
         if isinstance(value, (bytes, bytearray)):
             value = value.replace('\\', '\\\\')
@@ -1554,7 +1549,7 @@ class Clients(dict):
         # remove existing clients
         self.clear()
         # add list of matching clients
-        for cid, c in six.iteritems(mlist):
+        for cid, c in mlist.items():
             self[cid] = c
 
     def authorizeClients(self):

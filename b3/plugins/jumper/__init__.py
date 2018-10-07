@@ -32,9 +32,6 @@ import requests
 from threading import Timer
 import time
 
-import six
-from six.moves import map
-
 import b3
 import b3.plugin
 import b3.events
@@ -60,7 +57,7 @@ class JumpRun(object):
         Object constructor.
         """
         self.p = plugin
-        for k, v in six.iteritems(kwargs):
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
     def start(self):
@@ -741,7 +738,7 @@ class JumperPlugin(b3.plugin.Plugin):
                     client.message('do you mean: ^3%s?' % '^7, ^3'.join(mp[:5]))
                     return
 
-                if not isinstance(mp, six.string_types):
+                if not isinstance(mp, str):
                     client.message('^7could not find any map matching ^1%s' % ps[1])
                     return
 
@@ -774,7 +771,7 @@ class JumperPlugin(b3.plugin.Plugin):
                 client.message('do you mean: ^3%s?' % '^7, ^3'.join(mp[:5]))
                 return
 
-            if not isinstance(mp, six.string_types):
+            if not isinstance(mp, str):
                 client.message('^7could not find any map matching ^1%s' % data)
                 return
 
@@ -805,7 +802,7 @@ class JumperPlugin(b3.plugin.Plugin):
                 client.message('do you mean: ^3%s?' % '^7, ^3'.join(mp[:5]))
                 return
 
-            if not isinstance(mp, six.string_types):
+            if not isinstance(mp, str):
                 client.message('^7could not find any map matching ^1%s' % data)
                 return
 
@@ -853,7 +850,7 @@ class JumperPlugin(b3.plugin.Plugin):
                     client.message('do you mean: ^3%s?' % '^7, ^3'.join(mp[:5]))
                     return
 
-                if not isinstance(mp, six.string_types):
+                if not isinstance(mp, str):
                     client.message('^7could not find any map matching ^1%s' % ps[1])
                     return
 
@@ -985,7 +982,7 @@ class JumperPlugin(b3.plugin.Plugin):
             client.message('^7do you mean: %s?' % ', '.join(match[:5]))
             return
 
-        if isinstance(match, six.string_types):
+        if isinstance(match, str):
             cmd.sayLoudOrPM(client, '^7changing map to ^3%s' % match)
             time.sleep(1)
             self.console.write('map %s' % match)
@@ -1007,7 +1004,7 @@ class JumperPlugin(b3.plugin.Plugin):
             client.message('^7do you mean: %s?' % ', '.join(match[:5]))
             return
 
-        if isinstance(match, six.string_types):
+        if isinstance(match, str):
             self.console.setCvar('g_nextmap', match)
             if client:
                 client.message('^7nextmap set to ^3%s' % match)

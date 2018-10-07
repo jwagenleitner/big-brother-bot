@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'ThorN'
 __version__ = '1.6.5'
 
@@ -33,8 +31,7 @@ import time
 from ftplib import FTP
 from xml.dom.minidom import Document
 
-import six
-from six import StringIO
+from io import StringIO
 
 import b3
 import b3.cron
@@ -404,7 +401,7 @@ class StatusPlugin(b3.plugin.Plugin):
                     for k, v in client.attributes.items():
                         # build the qrystring
                         builder_key = "%s%s," % (builder_key, k)
-                        if isinstance(v, six.string_types):
+                        if isinstance(v, str):
                             if "'" in v:
                                 v = "%s" % v.replace("'", "\\'")
                         builder_value = "%s'%s'," % (builder_value, v)
@@ -422,7 +419,7 @@ class StatusPlugin(b3.plugin.Plugin):
 
                 b3clients.appendChild(client)
 
-                for k, v in six.iteritems(c.data):
+                for k, v in c.data.items():
                     data = xml.createElement("Data")
                     data.setAttribute("Name", "%s" % k)
 

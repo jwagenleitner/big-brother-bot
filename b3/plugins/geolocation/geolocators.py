@@ -22,14 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import absolute_import
-
 import re
 import os
 import os.path
 
 import requests
-import six
 
 import b3
 import b3.clients
@@ -55,7 +52,7 @@ class Geolocator(object):
         :raise TypeError: if we receive an invalid input data
         :return: string
         """
-        if isinstance(data, six.string_types):
+        if isinstance(data, str):
             if not re.match(r'''^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}''', str(data)):
                 raise GeolocalizationError('invalid ip address string supplied: %s' % data)
         elif isinstance(data, b3.clients.Client):
@@ -68,7 +65,7 @@ class Geolocator(object):
         else:
             raise GeolocalizationError('invalid argument supplied: %s' % type(data).__name__)
 
-        return data if isinstance(data, six.string_types) else data.ip
+        return data if isinstance(data, str) else data.ip
 
     def getLocation(self, data):
         """

@@ -25,12 +25,11 @@
 __author__ = 'ThorN, Courgette, Fenix'
 __version__ = '1.7.9'
 
+import configparser
 import os
 import re
 import time
-
-import six
-from six.moves import configparser
+from io import StringIO
 
 import b3
 import b3.exceptions
@@ -300,10 +299,11 @@ class CfgConfigParser(B3ConfigParserMixin, configparser.ConfigParser):
         Object constructor.
         :param allow_no_value: Whether or not to allow empty values in configuration sections
         """
-        opts = {"allow_no_value": allow_no_value}
-        if not six.PY2:
-            opts["inline_comment_prefixes"] = (";",)
-            opts["interpolation"] = None
+        opts = {
+            "allow_no_value": allow_no_value,
+            "inline_comment_prefixes": ";",
+            "interpolation": None
+        }
         configparser.ConfigParser.__init__(self, **opts)
 
     def add_comment(self, section, comment):
@@ -326,17 +326,14 @@ class CfgConfigParser(B3ConfigParserMixin, configparser.ConfigParser):
         Return a configuration value as a string.
         """
         try:
-            if six.PY2:
-                value = configparser.ConfigParser.get(self, section, option, *args, **kwargs)
-            else:
-                # TODO: fix this hack, PY3 configparser requires named params for `raw` and `vars`
-                opts = {"self": self, "section": section, "option": option}
-                opts.update(kwargs)
-                if len(args) > 0:
-                    opts["raw"] = args[0]
-                    if len(args) > 1:
-                        opts["vars"] = args[1]
-                value = configparser.ConfigParser.get(**opts)
+            # TODO: fix this hack, PY3 configparser requires named params for `raw` and `vars`
+            opts = {"self": self, "section": section, "option": option}
+            opts.update(kwargs)
+            if len(args) > 0:
+                opts["raw"] = args[0]
+                if len(args) > 1:
+                    opts["vars"] = args[1]
+            value = configparser.ConfigParser.get(**opts)
             if value is None:
                 return ""
             return value
@@ -358,7 +355,7 @@ class CfgConfigParser(B3ConfigParserMixin, configparser.ConfigParser):
         """
         Read the cfg config from a string.
         """
-        fp = six.StringIO(cfg_string)
+        fp = StringIO(cfg_string)
         self.readfp(fp)
         fp.close()
         self.fileName = None
@@ -370,7 +367,7 @@ class CfgConfigParser(B3ConfigParserMixin, configparser.ConfigParser):
         Inherits from configparser.ConfigParser to throw our custom exception if needed
         """
         try:
-            configparser.ConfigParser.readfp(self, fp, filename)
+            configparser.ConfigParser.read_file(self, fp, filename)
         except Exception as e:
             raise ConfigFileNotValid("%s" % e)
 

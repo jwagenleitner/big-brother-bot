@@ -29,10 +29,6 @@ import os
 import threading
 import time
 
-import six
-from six.moves import map
-from six.moves import range
-
 import b3
 import b3.config
 import b3.cron
@@ -2055,7 +2051,7 @@ class Poweradminurt43Plugin(b3.plugin.Plugin):
             client.message('^7Invalid or missing data, try !help pasetnextmap')
         else:
             match = self.console.getMapsSoundingLike(data)
-            if isinstance(match, six.string_types):
+            if isinstance(match, str):
                 mapname = match
                 self.console.setCvar('g_nextmap', mapname)
                 if client:

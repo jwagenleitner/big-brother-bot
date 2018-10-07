@@ -29,8 +29,6 @@ import re
 import threading
 import time
 
-from six.moves import zip
-
 import b3.plugin
 from b3.config import NoOptionError
 

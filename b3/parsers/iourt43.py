@@ -22,15 +22,11 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'xlr8or, Courgette, Fenix'
 __version__ = '4.33'
 
 import re
 import time
-
-import six
 
 import b3
 import b3.clients
@@ -807,7 +803,7 @@ class Iourt43Parser(AbstractParser):
 
             if client:
                 # update existing client
-                for k, v in six.iteritems(bclient):
+                for k, v in bclient.items():
                     if hasattr(client, 'gear') and k == 'gear' and client.gear != v:
                         self.queueEvent(b3.events.Event(self.getEventID('EVT_CLIENT_GEAR_CHANGE'), v, client))
                     if not k.startswith('_') and k not in (
@@ -1856,7 +1852,7 @@ class Iourt43Parser(AbstractParser):
         plist = self.getPlayerList(maxRetries=4)
         mlist = dict()
 
-        for cid, c in six.iteritems(plist):
+        for cid, c in plist.items():
             client = self.getByCidOrJoinPlayer(cid)
             if client:
                 # Disconnect the zombies first
@@ -1897,7 +1893,7 @@ class Iourt43Parser(AbstractParser):
         Load a given map/level.
         """
         rv = self.getMapsSoundingLike(map_name)
-        if isinstance(rv, six.string_types):
+        if isinstance(rv, str):
             self.say('^7Changing map to %s' % rv)
             time.sleep(1)
             self.write('map %s' % rv)

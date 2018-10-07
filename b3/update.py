@@ -27,13 +27,10 @@ import re
 from distutils import version
 from time import sleep
 
-import six
-from six.moves import map
-from six.moves import input
-
 import b3
 import b3.config
 import b3.functions
+from b3.parser import StubParser
 
 
 class B3version(version.StrictVersion):
@@ -105,7 +102,7 @@ $''', re.VERBOSE)
         Compare current object with another one.
         :param other: The other object
         """
-        if isinstance(other, six.string_types):
+        if isinstance(other, str):
             other = B3version(other)
 
         compare = b3.functions.cmp(self.version, other.version)
@@ -230,7 +227,7 @@ class DBUpdate(object):
 
         dsn = self.config.get('b3', 'database')
         dsndict = splitDSN(dsn)
-        database = getStorage(dsn, dsndict, b3.parser.StubParser())
+        database = getStorage(dsn, dsndict, StubParser())
 
         _update_database(database, '1.3.0')
         _update_database(database, '1.6.0')

@@ -31,8 +31,6 @@ import sys
 import traceback
 from time import sleep
 
-from six.moves import input
-
 import b3
 import b3.config
 import b3.pkg_handler

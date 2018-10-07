@@ -22,7 +22,7 @@
 #                                                                     #
 # ################################################################### #
 
-from six.moves import configparser
+import configparser
 
 NoOptionError = configparser.NoOptionError
 NoSectionError = configparser.NoSectionError

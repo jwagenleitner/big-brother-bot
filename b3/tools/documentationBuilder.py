@@ -41,7 +41,7 @@ from ftplib import FTP
 from functools import cmp_to_key
 from xml.dom.minidom import Document
 
-from six import StringIO
+from io import StringIO
 
 from b3 import getConfPath, getB3Path, getWritableFilePath
 from b3.functions import splitDSN

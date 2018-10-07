@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __version__ = '1.7'
 __author__ = 'guwashi / xlr8or'
 

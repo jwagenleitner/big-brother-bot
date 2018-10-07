@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'SvaRoX'
 __version__ = '0.3'
 
@@ -32,7 +30,6 @@ import b3.events
 import b3.plugin
 import string
 import threading
-import six
 
 from b3.functions import start_daemon_thread
 
@@ -135,7 +132,7 @@ class KniferPlugin(b3.plugin.Plugin):
             except:
                 pass
         elif (event.type == b3.events.EVT_GAME_ROUND_START):
-            if self._challengeThread != None:
+            if self._challengeThread is not None:
                 self._challengeThread.cancel()
         # elif event.type == b3.events.EVT_GAME_ROUND_END:
         # self.displayScores(0)
@@ -287,7 +284,7 @@ class KniferPlugin(b3.plugin.Plugin):
         # From stats plugin
         listKills = []
         ck = self._cutKillers
-        for cid, c in six.iteritems(ck):
+        for cid, c in ck.items():
             listKills.append((c, ck[cid].var(self, 'knifeKills', 0).value))
 
         if len(listKills):
@@ -402,7 +399,7 @@ class KniferPlugin(b3.plugin.Plugin):
         # Find the best knife player
         listKills = []
         ck = cutKillers
-        for cid, c in six.iteritems(ck):
+        for cid, c in ck.items():
             listKills.append((c, ck[cid].var(self, 'knifeKills', 0).value))
 
         if len(listKills):

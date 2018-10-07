@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = "Thomas LEVEIL"
 __version__ = "1.10"
 

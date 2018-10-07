@@ -26,14 +26,12 @@
 __author__ = 'ThorN'
 __version__ = '1.11'
 
+import queue
 import re
 import select
 import socket
 import threading
 import time
-
-import six
-from six.moves import queue as Queue
 
 import b3.functions
 
@@ -64,7 +62,7 @@ class Rcon(object):
         :param password: The RCON password
         """
         self.console = console
-        self.queue = Queue.Queue()
+        self.queue = queue.Queue()
 
         if self.console.config.has_option('caching', 'status_cache_type'):
             status_cache_type = self.console.config.get('caching', 'status_cache_type').lower()
@@ -97,8 +95,6 @@ class Rcon(object):
         :param source: Who requested the encoding
         """
         try:
-            if six.PY2 and isinstance(data, str):
-                data = six.text_type(data, errors='ignore')
             data = data.encode(self.console.encoding, 'replace')
         except Exception as msg:
             self.console.warning('%s: error encoding data: %r', source, msg)
@@ -171,9 +167,6 @@ class Rcon(object):
             maxRetries = 2
 
         data = data.strip()
-        # encode the data
-        if self.console.encoding and six.PY2:
-            data = self.encode_data(data, 'RCON')
 
         self.console.verbose('RCON sending (%s:%s) %r', self.host[0], self.host[1], data)
         start_time = time.time()
@@ -187,8 +180,7 @@ class Rcon(object):
             elif len(writeables) > 0:
                 try:
                     payload = self.rconsendstring % (self.password, data)
-                    if not six.PY2:
-                        payload = payload.encode(encoding="latin-1")
+                    payload = payload.encode(encoding="latin-1")
                     writeables[0].send(payload)
                 except Exception as msg:
                     self.console.warning('RCON: error sending: %r', msg)
@@ -320,10 +312,7 @@ class Rcon(object):
 
         while len(readables):
             payload = sock.recv(size)
-            if six.PY2:
-                d = str(payload)
-            else:
-                d = payload.decode(encoding="latin-1")
+            d = payload.decode(encoding="latin-1")
 
             if d:
                 # remove rcon header

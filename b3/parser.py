@@ -30,6 +30,7 @@ import datetime
 import glob
 import imp
 import os
+import queue
 import re
 import socket
 import sys
@@ -40,8 +41,6 @@ from textwrap import TextWrapper
 from traceback import extract_tb
 
 import dateutil.tz
-import six
-from six.moves import queue
 
 import b3
 import b3.config
@@ -937,7 +936,7 @@ class Parser(object):
                     cleanattr = pattern.sub('', attr)  # trim any underscore or any non alphanumeric character
                     variables[cleanattr] = getattr(obj, attr)
 
-        for key, obj in six.iteritems(kwargs):
+        for key, obj in kwargs.items():
             # self.debug('Type of kwarg %s: %s' % (key, type(obj).__name__))
             if obj is None:
                 continue
@@ -973,7 +972,7 @@ class Parser(object):
         <data> can be either a group keyword or a group level.
         Raises KeyError if group is not found.
         """
-        if type(data) is int or isinstance(data, six.string_types) and data.isdigit():
+        if type(data) is int or isinstance(data, str) and data.isdigit():
             g = Group(level=data)
         else:
             g = Group(keyword=data)

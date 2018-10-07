@@ -87,14 +87,10 @@
 # </pre>
 ##
 
-from __future__ import absolute_import
-
 import re
 
-import six
-
 try:
-    six.text_type("")
+    isinstance("", str)
 except NameError:
     def encode(s, encoding):
         # 1.5.2: application must use the right encoding

@@ -24,10 +24,6 @@ from __future__ import absolute_import
 import re
 import struct
 
-import six
-from six.moves import map
-from six.moves import range
-
 
 def nreverse(sequence):
     """nreverse in Common Lisp. :)"""
@@ -145,8 +141,8 @@ class GeoIP(object):
             fh.seek(offset * 2 * record_length, 0)
             x0 = fh.read(record_length)
             x1 = fh.read(record_length)
-            x0, = struct.unpack("<1l", x0 + six.b("\0"))
-            x1, = struct.unpack("<1l", x1 + six.b("\0"))
+            x0, = struct.unpack("<1l", x0 + b"\0")
+            x1, = struct.unpack("<1l", x1 + b"\0")
             if ipnum & (1 << depth):
                 if x1 >= databaseSegments:
                     return x1

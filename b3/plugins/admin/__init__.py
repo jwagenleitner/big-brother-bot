@@ -33,10 +33,6 @@ import threading
 import time
 import traceback
 
-import six
-from six.moves import map
-from six.moves import range
-
 import b3.cron
 import b3.plugin
 from b3 import functions
@@ -755,7 +751,7 @@ class AdminPlugin(b3.plugin.Plugin):
         :param client: The client who executed the command
         """
         c_list = []
-        for c, cmd in six.iteritems(self._commands):
+        for c, cmd in self._commands.items():
             if cmd.canUse(client):
                 if cmd.command not in c_list:
                     c_list.append(cmd.command)
@@ -1355,7 +1351,7 @@ class AdminPlugin(b3.plugin.Plugin):
                 client.message(self.getMessage('help_no_command', data))
             return
         else:
-            for c, cmd in six.iteritems(self._commands):
+            for c, cmd in self._commands.items():
                 if cmd.canUse(client):
                     if cmd.command not in commands:
                         commands.append(cmd.command)

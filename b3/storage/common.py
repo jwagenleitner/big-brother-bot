@@ -31,8 +31,6 @@ import threading
 from contextlib import contextmanager
 from time import time
 
-import six
-
 import b3
 from b3.clients import Client
 from b3.clients import ClientBan
@@ -129,7 +127,7 @@ class DatabaseStorage(Storage):
                 raise KeyError('no client matching guid %s' % client.guid)
 
             found = False
-            for k, v in six.iteritems(cursor.getRow()):
+            for k, v in cursor.getRow().items():
                 # if hasattr(client, k) and getattr(client, k):
                 #    # don't set already set items
                 #    continue
@@ -167,7 +165,7 @@ class DatabaseStorage(Storage):
         while not cursor.EOF:
             g = cursor.getRow()
             client = Client()
-            for k, v in six.iteritems(g):
+            for k, v in g.items():
                 setattr(client, self.getVar(k), v)
             clients.append(client)
             cursor.moveNext()
@@ -390,20 +388,6 @@ class DatabaseStorage(Storage):
         data = {'id': penalty.id} if penalty.id else {}
         if penalty.keyword and not re.match(r'^[a-z0-9]+$', penalty.keyword, re.I):
             penalty.keyword = ''
-
-        if penalty.reason:
-            # decode the reason data, as the name may need it
-            if six.PY2 \
-                    and hasattr(self.console, "encoding") \
-                    and self.console.encoding:
-                try:
-                    penalty.reason = penalty.reason.decode(self.console.encoding)
-                except Exception as msg:
-                    self.console.warning('ERROR: decoding reason: %r', msg)
-                try:
-                    penalty.reason = penalty.reason.encode('UTF-8', 'replace')
-                except Exception as msg:
-                    self.console.warning('ERROR: encoding reason: %r', msg)
 
         for f in fields:
             if hasattr(penalty, self.getVar(f)):

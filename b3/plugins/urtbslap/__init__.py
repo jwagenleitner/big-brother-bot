@@ -22,8 +22,6 @@
 #                                                                     #
 # ################################################################### #
 
-from __future__ import print_function, absolute_import
-
 __author__ = 'HSO Clan Development http://www.hsoclan.co.uk'
 __version__ = '0.0.2'
 

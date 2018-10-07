@@ -37,7 +37,7 @@ import time
 import traceback
 from sys import stdout
 
-from six import StringIO
+from io import StringIO
 
 import b3.events
 import b3.output

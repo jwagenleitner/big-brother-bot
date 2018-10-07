@@ -34,9 +34,6 @@ import threading
 import zipfile
 from hashlib import md5
 
-import six
-from six.moves import range
-
 from b3 import getPlatform
 from b3.exceptions import ProgrammingError
 
@@ -293,20 +290,13 @@ def soundex(s1):
     Return the soundex value to a string argument.
     """
     ignore = "~!@#$%^&*()_+=-`[]\|;:'/?.,<>\" \t\f\v"
-    if six.PY2:
-        import string
-        table = string.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '01230120022455012623010202')
-    else:
-        table = str.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '01230120022455012623010202', ignore)
+    table = str.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '01230120022455012623010202', ignore)
 
     s1 = s1.upper().strip()
     if not s1:
         return "Z000"
     s2 = s1[0]
-    if six.PY2:
-        s1 = s1.encode('ascii', 'ignore').translate(table, ignore)
-    else:
-        s1 = s1.translate(table)
+    s1 = s1.translate(table)
     if not s1:
         return "Z000"
     prev = s1[0]

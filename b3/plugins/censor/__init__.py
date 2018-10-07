@@ -30,8 +30,6 @@ import sys
 import threading
 import traceback
 
-import six
-
 import b3
 import b3.events
 import b3.plugin
@@ -46,7 +44,7 @@ class PenaltyData:
     duration = 0
 
     def __init__(self, **kwargs):
-        for k, v in six.iteritems(kwargs):
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
     def __repr__(self):
@@ -64,7 +62,7 @@ class CensorData:
     regexp = None
 
     def __init__(self, **kwargs):
-        for k, v in six.iteritems(kwargs):
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
     def __repr__(self):
