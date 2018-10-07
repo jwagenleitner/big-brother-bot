@@ -254,7 +254,7 @@ def clearscreen():
     """
     Clear the current shell screen according to the OS being used.
     """
-    if getPlatform() == 'win':
+    if getPlatform() == 'nt':
         os.system('cls')
     else:
         os.system('clear')
