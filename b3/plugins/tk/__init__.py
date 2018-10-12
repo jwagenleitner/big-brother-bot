@@ -217,7 +217,7 @@ class TkPlugin(b3.plugin.Plugin):
                          'using default: %s' % ','.join(map(str, self._levels.keys())))
         except ValueError as e:
             self.error('could not load levels from config value: %s' % e)
-            self.debug('using default levels' % ','.join(map(str, self._levels.keys())))
+            self.debug('using default levels: %s' % ','.join(map(str, self._levels.keys())))
 
         self._maxLevel = max(self._levels.keys())
         self.debug('teamkill max level is %s', self._maxLevel)

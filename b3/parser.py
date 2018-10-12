@@ -381,6 +381,7 @@ class Parser(object):
         """
         Return an absolute path name and expand the user prefix (~)
         :param path: the relative path we want to expand
+        :param decode: indicates whether decoding is required
         """
         return b3.getAbsolutePath(path, decode=decode)
 
@@ -817,6 +818,7 @@ class Parser(object):
         """
         Import a single plugin.
         :param name: The plugin name
+        :param path: The path to the plugin
         """
         if path is not None:
             # import error is being handled in loadPlugins already
@@ -882,7 +884,7 @@ class Parser(object):
         Disable all plugins except for 'admin'
         """
         for k in self._plugins:
-            if k not in ('admin'):
+            if k not in 'admin':
                 p = self._plugins[k]
                 self.bot('Disabling plugin: %s', k)
                 p.disable()

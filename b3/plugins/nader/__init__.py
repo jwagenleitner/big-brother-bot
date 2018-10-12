@@ -124,7 +124,7 @@ class NaderPlugin(b3.plugin.Plugin):
         if event.type == b3.events.EVT_CLIENT_KILL:
             self.someoneKilled(event.client, event.target, event.data)
         # elif (event.type == b3.events.EVT_GAME_EXIT) or (event.type == b3.events.EVT_GAME_ROUND_START):
-        elif (event.type == b3.events.EVT_GAME_EXIT):
+        elif event.type == b3.events.EVT_GAME_EXIT:
             self.displayScores(0)
             start_daemon_thread(self.updateHallOfFame, (self._nadeKillers, self.console.game.mapName))
             self.resetScores()
@@ -133,7 +133,7 @@ class NaderPlugin(b3.plugin.Plugin):
             except:
                 pass
         elif (event.type == b3.events.EVT_GAME_ROUND_START):
-            if self._challengeThread != None:
+            if self._challengeThread is not None:
                 self._challengeThread.cancel()
         # elif event.type == b3.events.EVT_GAME_ROUND_END:
         # self.displayScores(0)

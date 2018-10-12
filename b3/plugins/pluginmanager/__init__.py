@@ -333,7 +333,7 @@ class PluginmanagerPlugin(b3.plugin.Plugin):
             for r in [re.compile(r'(?:http[s]?://|www.)[^\s]*'),  # website
                       re.compile(r'[a-zA-Z0-9._%-+]+@[a-zA-Z0-9._%-]+.[a-zA-Z]{2,6}')]:  # email
                 a = re.sub(r, '', a)
-                a = re.sub(re.compile(r'-|\|'), '', a).strip()
+                a = re.sub(re.compile(r'[-|]'), '', a).strip()
             client.message('^7You are running plugin ^3%s ^7v%s by %s' % (name, v, a))
 
     def plugin_enable(self, client, data=None):

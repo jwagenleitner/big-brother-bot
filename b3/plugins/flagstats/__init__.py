@@ -276,9 +276,9 @@ class FlagstatsPlugin(b3.plugin.Plugin):
         return
 
     def show_time(self, sec):
-        '''
+        """
         Convert a time in seconds into minutes and hours
-        '''
+        """
         result = ''
 
         if sec < 0:

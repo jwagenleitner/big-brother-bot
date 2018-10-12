@@ -228,7 +228,7 @@ class KniferPlugin(b3.plugin.Plugin):
         """\
         [<player>] Displays the total knife kills for you/someone from xlrstats
         """
-        if self._xlrstatsPlugin == None:
+        if self._xlrstatsPlugin is None:
             client.message('Command unavailable, please try later"')
             return
 
