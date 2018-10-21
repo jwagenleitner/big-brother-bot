@@ -27,8 +27,6 @@ __version__ = '0.3'
 
 import threading
 
-import b3
-import b3.events
 import b3.plugin
 from b3.functions import start_daemon_thread
 
@@ -115,28 +113,26 @@ class NaderPlugin(b3.plugin.Plugin):
         self.query = self.console.storage.query
 
     def onStartup(self):
-        self.registerEvent(b3.events.EVT_GAME_ROUND_START)
-        self.registerEvent(b3.events.EVT_GAME_EXIT)
+        self.registerEvent('EVT_GAME_ROUND_START', self.on_round_start)
+        self.registerEvent('EVT_GAME_EXIT', self.on_round_end)
         # '-> See poweradmin 604
-        self.registerEvent(b3.events.EVT_CLIENT_KILL)
+        self.registerEvent('EVT_CLIENT_KILL', self.on_client_kill)
 
-    def onEvent(self, event):
-        if event.type == b3.events.EVT_CLIENT_KILL:
-            self.someoneKilled(event.client, event.target, event.data)
-        # elif (event.type == b3.events.EVT_GAME_EXIT) or (event.type == b3.events.EVT_GAME_ROUND_START):
-        elif event.type == b3.events.EVT_GAME_EXIT:
-            self.displayScores(0)
-            start_daemon_thread(self.updateHallOfFame, (self._nadeKillers, self.console.game.mapName))
-            self.resetScores()
-            try:
-                self._challengeThread.cancel()
-            except:
-                pass
-        elif (event.type == b3.events.EVT_GAME_ROUND_START):
-            if self._challengeThread is not None:
-                self._challengeThread.cancel()
-        # elif event.type == b3.events.EVT_GAME_ROUND_END:
-        # self.displayScores(0)
+    def on_round_start(self, event):
+        if self._challengeThread is not None:
+            self._challengeThread.cancel()
+
+    def on_round_end(self, event):
+        self.displayScores(0)
+        start_daemon_thread(self.updateHallOfFame, (self._nadeKillers, self.console.game.mapName))
+        self.resetScores()
+        try:
+            self._challengeThread.cancel()
+        except:
+            pass
+
+    def on_client_kill(self, event):
+        self.someoneKilled(event.client, event.target, event.data)
 
     def resetScores(self):
         self._nbHEK = 0

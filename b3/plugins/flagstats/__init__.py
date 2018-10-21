@@ -93,15 +93,15 @@ class FlagstatsPlugin(b3.plugin.Plugin):
         return
 
     def onStartup(self):
-        self.registerEvent(b3.events.EVT_CLIENT_ACTION)
+        self.registerEvent('EVT_CLIENT_ACTION')
         try:
-            self.registerEvent(b3.events.EVT_GAME_FLAG_RETURNED)
+            self.registerEvent('EVT_GAME_FLAG_RETURNED')
         except:
             pass
-        self.registerEvent(b3.events.EVT_GAME_EXIT)  # used to show awards at the end of round
+        self.registerEvent('EVT_GAME_EXIT')  # used to show awards at the end of round
         # self.registerEvent(b3.events.EVT_GAME_ROUND_END) # used to show awards at the end of round
         self.registerEvent(
-            b3.events.EVT_GAME_ROUND_START)  # better to reinit stats at round start than round end, so that players can still query their stats at the end
+            'EVT_GAME_ROUND_START')  # better to reinit stats at round start than round end, so that players can still query their stats at the end
 
         # Initialize the teams' flag stats
         self.BlueTeamData = BlueTeamData()
@@ -122,18 +122,18 @@ class FlagstatsPlugin(b3.plugin.Plugin):
         """
         if self.console.game.gameType == 'ctf':
             try:
-                if event.type == b3.events.EVT_GAME_FLAG_RETURNED:
+                if event.type == self.console.getEventID('EVT_GAME_FLAG_RETURNED'):
                     self.FlagReturn(event)
                     return
             except:
                 pass
 
-            if event.type == b3.events.EVT_CLIENT_ACTION:
+            if event.type == self.console.getEventID('EVT_CLIENT_ACTION'):
                 self.FlagCounter(event)
-            elif event.type == b3.events.EVT_GAME_EXIT:
+            elif event.type == self.console.getEventID('EVT_GAME_EXIT'):
                 if self._show_awards:
                     self.flag_awards_show()
-            elif event.type == b3.events.EVT_GAME_ROUND_START:
+            elif event.type == self.console.getEventID('EVT_GAME_ROUND_START'):
                 self.game_reinit(event)
         return
 
