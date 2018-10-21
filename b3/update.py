@@ -30,7 +30,6 @@ from time import sleep
 import b3
 import b3.config
 import b3.functions
-import b3.parser
 
 
 class B3version(version.StrictVersion):
@@ -227,7 +226,8 @@ class DBUpdate(object):
 
         dsn = self.config.get('b3', 'database')
         dsndict = splitDSN(dsn)
-        database = getStorage(dsn, dsndict, b3.parser.StubParser())
+        from b3.parser import StubParser
+        database = getStorage(dsn, dsndict, StubParser())
 
         _update_database(database, '1.3.0')
         _update_database(database, '1.6.0')
