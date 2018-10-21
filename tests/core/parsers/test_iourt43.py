@@ -151,7 +151,7 @@ class Test_log_lines_parsing(Iourt43TestCase):
         self.assertEqual(self.bot.team, b3.TEAM_RED)
         self.assertTrue(self.bot.bot)
         self.console.parseLine(
-            '''InitRound: \sv_allowdownload\0\g_matchmode\0\g_gametype\4\sv_maxclients\16\sv_floodprotect\1\g_warmup\5\capturelimit\0''')
+            r'''InitRound: \sv_allowdownload\0\g_matchmode\0\g_gametype\4\sv_maxclients\16\sv_floodprotect\1\g_warmup\5\capturelimit\0''')
         self.assertEqual(self.bot.team, b3.TEAM_RED)
         self.assertTrue(self.bot.bot)
 
@@ -1087,7 +1087,7 @@ class Test_inflictCustomPenalty(Iourt43TestCase):
     Called if b3.admin.penalizeClient() does not know a given penalty type.
     Overwrite this to add customized penalties for your game like 'slap', 'nuke',
     'mute', 'kill' or anything you want.
-    /!\ This method must return True if the penalty was inflicted.
+    IMPORTANT: This method must return True if the penalty was inflicted.
     """
 
     def setUp(self):
